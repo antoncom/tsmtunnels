@@ -1,0 +1,22 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "install to device",
+            "type": "shell",
+            "command": [
+                "scp -r ${cwd}/luasrc/* root@192.168.1.1:/usr/lib/lua/luci/ && ",
+                "echo 'Clear caсhe'; ssh root@192.168.1.1 \"rm /tmp/luci*\"; ",
+                // "echo 'Restart uhttpd'; ssh root@192.168.1.1 \"/etc/init.d/uhttpd  restart\"; ",
+                "echo Done!"
+            ],
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        }
+    ]
+}
