@@ -10,7 +10,12 @@ function index()
 	entry({"admin", "services", "pptp"}, cbi("vpn/pptp"), _("PPTP Client"), 30)
 	entry({"admin", "services", "pptp", "action"}, call("do_pptp_action"), nil).leaf = true
 
-	entry({"admin", "services", "l2tp"}, cbi("vpn/l2tp"), _("L2TP Client"), 40).leaf = true
+	entry({"admin", "services", "l2tp"},   cbi("vpn/l2tp"),   _("L2TP Client"),   40).leaf = true
+	entry({"admin", "services", "gre"},    cbi("vpn/gre"),    _("GRE Client"),    50).leaf = true
+	entry({"admin", "services", "dmvpn"},  cbi("vpn/dmvpn"),  _("DMVPN Tunnels"),  60).leaf = true
+	entry({"admin", "services", "eoip"},   cbi("vpn/eoip"),   _("EoIP Tunnels"),   70).leaf = true
+	entry({"admin", "services", "l2tpv3"}, cbi("vpn/l2tpv3"), _("L2TPv3 Tunnels"), 80).leaf = true
+	entry({"admin", "services", "ipsec"},  cbi("vpn/ipsec"),  _("IPSec Tunnels"),  90).leaf = true
 
 end
 
