@@ -10,6 +10,41 @@
 		</div>
 	</div>
 	<div class="cbi-page-actions">
-        <input class="cbi-button cbi-button-apply" type="button" value="Create new" onclick="alert('Hello')"> 
+        <input class="cbi-button cbi-button-apply" type="button" value="Create new" onclick="showMyModal()"> 
     </div>
 </div>
+
+<script type="text/javascript">
+	function showMyModal() {
+		L.require('ui').then(function(ui) {
+			var rssi = new ui.Textfield("1245", {
+				datatype: "rangelength(1,4)",
+				optional: false
+			});
+
+			L.showModal('Configure GRE tunnel', [
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:Signal strength, MIN, % %>') + ":"),
+					E('div', { class: 'cbi-value-field' }, [rssi.render()])
+				]),
+
+				E('div', { class: 'cbi-value-field' }, [
+					E('div', {
+						class: 'btn',
+						click: function() {
+							L.hideModal()
+						}
+					}, _('Close')),
+					' ',
+					E('div', {
+						class: 'btn success',
+						click: function() {
+							//TODO: save data to config file
+							L.hideModal()
+						}
+					}, _('Save')),
+				]),
+			]);
+		});
+	}
+</script>
