@@ -10,15 +10,33 @@
 		</div>
 	</div>
 	<div class="cbi-page-actions">
-        <input class="cbi-button cbi-button-apply" type="button" value="Create new" onclick="showModal()"> 
+        <input class="cbi-button cbi-button-apply" type="button" value="Create new" onclick="showModal(new GreData())"> 
     </div>
 </div>
 
 <script type="text/javascript">
 
-function showModal() {
+var GreData = function() {
+	this.name = "";
+	this.localAddr = "";
+	this.remoteAdderss = "";
+	this.netType = "";
+	this.bridge = "";
+	this.tunnelIp = "";
+	this.tunnelMask = "";
+	this.greKey = "";
+	this.zone = "";
+	this.notFragment = "1";
+}
+
+var localAddresses = {"loopback":"loopback"};
+var bridges = {"bridge1":"bridge1", "bridge2":"bridge2"};
+var firewallZones = {};
+var networkTypes = {"L2 layer":"L2 layer"};
+
+function showModal(greData) {
 	L.require('ui').then(function(ui) {
-		var name = new ui.Textfield("", {
+		var name = new ui.Textfield(greData.name, {
 			placeholder: "Name",
 			optional: false,
 			validate: function(inp) {
@@ -26,65 +44,49 @@ function showModal() {
 			}
 		});
 
-		var localAddr = new ui.Dropdown("", {
-			"net1": "network 1",
-			"net2": "network 2",
-			"net3": "network 3",
-		}, {
+		var localAddr = new ui.Dropdown(greData.localAddr, localAddresses, {
 			multiple: false,
 			optional: false
 		});
 
-		var remoteAdderss = new ui.Textfield("", {
+		var remoteAdderss = new ui.Textfield(greData.remoteAdderss, {
 			placeholder: "Remote IP",
 			optional: false,
 		});
 
-		var netType = new ui.Dropdown("", {
-			"netType1": "network type 1",
-			"netType2": "network type 2",
-			"netType3": "network type 3",
-		}, {
+		var netType = new ui.Dropdown(greData.netType, networkTypes, {
 			multiple: false,
 			optional: false
 		});
 
-		var bridge = new ui.Dropdown("", {
-			"br1": "bridge 1",
-			"br2": "bridge 2",
-			"br3": "bridge 3",
-		}, {
+		var bridge = new ui.Dropdown(greData.bridge, bridges, {
 			multiple: false,
 			optional: false,
 			create: true,
 		});
 
-		var tunnelIp = new ui.Textfield("", {
+		var tunnelIp = new ui.Textfield(greData.tunnelIp, {
 			optional: false,
 			placeholder: "Local IP for tunnel"
 		});
 
-		var tunnelMask = new ui.Textfield("", {
+		var tunnelMask = new ui.Textfield(greData.tunnelMask, {
 			optional: false,
 			placeholder: "Netmask"
 		});
 
-		var greKey = new ui.Textfield("", {
+		var greKey = new ui.Textfield(greData.greKey, {
 			optional: false,
 			placeholder: "Leave blank if not used"
 		});
 
-		var zone = new ui.Dropdown("", {
-			"zone1": "Firewall zone 1",
-			"zone2": "Firewall zone 2",
-			"zone3": "Firewall zone 3",
-		}, {
+		var zone = new ui.Dropdown(greData.firewallZones, firewallZones, {
 			multiple: false,
 			create: true,
 			optional: false
 		});
 
-		var notFragment = new ui.Checkbox("1");
+		var notFragment = new ui.Checkbox(greData.notFragment);
 
 		L.showModal('Configure GRE tunnel', [
 			E('div', { class: 'cbi-value' }, [
