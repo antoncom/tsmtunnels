@@ -10,41 +10,151 @@
 		</div>
 	</div>
 	<div class="cbi-page-actions">
-        <input class="cbi-button cbi-button-apply" type="button" value="Create new" onclick="showMyModal()"> 
+        <input class="cbi-button cbi-button-apply" type="button" value="Create new" onclick="showModal()"> 
     </div>
 </div>
 
 <script type="text/javascript">
-	function showMyModal() {
-		L.require('ui').then(function(ui) {
-			var rssi = new ui.Textfield("1245", {
-				datatype: "rangelength(1,4)",
-				optional: false
-			});
 
-			L.showModal('Configure GRE tunnel', [
-				E('div', { class: 'cbi-value' }, [
-					E('label', { 'class': 'cbi-value-title' }, _('<%:Signal strength, MIN, % %>') + ":"),
-					E('div', { class: 'cbi-value-field' }, [rssi.render()])
-				]),
-
-				E('div', { class: 'cbi-value-field' }, [
-					E('div', {
-						class: 'btn',
-						click: function() {
-							L.hideModal()
-						}
-					}, _('Close')),
-					' ',
-					E('div', {
-						class: 'btn success',
-						click: function() {
-							//TODO: save data to config file
-							L.hideModal()
-						}
-					}, _('Save')),
-				]),
-			]);
+function showModal() {
+	L.require('ui').then(function(ui) {
+		var name = new ui.Textfield("", {
+			placeholder: "Name",
+			optional: false,
+			validate: function(inp) {
+				return true;
+			}
 		});
-	}
+
+		var localAddr = new ui.Dropdown("", {
+			"net1": "network 1",
+			"net2": "network 2",
+			"net3": "network 3",
+		}, {
+			multiple: false,
+			optional: false
+		});
+
+		var remoteAdderss = new ui.Textfield("", {
+			placeholder: "Remote IP",
+			optional: false,
+		});
+
+		var netType = new ui.Dropdown("", {
+			"netType1": "network type 1",
+			"netType2": "network type 2",
+			"netType3": "network type 3",
+		}, {
+			multiple: false,
+			optional: false
+		});
+
+		var bridge = new ui.Dropdown("", {
+			"br1": "bridge 1",
+			"br2": "bridge 2",
+			"br3": "bridge 3",
+		}, {
+			multiple: false,
+			optional: false,
+			create: true,
+		});
+
+		var tunnelIp = new ui.Textfield("", {
+			optional: false,
+			placeholder: "Local IP for tunnel"
+		});
+
+		var tunnelMask = new ui.Textfield("", {
+			optional: false,
+			placeholder: "Netmask"
+		});
+
+		var greKey = new ui.Textfield("", {
+			optional: false,
+			placeholder: "Leave blank if not used"
+		});
+
+		var zone = new ui.Dropdown("", {
+			"zone1": "Firewall zone 1",
+			"zone2": "Firewall zone 2",
+			"zone3": "Firewall zone 3",
+		}, {
+			multiple: false,
+			create: true,
+			optional: false
+		});
+
+		var notFragment = new ui.Checkbox("1");
+
+		L.showModal('Configure GRE tunnel', [
+			E('div', { class: 'cbi-value' }, [
+				E('label', { 'class': 'cbi-value-title' }, _('<%:Name %>')),
+				E('div', { class: 'cbi-value-field' }, [name.render()])
+			]),
+
+			E('div', { class: 'cbi-value' }, [
+				E('label', { 'class': 'cbi-value-title' }, _('<%:Local address %>')),
+				E('div', { class: 'cbi-value-field' }, [localAddr.render()])
+			]),
+
+			E('div', { class: 'cbi-value' }, [
+				E('label', { 'class': 'cbi-value-title' }, _('<%:Remote address %>')),
+				E('div', { class: 'cbi-value-field' }, [remoteAdderss.render()])
+			]),
+
+			E('div', { class: 'cbi-value' }, [
+				E('label', { 'class': 'cbi-value-title' }, _('<%:Network type %>')),
+				E('div', { class: 'cbi-value-field' }, [netType.render()])
+			]),
+
+			E('div', { class: 'cbi-value' }, [
+				E('label', { 'class': 'cbi-value-title' }, _('<%:Add to Bridge or create new %>')),
+				E('div', { class: 'cbi-value-field' }, [bridge.render()])
+			]),
+
+			E('div', { class: 'cbi-value' }, [
+				E('label', { 'class': 'cbi-value-title' }, _('<%:Tunnel IP %>')),
+				E('div', { class: 'cbi-value-field' }, [tunnelIp.render()])
+			]),
+
+			E('div', { class: 'cbi-value' }, [
+				E('label', { 'class': 'cbi-value-title' }, _('<%:Tunnel netmask %>')),
+				E('div', { class: 'cbi-value-field' }, [tunnelMask.render()])
+			]),
+
+			E('div', { class: 'cbi-value' }, [
+				E('label', { 'class': 'cbi-value-title' }, _('<%:GRE key %>')),
+				E('div', { class: 'cbi-value-field' }, [greKey.render()])
+			]),
+
+			E('div', { class: 'cbi-value' }, [
+				E('label', { 'class': 'cbi-value-title' }, _('<%:Firewall zone %>')),
+				E('div', { class: 'cbi-value-field' }, [zone.render()])
+			]),
+
+			E('div', { class: 'cbi-value' }, [
+				E('label', { 'class': 'cbi-value-title' }, _('<%:Dont fragment packets %>')),
+				E('div', { class: 'cbi-value-field' }, [notFragment.render()])
+			]),
+
+			E('div', { class: 'cbi-value-field' }, [
+				E('div', {
+					class: 'btn',
+					click: function() {
+						L.hideModal()
+					}
+				}, _('Close')),
+				' ',
+				E('div', {
+					class: 'btn success',
+					click: function() {
+						//TODO: save data to config file
+						L.hideModal()
+					}
+				}, _('Save')),
+			]),
+		]);
+	});
+}
+
 </script>
