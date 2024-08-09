@@ -3,7 +3,6 @@
 
 	<div id="gre_rows" class="table">
 		<div class="tr table-titles">
-			<div class="th">N</div>
 			<div class="th">Name</div>
 			<div class="th">Active</div>
 			<div class="th center nowrap cbi-section-actions"><%:Actions %></div>
@@ -18,7 +17,7 @@
 
 var GreData = function() {
 	this.name = "";
-	this.isActive = "0";
+	this.isActive = 0;
 	this.options = {
 		localAddr: "",
 		remoteAdderss: "",
@@ -40,10 +39,41 @@ var networkTypes = {"L2 layer":"L2 layer"};
 L.require("ui").then(function(ui){
 	L.require("uci").then(function(uci) {
 		uci.load("gre_tunnels").then(function(out){
-			console.log(uci.sections('gre_tunnels'));
+			var sections = uci.sections('gre_tunnels');
+			for (s in sections) {
+				var newGre = new GreData();
+				newGre.name = sections[s]['.name'];
+				newGre.isActive = parseInt(sections[s]['isActive']);
+				newGre.options['localAddr'] = sections[s]['localAddr'];
+				newGre.options['remoteAdderss'] = sections[s]['remoteAdderss'];
+				newGre.options['netType'] = sections[s]['netType'];
+				newGre.options['bridge'] = sections[s]['bridge'];
+				newGre.options['tunnelIp'] = sections[s]['tunnelIp'];
+				newGre.options['tunnelMask'] = sections[s]['tunnelMask'];
+				newGre.options['greKey'] = sections[s]['greKey'];
+				newGre.options['zone'] = sections[s]['zone'];
+				newGre.options['notFragment'] = sections[s]['notFragment'];
+				addRow(newGre);
+			}
 		});
+		
+		function addRow(greData) {
+			var container = E('div', { id: greData.name, class: 'tr '}, [
+				E('div', {class: 'td'}, E('div', {}, greData.name)),
+				E('div', {class: 'td'}, E('div', {id: greData.name+'-active'}, (greData.isActive ? 'yes' : 'no'))),
+				E('div', {class: "nowrap cbi-section-actions td", style: "text-align: center;"}, [
+					E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {activateConfig(greData);}}, _('Activate')),' ',
+					E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {showModal(greData);}}, _('Edit')),' ',
+					E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {/*TODO: delete */}}, _('Delete')),
+				])
+			])
+						
+			var viewWrapper= document.getElementById('gre_rows');
+			viewWrapper.appendChild(container);
+		}
 	});
 });
+
 
 function showModal(greData) {
 	L.require('ui').then(function(ui) {
@@ -190,6 +220,18 @@ function commitConfig(greData) {
 			uci.apply().then(function(){
 				console.log("uci apply success");
 			});
+		});
+	});
+}
+
+function activateConfig(greData) {
+	L.require('uci').then(function(uci){
+		greData.isActive = !greData.isActive; 
+		uci.set('gre_tunnels', greData.name, 'isActive', greData.isActive);
+		uci.save().then(function(){
+			// var viewWrapper= document.getElementById(greData.name+'-active');
+			// viewWrapper.innerText = (greData.isActive ? 'yes' : 'no');
+			console.log('set '+greData.name+'.isActive to '+greData.isActive);
 		});
 	});
 }
