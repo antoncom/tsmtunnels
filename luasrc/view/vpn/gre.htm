@@ -64,7 +64,7 @@ L.require("ui").then(function(ui){
 				E('div', {class: "nowrap cbi-section-actions td", style: "text-align: center;"}, [
 					E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {activateConfig(greData);}}, _('Activate')),' ',
 					E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {showModal(greData);}}, _('Edit')),' ',
-					E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {/*TODO: delete */}}, _('Delete')),
+					E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {deleteConfig(greData);}}, _('Delete')),
 				])
 			])
 						
@@ -236,6 +236,15 @@ function activateConfig(greData) {
 			// var viewWrapper= document.getElementById(greData.name+'-active');
 			// viewWrapper.innerText = (greData.isActive ? 'yes' : 'no');
 			console.log('set '+greData.name+'.isActive to '+greData.isActive);
+		});
+	});
+}
+
+function deleteConfig(greData) {
+	L.require('uci').then(function(uci){
+		uci.remove('gre_tunnels', greData.name);
+		uci.save().then(function(){
+			console.log('removed '+greData.name);
 		});
 	});
 }
