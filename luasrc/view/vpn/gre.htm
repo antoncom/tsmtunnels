@@ -80,6 +80,7 @@ function showModal(greData) {
 		var name = new ui.Textfield(greData.name, {
 			placeholder: "Name",
 			optional: false,
+			readonly: greData.name.length > 0,
 			validate: function(inp) {
 				return true;
 			}
@@ -213,13 +214,16 @@ function showModal(greData) {
 
 function commitConfig(greData) {
 	L.require('uci').then(function(uci){
+		var section = uci.get('gre_tunnels', greData.name);
+		if (!section) {
+			uci.add('gre_tunnels', 'gre', greData.name);
+		}
+
 		for (key in greData.options) {
 			uci.set('gre_tunnels', greData.name, key, greData.options[key]);
 		}
 		uci.save().then(function(){
-			uci.apply().then(function(){
-				console.log("uci apply success");
-			});
+			console.log("uci apply success");
 		});
 	});
 }
