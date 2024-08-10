@@ -17,7 +17,7 @@
 
 var GreData = function() {
 	this.name = "";
-	this.isActive = 0;
+	this.isActive = false;
 	this.options = {
 		localAddr: "",
 		remoteAdderss: "",
@@ -43,7 +43,7 @@ L.require("ui").then(function(ui){
 			for (s in sections) {
 				var newGre = new GreData();
 				newGre.name = sections[s]['.name'];
-				newGre.isActive = parseInt(sections[s]['isActive']);
+				newGre.isActive = sections[s]['isActive'] == 'true' || sections[s]['isActive'] == '1';
 				newGre.options['localAddr'] = sections[s]['localAddr'];
 				newGre.options['remoteAdderss'] = sections[s]['remoteAdderss'];
 				newGre.options['netType'] = sections[s]['netType'];
@@ -60,7 +60,7 @@ L.require("ui").then(function(ui){
 		function addRow(greData) {
 			var container = E('div', { id: greData.name, class: 'tr '}, [
 				E('div', {class: 'td'}, E('div', {}, greData.name)),
-				E('div', {class: 'td'}, E('div', {id: greData.name+'-active'}, (greData.isActive ? 'yes' : 'no'))),
+				E('div', {class: 'td'}, E('div', {id: greData.name+'-active'}, (greData.isActive == true ? 'yes' : 'no'))),
 				E('div', {class: "nowrap cbi-section-actions td", style: "text-align: center;"}, [
 					E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {activateConfig(greData);}}, _('Activate')),' ',
 					E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {showModal(greData);}}, _('Edit')),' ',
@@ -216,36 +216,36 @@ function commitConfig(greData) {
 	L.require('uci').then(function(uci){
 		var section = uci.get('gre_tunnels', greData.name);
 		if (!section) {
-			uci.add('gre_tunnels', 'gre', greData.name);
+			send_action("add", "gre", greData);
+		} else {
+			send_action("edit", "gre", greData);
 		}
-
-		for (key in greData.options) {
-			uci.set('gre_tunnels', greData.name, key, greData.options[key]);
-		}
-		uci.save().then(function(){
-			console.log("uci apply success");
-		});
 	});
 }
 
 function activateConfig(greData) {
-	L.require('uci').then(function(uci){
-		greData.isActive = !greData.isActive; 
-		uci.set('gre_tunnels', greData.name, 'isActive', greData.isActive);
-		uci.save().then(function(){
-			// var viewWrapper= document.getElementById(greData.name+'-active');
-			// viewWrapper.innerText = (greData.isActive ? 'yes' : 'no');
-			console.log('set '+greData.name+'.isActive to '+greData.isActive);
-		});
-	});
+	greData.isActive = !greData.isActive; 
+	send_action("enable", "gre", greData);
 }
 
 function deleteConfig(greData) {
-	L.require('uci').then(function(uci){
-		uci.remove('gre_tunnels', greData.name);
-		uci.save().then(function(){
-			console.log('removed '+greData.name);
-		});
+	send_action("delete", "gre", greData);
+
+}
+
+function send_action(action, vpnType, data) {
+	var xhr = new XHR(false);
+	var url = '<%=luci.dispatcher.build_url("admin", "services", "vpn", "action")%>/'+ '%h/%h'.format(action, vpnType);
+	// var btn_spinner = document.getElementById("btn_enable_spinner");;
+	// spinner(btn_spinner, 1);
+
+	xhr.post(url, data, function(resp) {
+		if (!resp) {
+			return;
+		}
+		console.log(action+'/'+vpnType+' success');
+		// spinner(btn_spinner, 0);
+		location.reload();
 	});
 }
 
