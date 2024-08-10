@@ -1,7 +1,7 @@
 local config, title = "vpn", "GRE client"
 
 m = Map(config, title)
-m.template = "vpn/gre"
+m.template = "vpnconfig/gre"
 m.pageaction = false
 
 return m
