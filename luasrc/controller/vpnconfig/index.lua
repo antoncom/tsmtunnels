@@ -7,10 +7,10 @@ local http = require "luci.http"
 local uci = require "luci.model.uci".cursor()
 
 function index()
-	-- if not nixio.fs.access("/etc/config/uhttpd") then
+	-- if not nixio.fs.access("/etc/config/vpnconfig") then
 	-- 	return
 	-- end
-	entry({"admin", "services", "vpn", "action"}, call("do_action"), nil).leaf = true
+	entry({"admin", "services", "vpnconfig", "action"}, call("do_action"), nil).leaf = true
 	
 	entry({"admin", "services", "pptp"},   cbi("vpnconfig/pptp"),   _("PPTP Client"), 30).leaf = true
 	entry({"admin", "services", "l2tp"},   cbi("vpnconfig/l2tp"),   _("L2TP Client"),   40).leaf = true
@@ -26,7 +26,7 @@ function do_action(action, vpnType)
 	local name = luci.http.formvalue("name")
 	local isActive = luci.http.formvalue("isActive")
 	local options = luci.jsonc.parse(luci.http.formvalue("options"))
-	local config = 'gre_tunnels'
+	local config = 'vpnconfig_' .. vpnType
 
 	local commands = {
 		add= function(...)
@@ -54,7 +54,7 @@ function do_action(action, vpnType)
 
 		default = function(...)
 			http.prepare_content("text/plain")
-			http.write(vpnType .. " " .. name)
+			http.write(config)
 		end
 	}
 

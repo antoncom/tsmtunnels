@@ -38,8 +38,8 @@ var networkTypes = {"L2 layer":"L2 layer"};
 
 L.require("ui").then(function(ui){
 	L.require("uci").then(function(uci) {
-		uci.load("gre_tunnels").then(function(out){
-			var sections = uci.sections('gre_tunnels');
+		uci.load("vpnconfig_gre").then(function(out){
+			var sections = uci.sections('vpnconfig_gre');
 			for (s in sections) {
 				var newGre = new GreData();
 				newGre.name = sections[s]['.name'];
@@ -214,7 +214,7 @@ function showModal(greData) {
 
 function commitConfig(greData) {
 	L.require('uci').then(function(uci){
-		var section = uci.get('gre_tunnels', greData.name);
+		var section = uci.get('vpnconfig_gre', greData.name);
 		if (!section) {
 			send_action("add", "gre", greData);
 		} else {
@@ -235,7 +235,7 @@ function deleteConfig(greData) {
 
 function send_action(action, vpnType, data) {
 	var xhr = new XHR(false);
-	var url = '<%=luci.dispatcher.build_url("admin", "services", "vpn", "action")%>/'+ '%h/%h'.format(action, vpnType);
+	var url = '<%=luci.dispatcher.build_url("admin", "services", "vpnconfig", "action")%>/'+ '%h/%h'.format(action, vpnType);
 	// var btn_spinner = document.getElementById("btn_enable_spinner");;
 	// spinner(btn_spinner, 1);
 
