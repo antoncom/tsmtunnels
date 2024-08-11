@@ -1,3 +1,6 @@
+<% --[[=========== JS ==========]] %>
+<%+vpnconfig/vpnconfig.js%>
+
 <div id="view">
     <h2><%:GRE %></h2>
 
@@ -231,22 +234,6 @@ function activateConfig(greData) {
 function deleteConfig(greData) {
 	send_action("delete", "gre", greData);
 
-}
-
-function send_action(action, vpnType, data) {
-	var xhr = new XHR(false);
-	var url = '<%=luci.dispatcher.build_url("admin", "services", "vpnconfig", "action")%>/'+ '%h/%h'.format(action, vpnType);
-	// var btn_spinner = document.getElementById("btn_enable_spinner");;
-	// spinner(btn_spinner, 1);
-
-	xhr.post(url, data, function(resp) {
-		if (!resp) {
-			return;
-		}
-		console.log(action+'/'+vpnType+' success');
-		// spinner(btn_spinner, 0);
-		location.reload();
-	});
 }
 
 </script>
