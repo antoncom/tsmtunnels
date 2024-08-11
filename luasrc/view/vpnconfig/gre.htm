@@ -23,7 +23,7 @@ var GreData = function() {
 	this.isActive = false;
 	this.options = {
 		localAddr: "",
-		remoteAdderss: "",
+		remoteAddr: "",
 		netType: "",
 		bridge: "",
 		tunnelIp: "",
@@ -48,7 +48,7 @@ L.require("ui").then(function(ui){
 				newGre.name = sections[s]['.name'];
 				newGre.isActive = parse_bool(sections[s]['isActive']);
 				newGre.options['localAddr'] = sections[s]['localAddr'];
-				newGre.options['remoteAdderss'] = sections[s]['remoteAdderss'];
+				newGre.options['remoteAddr'] = sections[s]['remoteAddr'];
 				newGre.options['netType'] = sections[s]['netType'];
 				newGre.options['bridge'] = sections[s]['bridge'];
 				newGre.options['tunnelIp'] = sections[s]['tunnelIp'];
@@ -94,7 +94,7 @@ function showModal(greData) {
 			optional: false
 		});
 
-		var remoteAdderss = new ui.Textfield(greData.options.remoteAdderss, {
+		var remoteAddr = new ui.Textfield(greData.options.remoteAddr, {
 			placeholder: "Remote IP",
 			optional: false,
 		});
@@ -146,7 +146,7 @@ function showModal(greData) {
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Remote address %>')),
-				E('div', { class: 'cbi-value-field' }, [remoteAdderss.render()])
+				E('div', { class: 'cbi-value-field' }, [remoteAddr.render()])
 			]),
 
 			E('div', { class: 'cbi-value' }, [
@@ -198,7 +198,7 @@ function showModal(greData) {
 						//TODO: validate and save data to config file
 						greData.name = name.getValue(); 
 						greData.options['localAddr'] = localAddr.getValue(); 
-						greData.options['remoteAdderss'] = remoteAdderss.getValue(); 
+						greData.options['remoteAddr'] = remoteAddr.getValue(); 
 						greData.options['netType'] = netType.getValue(); 
 						greData.options['bridge'] = bridge.getValue(); 
 						greData.options['tunnelIp'] = tunnelIp.getValue(); 
