@@ -47,7 +47,7 @@ function do_action(action, vpnType)
 			uci:commit(config)
 		end,
 
-		enable = function(vpnType)
+		enable = function(...)
 			uci:set(config, name, 'isActive', isActive)
 			uci:commit(config)
 		end,

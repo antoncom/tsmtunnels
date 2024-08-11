@@ -10,35 +10,35 @@
                 <div class="cbi-value">
                     <label class="cbi-value-title">Enable PPTP client</label>
                     <div class="cbi-value-field">
-                        <input type="checkbox" class="cbi-input-checkbox" value="1" checked>
+                        <input type="checkbox" id="isActive" class="cbi-input-checkbox" value="0">
                     </div>
                 </div>
 
                 <div class="cbi-value">
                     <label class="cbi-value-title">Server</label>
                     <div class="cbi-value-field">
-                        <input type="text" class="cbi-input-text" value="" placeholder="Server address">
+                        <input type="text" id="server" class="cbi-input-text" value="" placeholder="Server address">
                     </div>
                 </div>
 
                 <div class="cbi-value">
                     <label class="cbi-value-title">Use as default route</label>
                     <div class="cbi-value-field">
-                        <input type="checkbox" class="cbi-input-checkbox" value="0">
+                        <input type="checkbox" id="isDefaultRoute" class="cbi-input-checkbox" value="0">
                     </div>
                 </div>
 
                 <div class="cbi-value">
                     <label class="cbi-value-title">Username</label>
                     <div class="cbi-value-field">
-                        <input type="text" class="cbi-input-text" value="" placeholder="Username">
+                        <input type="text" id="username" cbi-input-text" value="" placeholder="Username">
                     </div>
                 </div>
 
                 <div class="cbi-value">
                     <label class="cbi-value-title">Password</label>
                     <div class="cbi-value-field">
-                        <input type="password" class="cbi-input-text" value="" placeholder="Password">
+                        <input type="password" id="password" class="cbi-input-text" value="" placeholder="Password">
                         <button class="cbi-button cbi-button-neutral" title="Показать/скрыть пароль" aria-label="Показать/скрыть пароль" onclick="">∗</button>
                     </div>
                 </div>
@@ -46,24 +46,14 @@
                 <div class="cbi-value">
                     <label class="cbi-value-title">Use MPPE (MS-CHAP-V2 auth)</label>
                     <div class="cbi-value-field">
-                        <input type="checkbox" class="cbi-input-checkbox" value="0">
+                        <input type="checkbox" id="isMPPE" class="cbi-input-checkbox" value="0">
                     </div>
                 </div>
 
                 <div class="cbi-value">
                     <label class="cbi-value-title">Authentication type</label>
-                    <!-- <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          Dropdown button
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                          <a class="dropdown-item" href="#">Action</a>
-                          <a class="dropdown-item" href="#">Another action</a>
-                          <a class="dropdown-item" href="#">Something else here</a>
-                        </div>
-                    </div> -->
                     <div class="cbi-value-field">
-                        <select>
+                        <select id="authType" value="">
                             <option value="EAP">EAP</option>
                             <option value="PAP">PAP</option>
                             <option value="CHAP">CHAP</option>
@@ -76,14 +66,90 @@
                 <div class="cbi-value">
                     <label class="cbi-value-title">Additional options</label>
                     <div class="cbi-value-field">
-                        <input type="text" class="cbi-input-text" value="" placeholder="Additional options">
+                        <input type="text" id="addOptions" class="cbi-input-text" value="" placeholder="Additional options">
                     </div>
                 </div>
             </div>
         </div>
 	</div>
     <div class="cbi-page-actions">
-        <input class="cbi-button cbi-button-apply" type="button" value="Применить" onclick=""> 
-        <input class="cbi-button cbi-button-reset" type="button" value="Очистить" onclick=""> 
+        <input class="cbi-button cbi-button-apply" type="button" value="Применить" onclick="apply()"> 
+        <input class="cbi-button cbi-button-reset" type="button" value="Reset" onclick="reset_fields()"> 
     </div>
 </div>
+
+
+<script type="text/javascript">
+//<![CDATA[
+
+var PptpData = function() {
+    this.name = "pptp1";
+    this.isActive = false;
+    this.options = {
+        server: "",
+        username: "",
+        password: "",
+        authType: "",
+        addOptinos: "",
+        isMPPE: false,
+        isDefaultRoute: false,
+    };
+}
+
+var g_pptpData = new PptpData();
+
+L.require("ui").then(function(ui){
+    L.require("uci").then(function(uci) {
+        uci.load("vpnconfig_pptp").then(function(out){
+            var sections = uci.sections('vpnconfig_pptp');
+            g_pptpData.isActive = parse_bool(sections[0]['isActive']);
+            g_pptpData.options['server'] = sections[0]['server'];
+            g_pptpData.options['username'] = sections[0]['username'];
+            g_pptpData.options['password'] = sections[0]['password'];
+            g_pptpData.options['authType'] = sections[0]['authType'];
+            g_pptpData.options['addOptinos'] = sections[0]['addOptinos'];
+            g_pptpData.options['isMPPE'] = parse_bool(sections[0]['isMPPE']);
+            g_pptpData.options['isDefaultRoute'] = parse_bool(sections[0]['isDefaultRoute']);
+            fill_form(g_pptpData);
+        });
+    });
+});
+
+function fill_form(pptpData) {
+    $('#server').val(pptpData.options['server']);
+    $('#username').val(pptpData.options['username']);
+    $('#password').val(pptpData.options['password']);
+    $('#addOptinos').val(pptpData.options['addOptinos']);
+    $('#authType').val(pptpData.options['authType']);
+    $('#isMPPE').prop('checked', pptpData.options['isMPPE']);
+    $('#isDefaultRoute').prop('checked', pptpData.options['isDefaultRoute']);
+    $('#isActive').prop('checked', pptpData.isActive);
+}
+
+function reset_fields() {
+    fill_form(g_pptpData);
+}
+
+function apply() {
+    var pptpData = new PptpData();
+    pptpData.options['server'] = $('#server').val();
+    pptpData.options['username'] = $('#username').val();
+    pptpData.options['password'] = $('#password').val();
+    pptpData.options['addOptinos'] = $('#addOptinos').val();
+    pptpData.options['authType'] = $('#authType').val();
+    pptpData.options['isMPPE'] = $('#isMPPE').prop('checked');
+    pptpData.options['isDefaultRoute'] = $('#isDefaultRoute').prop('checked');
+    pptpData.isActive = $('#isActive').prop('checked');
+    send_action("edit", "pptp", pptpData, function(){
+        if (pptpData.isActive == g_pptpData.isActive) {
+            location.reload();
+        } else {
+            send_action("enable", "pptp", pptpData, function(){
+                location.reload();
+            });
+        }
+    });
+}
+
+//]]>
+</script>

@@ -46,7 +46,7 @@ L.require("ui").then(function(ui){
 			for (s in sections) {
 				var newGre = new GreData();
 				newGre.name = sections[s]['.name'];
-				newGre.isActive = sections[s]['isActive'] == 'true' || sections[s]['isActive'] == '1';
+				newGre.isActive = parse_bool(sections[s]['isActive']);
 				newGre.options['localAddr'] = sections[s]['localAddr'];
 				newGre.options['remoteAdderss'] = sections[s]['remoteAdderss'];
 				newGre.options['netType'] = sections[s]['netType'];
@@ -55,7 +55,7 @@ L.require("ui").then(function(ui){
 				newGre.options['tunnelMask'] = sections[s]['tunnelMask'];
 				newGre.options['greKey'] = sections[s]['greKey'];
 				newGre.options['zone'] = sections[s]['zone'];
-				newGre.options['notFragment'] = sections[s]['notFragment'];
+				newGre.options['notFragment'] = parse_bool(sections[s]['notFragment']);
 				addRow(newGre);
 			}
 		});
@@ -219,20 +219,28 @@ function commitConfig(greData) {
 	L.require('uci').then(function(uci){
 		var section = uci.get('vpnconfig_gre', greData.name);
 		if (!section) {
-			send_action("add", "gre", greData);
+			send_action("add", "gre", greData, function(){
+				location.reload();
+			});
 		} else {
-			send_action("edit", "gre", greData);
+			send_action("edit", "gre", greData, function(){
+				location.reload();
+			});
 		}
 	});
 }
 
 function activateConfig(greData) {
 	greData.isActive = !greData.isActive; 
-	send_action("enable", "gre", greData);
+	send_action("enable", "gre", greData, function(){
+		location.reload();
+	});
 }
 
 function deleteConfig(greData) {
-	send_action("delete", "gre", greData);
+	send_action("delete", "gre", greData, function(){
+		location.reload();
+	});
 
 }
 
