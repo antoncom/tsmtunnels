@@ -1,6 +1,12 @@
 <% --[[=========== JS ==========]] %>
 <%+vpnconfig/vpnconfig.js%>
 
+<% --[[=========== LUA BACKEND ==========]] %>
+<%
+	local vpnType = "gre"
+	local config = "vpnconfig_" .. vpnType
+%>
+
 <div id="view">
     <h2><%:GRE %></h2>
 
@@ -41,8 +47,8 @@ var networkTypes = {"L2 layer":"L2 layer"};
 
 L.require("ui").then(function(ui){
 	L.require("uci").then(function(uci) {
-		uci.load("vpnconfig_gre").then(function(out){
-			var sections = uci.sections('vpnconfig_gre');
+		uci.load("<%=config%>").then(function(out){
+			var sections = uci.sections('<%=config%>');
 			for (s in sections) {
 				var newGre = new GreData();
 				newGre.name = sections[s]['.name'];
@@ -217,13 +223,13 @@ function showModal(greData) {
 
 function commitConfig(greData) {
 	L.require('uci').then(function(uci){
-		var section = uci.get('vpnconfig_gre', greData.name);
+		var section = uci.get('<%=config%>', greData.name);
 		if (!section) {
-			send_action("add", "gre", greData, function(){
+			send_action("add", "<%=vpnType%>", greData, function(){
 				location.reload();
 			});
 		} else {
-			send_action("edit", "gre", greData, function(){
+			send_action("edit", "<%=vpnType%>", greData, function(){
 				location.reload();
 			});
 		}
@@ -232,13 +238,13 @@ function commitConfig(greData) {
 
 function activateConfig(greData) {
 	greData.isActive = !greData.isActive; 
-	send_action("enable", "gre", greData, function(){
+	send_action("enable", "<%=vpnType%>", greData, function(){
 		location.reload();
 	});
 }
 
 function deleteConfig(greData) {
-	send_action("delete", "gre", greData, function(){
+	send_action("delete", "<%=vpnType%>", greData, function(){
 		location.reload();
 	});
 

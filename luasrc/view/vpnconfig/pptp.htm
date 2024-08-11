@@ -1,6 +1,12 @@
 <% --[[=========== JS ==========]] %>
 <%+vpnconfig/vpnconfig.js%>
 
+<% --[[=========== LUA BACKEND ==========]] %>
+<%
+	local vpnType = "pptp"
+	local config = "vpnconfig_" .. vpnType
+%>
+
 <div id="view">
     <h2><%:PPTP Client %></h2>
 
@@ -100,8 +106,8 @@ var g_pptpData = new PptpData();
 
 L.require("ui").then(function(ui){
     L.require("uci").then(function(uci) {
-        uci.load("vpnconfig_pptp").then(function(out){
-            var sections = uci.sections('vpnconfig_pptp');
+        uci.load("<%=config%>").then(function(out){
+            var sections = uci.sections('<%=config%>');
             g_pptpData.isActive = parse_bool(sections[0]['isActive']);
             g_pptpData.options['server'] = sections[0]['server'];
             g_pptpData.options['username'] = sections[0]['username'];
@@ -140,11 +146,11 @@ function apply() {
     pptpData.options['isMPPE'] = $('#isMPPE').prop('checked');
     pptpData.options['isDefaultRoute'] = $('#isDefaultRoute').prop('checked');
     pptpData.isActive = $('#isActive').prop('checked');
-    send_action("edit", "pptp", pptpData, function(){
+    send_action("edit", "<%=vpnType%>", pptpData, function(){
         if (pptpData.isActive == g_pptpData.isActive) {
             location.reload();
         } else {
-            send_action("enable", "pptp", pptpData, function(){
+            send_action("enable", "<%=vpnType%>", pptpData, function(){
                 location.reload();
             });
         }

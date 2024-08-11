@@ -1,6 +1,13 @@
 <% --[[=========== JS ==========]] %>
 <%+vpnconfig/vpnconfig.js%>
 
+
+<% --[[=========== LUA BACKEND ==========]] %>
+<%
+	local vpnType = "l2tp"
+	local config = "vpnconfig_" .. vpnType
+%>
+
 <div id="view">
     <h2><%:L2TP Client %></h2>
 
@@ -108,8 +115,8 @@
     
     L.require("ui").then(function(ui){
         L.require("uci").then(function(uci) {
-            uci.load("vpnconfig_l2tp").then(function(out){
-                var sections = uci.sections('vpnconfig_l2tp');
+            uci.load("<%=config%>").then(function(out){
+                var sections = uci.sections('<%=config%>');
                 g_l2tpData.isActive = parse_bool(sections[0]['isActive']);
                 g_l2tpData.options['server'] = sections[0]['server'];
                 g_l2tpData.options['username'] = sections[0]['username'];
@@ -151,11 +158,11 @@
         l2tpData.options['isDefaultRoute'] = $('#isDefaultRoute').prop('checked');
         l2tpData.options['isIPSecProt'] = $('#isIPSecProt').prop('checked');
         l2tpData.isActive = $('#isActive').prop('checked');
-        send_action("edit", "l2tp", l2tpData, function(){
+        send_action("edit", "<%=vpnType%>", l2tpData, function(){
             if (l2tpData.isActive == g_l2tpData.isActive) {
                 location.reload();
             } else {
-                send_action("enable", "l2tp", l2tpData, function(){
+                send_action("enable", "<%=vpnType%>", l2tpData, function(){
                     location.reload();
                 });
             }
