@@ -1,4 +1,6 @@
-                                                                   
+<% --[[=========== JS ==========]] %>
+<%+vpnconfig/vpnconfig.js%>
+
 <div id="view">
     <h2><%:L2TP Client %></h2>
 
@@ -6,37 +8,37 @@
         <div class="cbi-map-section">
 	        <div class="cbi-map-section-node">
                 <div class="cbi-value">
-                    <label class="cbi-value-title">Enable PPTP client</label>
+                    <label class="cbi-value-title">Enable L2TP client</label>
                     <div class="cbi-value-field">
-                        <input type="checkbox" class="cbi-input-checkbox" value="1" checked>
+                        <input type="checkbox" id="isActive" class="cbi-input-checkbox" value="0">
                     </div>
                 </div>
 
                 <div class="cbi-value">
                     <label class="cbi-value-title">Server</label>
                     <div class="cbi-value-field">
-                        <input type="text" class="cbi-input-text" value="" placeholder="Server address">
+                        <input type="text" id="server" class="cbi-input-text" value="" placeholder="Server address">
                     </div>
                 </div>
 
                 <div class="cbi-value">
                     <label class="cbi-value-title">Use as default route</label>
                     <div class="cbi-value-field">
-                        <input type="checkbox" class="cbi-input-checkbox" value="0">
+                        <input type="checkbox" id="isDefaultRoute" class="cbi-input-checkbox" value="0">
                     </div>
                 </div>
 
                 <div class="cbi-value">
                     <label class="cbi-value-title">Username</label>
                     <div class="cbi-value-field">
-                        <input type="text" class="cbi-input-text" value="" placeholder="Username">
+                        <input type="text" id="username" cbi-input-text" value="" placeholder="Username">
                     </div>
                 </div>
 
                 <div class="cbi-value">
                     <label class="cbi-value-title">Password</label>
                     <div class="cbi-value-field">
-                        <input type="password" class="cbi-input-text" value="" placeholder="Password">
+                        <input type="password" id="password" class="cbi-input-text" value="" placeholder="Password">
                         <button class="cbi-button cbi-button-neutral" title="Показать/скрыть пароль" aria-label="Показать/скрыть пароль" onclick="">∗</button>
                     </div>
                 </div>
@@ -44,24 +46,14 @@
                 <div class="cbi-value">
                     <label class="cbi-value-title">Use MPPE (MS-CHAP-V2 auth)</label>
                     <div class="cbi-value-field">
-                        <input type="checkbox" class="cbi-input-checkbox" value="0">
+                        <input type="checkbox" id="isMPPE" class="cbi-input-checkbox" value="0">
                     </div>
                 </div>
 
                 <div class="cbi-value">
                     <label class="cbi-value-title">Authentication type</label>
-                    <!-- <div class="dropdown">
-                        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          Dropdown button
-                        </button>
-                        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                          <a class="dropdown-item" href="#">Action</a>
-                          <a class="dropdown-item" href="#">Another action</a>
-                          <a class="dropdown-item" href="#">Something else here</a>
-                        </div>
-                    </div> -->
                     <div class="cbi-value-field">
-                        <select>
+                        <select id="authType" value="">
                             <option value="EAP">EAP</option>
                             <option value="PAP">PAP</option>
                             <option value="CHAP">CHAP</option>
@@ -74,21 +66,101 @@
                 <div class="cbi-value">
                     <label class="cbi-value-title">Additional options</label>
                     <div class="cbi-value-field">
-                        <input type="text" class="cbi-input-text" value="" placeholder="Additional options">
+                        <input type="text" id="addOptions" class="cbi-input-text" value="" placeholder="Additional options">
                     </div>
                 </div>
 
                 <div class="cbi-value">
-                    <label class="cbi-value-title">Use IPSec Protection</label>
+                    <label class="cbi-value-title">Use IPSec protection</label>
                     <div class="cbi-value-field">
-                        <input type="checkbox" class="cbi-input-checkbox" value="0">
+                        <input type="checkbox" id="isIPSecProt" class="cbi-input-checkbox" value="0">
                     </div>
                 </div>
             </div>
         </div>
 	</div>
     <div class="cbi-page-actions">
-        <input class="cbi-button cbi-button-apply" type="button" value="Применить" onclick=""> 
-        <input class="cbi-button cbi-button-reset" type="button" value="Очистить" onclick=""> 
+        <input class="cbi-button cbi-button-apply" type="button" value="Применить" onclick="apply()"> 
+        <input class="cbi-button cbi-button-reset" type="button" value="Reset" onclick="reset_fields()"> 
     </div>
 </div>
+
+
+<script type="text/javascript">
+    //<![CDATA[
+    
+    var L2tpData = function() {
+        this.name = "l2tp1";
+        this.isActive = false;
+        this.options = {
+            server: "",
+            username: "",
+            password: "",
+            authType: "",
+            addOptinos: "",
+            isMPPE: false,
+            isDefaultRoute: false,
+            isIPSecProt: false,
+        };
+    }
+    
+    var g_l2tpData = new L2tpData();
+    
+    L.require("ui").then(function(ui){
+        L.require("uci").then(function(uci) {
+            uci.load("vpnconfig_l2tp").then(function(out){
+                var sections = uci.sections('vpnconfig_l2tp');
+                g_l2tpData.isActive = parse_bool(sections[0]['isActive']);
+                g_l2tpData.options['server'] = sections[0]['server'];
+                g_l2tpData.options['username'] = sections[0]['username'];
+                g_l2tpData.options['password'] = sections[0]['password'];
+                g_l2tpData.options['authType'] = sections[0]['authType'];
+                g_l2tpData.options['addOptinos'] = sections[0]['addOptinos'];
+                g_l2tpData.options['isMPPE'] = parse_bool(sections[0]['isMPPE']);
+                g_l2tpData.options['isDefaultRoute'] = parse_bool(sections[0]['isDefaultRoute']);
+                g_l2tpData.options['isIPSecProt'] = parse_bool(sections[0]['isIPSecProt']);
+                fill_form(g_l2tpData);
+            });
+        });
+    });
+    
+    function fill_form(l2tpData) {
+        $('#server').val(l2tpData.options['server']);
+        $('#username').val(l2tpData.options['username']);
+        $('#password').val(l2tpData.options['password']);
+        $('#addOptinos').val(l2tpData.options['addOptinos']);
+        $('#authType').val(l2tpData.options['authType']);
+        $('#isMPPE').prop('checked', l2tpData.options['isMPPE']);
+        $('#isDefaultRoute').prop('checked', l2tpData.options['isDefaultRoute']);
+        $('#isIPSecProt').prop('checked', l2tpData.options['isIPSecProt']);
+        $('#isActive').prop('checked', l2tpData.isActive);
+    }
+    
+    function reset_fields() {
+        fill_form(g_l2tpData);
+    }
+    
+    function apply() {
+        var l2tpData = new L2tpData();
+        l2tpData.options['server'] = $('#server').val();
+        l2tpData.options['username'] = $('#username').val();
+        l2tpData.options['password'] = $('#password').val();
+        l2tpData.options['addOptinos'] = $('#addOptinos').val();
+        l2tpData.options['authType'] = $('#authType').val();
+        l2tpData.options['isMPPE'] = $('#isMPPE').prop('checked');
+        l2tpData.options['isDefaultRoute'] = $('#isDefaultRoute').prop('checked');
+        l2tpData.options['isIPSecProt'] = $('#isIPSecProt').prop('checked');
+        l2tpData.isActive = $('#isActive').prop('checked');
+        send_action("edit", "l2tp", l2tpData, function(){
+            if (l2tpData.isActive == g_l2tpData.isActive) {
+                location.reload();
+            } else {
+                send_action("enable", "l2tp", l2tpData, function(){
+                    location.reload();
+                });
+            }
+        });
+    }
+    
+    //]]>
+    </script>
