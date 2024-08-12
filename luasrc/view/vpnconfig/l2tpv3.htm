@@ -1,15 +1,299 @@
+<% --[[=========== JS ==========]] %>
+<%+vpnconfig/vpnconfig.js%>
+
+<% --[[=========== LUA BACKEND ==========]] %>
+<%
+	local vpnType = "l2tpv3"
+	local config = "vpnconfig"
+%>
+
 <div id="view">
     <h2><%:L2TPv3 tunnels %></h2>
 
 	<div id="l2tpv3_rows" class="table">
 		<div class="tr table-titles">
-			<div class="th">N</div>
 			<div class="th">Name</div>
 			<div class="th">Active</div>
 			<div class="th center nowrap cbi-section-actions"><%:Actions %></div>
 		</div>
 	</div>
 	<div class="cbi-page-actions">
-        <input class="cbi-button cbi-button-apply" type="button" value="Create new" onclick=""> 
+        <input class="cbi-button cbi-button-apply" type="button" value="Create new" onclick="showModal(new L2ptv3Data())"> 
     </div>
 </div>
+
+
+<script type="text/javascript">
+
+	var L2ptv3Data = function() {
+		this.name = "";
+		this.isActive = false;
+		this.options = {
+			localAddr: "",
+			remoteAddr: "",
+			bridge: "",
+			zone: "",
+			tunnelIp: "",
+			tunnelMask: "",
+			tunnelId: "0",
+			remoteTunnelId: "",
+			sessionId: "0",
+			remoteSessionId: "",
+			encapsulation: "ip",
+			l2HeaderType: "none",
+		};
+	}
+	
+	var localAddresses = {"default":"default"};
+	var firewallZones = {};
+	var bridges = {"bridge1":"bridge1", "bridge2":"bridge2"};
+	var encapsulationTypes = {"ip": "ip"};
+	var l2HeaderTypes = {"none": "none"}
+	
+	L.require("ui").then(function(ui){
+		L.require("uci").then(function(uci) {
+			uci.load("<%=config%>").then(function(out){
+				var sections = uci.sections('<%=config%>', '<%=vpnType%>');
+				for (s in sections) {
+					var l2ptv3Data = new L2ptv3Data();
+					l2ptv3Data.name = sections[s]['.name'];
+					l2ptv3Data.isActive = parse_bool(sections[s]['isActive']);
+	
+					l2ptv3Data.options['localAddr'] = sections[s]['localAddr'];
+					l2ptv3Data.options['remoteAddr'] = sections[s]['remoteAddr'];
+					l2ptv3Data.options['bridge'] = sections[s]['bridge'];
+					l2ptv3Data.options['zone'] = sections[s]['zone'];
+					l2ptv3Data.options['tunnelIp'] = sections[s]['tunnelIp'];
+					l2ptv3Data.options['tunnelMask'] = sections[s]['tunnelMask'];
+					l2ptv3Data.options['tunnelId'] = sections[s]['tunnelId'];
+					l2ptv3Data.options['remoteTunnelId'] = sections[s]['remoteTunnelId'];
+					l2ptv3Data.options['sessionId'] = sections[s]['sessionId'];
+					l2ptv3Data.options['remoteSessionId'] = sections[s]['remoteSessionId'];
+					l2ptv3Data.options['encapsulation'] = sections[s]['encapsulation'];
+					l2ptv3Data.options['l2HeaderType'] = sections[s]['isNotCachel2HeaderType'];
+						
+					addRow(l2ptv3Data);
+				}
+			});
+			
+			function addRow(l2ptv3Data) {
+				var container = E('div', { id: l2ptv3Data.name, class: 'tr '}, [
+					E('div', {class: 'td'}, E('div', {}, l2ptv3Data.name)),
+					E('div', {class: 'td'}, E('div', {id: l2ptv3Data.name+'-active'}, (l2ptv3Data.isActive == true ? 'yes' : 'no'))),
+					E('div', {class: "nowrap cbi-section-actions td", style: "text-align: center;"}, [
+						E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {activateConfig(l2ptv3Data);}}, _('Activate')),' ',
+						E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {showModal(l2ptv3Data);}}, _('Edit')),' ',
+						E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {deleteConfig(l2ptv3Data);}}, _('Delete')),
+					])
+				])
+							
+				var viewWrapper= document.getElementById('l2tpv3_rows');
+				viewWrapper.appendChild(container);
+			}
+		});
+	});
+	
+	function showModal(l2ptv3Data) {
+		L.require('ui').then(function(ui) {
+			var name = new ui.Textfield(l2ptv3Data.name, {
+				placeholder: "Name",
+				optional: false,
+				readonly: l2ptv3Data.name.length > 0,
+				validate: function(inp) {
+					return true;
+				}
+			});
+	
+			var localAddr = new ui.Dropdown(l2ptv3Data.options.localAddr, localAddresses, {
+				multiple: false,
+				optional: false
+			});
+	
+			var remoteAddr = new ui.Textfield(l2ptv3Data.options.remoteAddr, {
+				placeholder: "Remote IP",
+				optional: false,
+			});
+
+			var bridge = new ui.Dropdown(l2ptv3Data.options.bridge, bridges, {
+				multiple: false,
+				optional: false,
+				create: true,
+			});
+	
+			var zone = new ui.Dropdown(l2ptv3Data.options.firewallZones, firewallZones, {
+				multiple: false,
+				create: true,
+				optional: false
+			});
+	
+			var tunnelIp = new ui.Textfield(l2ptv3Data.options.tunnelIp, {
+				optional: false,
+				placeholder: "Local IP for tunnel"
+			});
+	
+			var tunnelMask = new ui.Textfield(l2ptv3Data.options.tunnelMask, {
+				optional: false,
+				placeholder: "tunnel netmask"
+			});
+			
+			var tunnelId = new ui.Textfield(l2ptv3Data.options.tunnelId, {
+				optional: false,
+				placeholder: ""
+			});
+	
+			var remoteTunnelId = new ui.Textfield(l2ptv3Data.options.remoteTunnelId, {
+				optional: false,
+				placeholder: ""
+			});
+	
+			var sessionId = new ui.Textfield(l2ptv3Data.options.sessionId, {
+				optional: false,
+				placeholder: ""
+			});
+	
+			var remoteSessionId = new ui.Textfield(l2ptv3Data.options.pingAddr, {
+				optional: false,
+				placeholder: ""
+			});
+	
+			var encapsulation = new ui.Dropdown(l2ptv3Data.options.encapsulation, encapsulationTypes, {
+				multiple: false,
+				optional: false
+			});
+	
+			var l2HeaderType = new ui.Dropdown(l2ptv3Data.options.l2HeaderType, l2HeaderTypes, {
+				multiple: false,
+				optional: false
+			});
+	
+			L.showModal('Configure L2TPv3 tunnel', [
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:Name %>')),
+					E('div', { class: 'cbi-value-field' }, [name.render()])
+				]),
+	
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:Local address %>')),
+					E('div', { class: 'cbi-value-field' }, [localAddr.render()])
+				]),
+	
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:Remote address %>')),
+					E('div', { class: 'cbi-value-field' }, [remoteAddr.render()])
+				]),
+
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:Add to bridge or Create new %>')),
+					E('div', { class: 'cbi-value-field' }, [bridge.render()])
+				]),
+
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:Firewall zone %>')),
+					E('div', { class: 'cbi-value-field' }, [zone.render()])
+				]),
+	
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:Tunnel IP %>')),
+					E('div', { class: 'cbi-value-field' }, [tunnelIp.render()])
+				]),
+	
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:Tunnel netmask %>')),
+					E('div', { class: 'cbi-value-field' }, [tunnelMask.render()])
+				]),
+	
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:Tunnel ID %>')),
+					E('div', { class: 'cbi-value-field' }, [tunnelId.render()])
+				]),
+	
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:Remote tunnel ID %>')),
+					E('div', { class: 'cbi-value-field' }, [remoteTunnelId.render()])
+				]),
+	
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:Session ID %>')),
+					E('div', { class: 'cbi-value-field' }, [sessionId.render()])
+				]),
+
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:Remote Session ID %>')),
+					E('div', { class: 'cbi-value-field' }, [remoteSessionId.render()])
+				]),
+	
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:Encapsulation %>')),
+					E('div', { class: 'cbi-value-field' }, [encapsulation.render()])
+				]),
+	
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:L2 Specific Header type %>')),
+					E('div', { class: 'cbi-value-field' }, [l2HeaderType.render()])
+				]),
+	
+				E('div', { class: 'cbi-value-field' }, [
+					E('div', {
+						class: 'btn',
+						click: function() {
+							L.hideModal()
+						}
+					}, _('Close')),
+					' ',
+					E('div', {
+						class: 'btn success',
+						click: function() {
+							//TODO: validate and save data to config file
+							l2ptv3Data.name = name.getValue(); 
+							l2ptv3Data.options['localAddr'] = localAddr.getValue(); 
+							l2ptv3Data.options['remoteAddr'] = remoteAddr.getValue();
+							l2ptv3Data.options['bridge'] = bridge.getValue(); 
+							l2ptv3Data.options['zone'] = zone.getValue(); 
+							l2ptv3Data.options['tunnelIp'] = tunnelIp.getValue(); 
+							l2ptv3Data.options['tunnelMask'] = tunnelMask.getValue(); 
+							l2ptv3Data.options['tunnelId'] = tunnelId.getValue(); 
+							l2ptv3Data.options['remoteTunnelId'] = remoteTunnelId.getValue(); 
+							l2ptv3Data.options['sessionId'] = sessionId.getValue(); 
+							l2ptv3Data.options['remoteSessionId'] = remoteSessionId.getValue();
+							l2ptv3Data.options['encapsulation'] = encapsulation.getValue();
+							l2ptv3Data.options['l2HeaderType'] = l2HeaderType.getValue();
+	
+							commitConfig(l2ptv3Data);
+							L.hideModal()
+						}
+					}, _('Save')),
+				]),
+			]);
+		});
+	}
+	
+	function commitConfig(data) {
+		L.require('uci').then(function(uci){
+			var section = uci.get('<%=config%>', data.name);
+			if (!section) {
+				send_action("add", "<%=vpnType%>", data, function(){
+					location.reload();
+				});
+			} else {
+				send_action("edit", "<%=vpnType%>", data, function(){
+					location.reload();
+				});
+			}
+		});
+	}
+	
+	function activateConfig(data) {
+		data.isActive = !data.isActive; 
+		send_action("enable", "<%=vpnType%>", data, function(){
+			location.reload();
+		});
+	}
+	
+	function deleteConfig(data) {
+		send_action("delete", "<%=vpnType%>", data, function(){
+			location.reload();
+		});
+	
+	}
+	
+	</script>
