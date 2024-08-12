@@ -47,8 +47,8 @@ var DmvpnData = function() {
 	};
 }
 
-var localAddresses = {"default":"default"};
-var firewallZones = {};
+var localAddresses = ["default"];
+var firewallZones = [];
 
 L.require("ui").then(function(ui){
 	L.require("uci").then(function(uci) {
@@ -107,7 +107,7 @@ function showModal(dmvpnData) {
 			}
 		});
 
-		var localAddr = new ui.Dropdown(dmvpnData.options.localAddr, localAddresses, {
+		var localAddr = new ui.Dropdown(dmvpnData.options.localAddr, make_dropdown_options(localAddresses), {
 			multiple: false,
 			optional: false
 		});
@@ -142,7 +142,7 @@ function showModal(dmvpnData) {
 			placeholder: "Leave blank if not used"
 		});
 
-		var zone = new ui.Dropdown(dmvpnData.options.firewallZones, firewallZones, {
+		var zone = new ui.Dropdown(dmvpnData.options.firewallZones, make_dropdown_options(firewallZones), {
 			multiple: false,
 			create: true,
 			optional: false

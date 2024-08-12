@@ -39,9 +39,9 @@
 		};
 	}
 	
-	var localAddresses = {"loopback":"loopback"};
-	var bridges = {"bridge1":"bridge1", "bridge2":"bridge2"};
-	var firewallZones = {};
+	var localAddresses = ["loopback"];
+	var bridges = ["bridge1", "bridge2"];
+	var firewallZones = [];
 	
 	L.require("ui").then(function(ui){
 		L.require("uci").then(function(uci) {
@@ -91,7 +91,7 @@
 				}
 			});
 	
-			var localAddr = new ui.Dropdown(eoipData.options.localAddr, localAddresses, {
+			var localAddr = new ui.Dropdown(eoipData.options.localAddr, make_dropdown_options(localAddresses), {
 				multiple: false,
 				optional: false
 			});
@@ -101,7 +101,7 @@
 				optional: false,
 			});
 	
-			var bridge = new ui.Dropdown(eoipData.options.bridge, bridges, {
+			var bridge = new ui.Dropdown(eoipData.options.bridge, make_dropdown_options(bridges), {
 				multiple: false,
 				optional: false,
 				create: true,
@@ -122,7 +122,7 @@
 				placeholder: ""
 			});
 	
-			var zone = new ui.Dropdown(eoipData.options.firewallZones, firewallZones, {
+			var zone = new ui.Dropdown(eoipData.options.firewallZones, make_dropdown_options(firewallZones), {
 				multiple: false,
 				create: true,
 				optional: false

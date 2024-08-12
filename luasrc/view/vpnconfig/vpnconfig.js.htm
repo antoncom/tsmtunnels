@@ -25,4 +25,16 @@ function parse_bool(value) {
     return value == 'true' || value == 1;
 }
 
+function make_dropdown_options(list) {
+    var result = {};
+    var item = "";
+
+    for(i in list) {
+        item = list[i];
+        result[item] = item;
+    }
+
+    return result;
+}
+
 </script>

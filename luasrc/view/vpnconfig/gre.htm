@@ -40,10 +40,10 @@ var GreData = function() {
 	};
 }
 
-var localAddresses = {"loopback":"loopback"};
-var bridges = {"bridge1":"bridge1", "bridge2":"bridge2"};
-var firewallZones = {};
-var networkTypes = {"L2 layer":"L2 layer"};
+var localAddresses = ["loopback"];
+var bridges = ["bridge1", "bridge2"];
+var firewallZones = [];
+var networkTypes = ["L2 layer"];
 
 L.require("ui").then(function(ui){
 	L.require("uci").then(function(uci) {
@@ -95,7 +95,7 @@ function showModal(greData) {
 			}
 		});
 
-		var localAddr = new ui.Dropdown(greData.options.localAddr, localAddresses, {
+		var localAddr = new ui.Dropdown(greData.options.localAddr, make_dropdown_options(localAddresses), {
 			multiple: false,
 			optional: false
 		});
@@ -105,12 +105,12 @@ function showModal(greData) {
 			optional: false,
 		});
 
-		var netType = new ui.Dropdown(greData.options.netType, networkTypes, {
+		var netType = new ui.Dropdown(greData.options.netType, make_dropdown_options(networkTypes), {
 			multiple: false,
 			optional: false
 		});
 
-		var bridge = new ui.Dropdown(greData.options.bridge, bridges, {
+		var bridge = new ui.Dropdown(greData.options.bridge, make_dropdown_options(bridges), {
 			multiple: false,
 			optional: false,
 			create: true,
@@ -131,7 +131,7 @@ function showModal(greData) {
 			placeholder: "Leave blank if not used"
 		});
 
-		var zone = new ui.Dropdown(greData.options.firewallZones, firewallZones, {
+		var zone = new ui.Dropdown(greData.options.firewallZones, make_dropdown_options(firewallZones), {
 			multiple: false,
 			create: true,
 			optional: false

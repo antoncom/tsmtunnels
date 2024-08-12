@@ -55,6 +55,8 @@ var authTypes = ['psk'];
 var hashTypes = ['sha256'];
 var encriptTypes = ['aes265'];
 var keyExchModes = ['ikev2'];
+var dhGroups = [];
+var pfsGroups = [];
 
 L.require("ui").then(function(ui){
 	L.require("uci").then(function(uci) {
@@ -112,7 +114,7 @@ function showModal(data) {
 			placeholder: "Name",
 		});
 
-		var localAddr = new ui.Dropdown(data.options.localAddr, {}, {
+		var localAddr = new ui.Dropdown(data.options.localAddr, make_dropdown_options(localAddresses), {
 			multiple: false,
 			opional: false,
 			placeholder: "",
@@ -138,7 +140,7 @@ function showModal(data) {
 			placeholder: "",
 		});
 
-		var keyExchMode = new ui.Dropdown(data.options.keyExchMode, {}, {
+		var keyExchMode = new ui.Dropdown(data.options.keyExchMode, make_dropdown_options(keyExchModes), {
 			multiple: false,
 			opional: false,
 			placeholder: "",
@@ -154,7 +156,7 @@ function showModal(data) {
 			placeholder: "",
 		});
 
-		var authType = new ui.Dropdown(data.options.authType, {}, {
+		var authType = new ui.Dropdown(data.options.authType, make_dropdown_options(authTypes), {
 			multiple: false,
 			opional: false,
 			placeholder: "",
@@ -170,19 +172,19 @@ function showModal(data) {
 			placeholder: "",
 		});
 
-		var phase1_ikeEncript = new ui.Dropdown(data.options.phase1_ikeEncript, {}, {
+		var phase1_ikeEncript = new ui.Dropdown(data.options.phase1_ikeEncript, make_dropdown_options(encriptTypes), {
 			multiple: false,
 			opional: false,
 			placeholder: "",
 		});
 
-		var phase1_ikeHash = new ui.Dropdown(data.options.phase1_ikeHash, {}, {
+		var phase1_ikeHash = new ui.Dropdown(data.options.phase1_ikeHash, make_dropdown_options(hashTypes), {
 			multiple: false,
 			opional: false,
 			placeholder: "",
 		});
 
-		var phase1_dhGroup = new ui.Dropdown(data.options.phase1_dhGroup, {}, {
+		var phase1_dhGroup = new ui.Dropdown(data.options.phase1_dhGroup, make_dropdown_options(dhGroups), {
 			multiple: false,
 			opional: false,
 			placeholder: "",
@@ -193,19 +195,19 @@ function showModal(data) {
 			placeholder: "",
 		});
 
-		var phase2_espEncript = new ui.Dropdown(data.options.phase2_espEncript, {}, {
+		var phase2_espEncript = new ui.Dropdown(data.options.phase2_espEncript, make_dropdown_options(encriptTypes), {
 			multiple: false,
 			opional: false,
 			placeholder: "",
 		});
 
-		var phase2_espHash = new ui.Dropdown(data.options.phase2_espHash, {}, {
+		var phase2_espHash = new ui.Dropdown(data.options.phase2_espHash, make_dropdown_options(hashTypes), {
 			multiple: false,
 			opional: false,
 			placeholder: "",
 		});
 
-		var phase2_pfsGroup = new ui.Dropdown(data.options.phase2_pfsGroup, {}, {
+		var phase2_pfsGroup = new ui.Dropdown(data.options.phase2_pfsGroup, make_dropdown_options(pfsGroups), {
 			multiple: false,
 			opional: false,
 			placeholder: "",

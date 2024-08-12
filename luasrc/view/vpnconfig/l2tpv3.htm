@@ -44,11 +44,11 @@
 		};
 	}
 	
-	var localAddresses = {"default":"default"};
-	var firewallZones = {};
-	var bridges = {"bridge1":"bridge1", "bridge2":"bridge2"};
-	var encapsulationTypes = {"ip": "ip"};
-	var l2HeaderTypes = {"none": "none"}
+	var localAddresses = ["default"];
+	var firewallZones = [];
+	var bridges = ["bridge1", "bridge2"];
+	var encapsulationTypes = ["ip"];
+	var l2HeaderTypes = ["none"];
 	
 	L.require("ui").then(function(ui){
 		L.require("uci").then(function(uci) {
@@ -104,7 +104,7 @@
 				}
 			});
 	
-			var localAddr = new ui.Dropdown(l2ptv3Data.options.localAddr, localAddresses, {
+			var localAddr = new ui.Dropdown(l2ptv3Data.options.localAddr, make_dropdown_options(localAddresses), {
 				multiple: false,
 				optional: false
 			});
@@ -114,13 +114,13 @@
 				optional: false,
 			});
 
-			var bridge = new ui.Dropdown(l2ptv3Data.options.bridge, bridges, {
+			var bridge = new ui.Dropdown(l2ptv3Data.options.bridge, make_dropdown_options(bridges), {
 				multiple: false,
 				optional: false,
 				create: true,
 			});
 	
-			var zone = new ui.Dropdown(l2ptv3Data.options.firewallZones, firewallZones, {
+			var zone = new ui.Dropdown(l2ptv3Data.options.firewallZones, make_dropdown_options(firewallZones), {
 				multiple: false,
 				create: true,
 				optional: false
@@ -156,12 +156,12 @@
 				placeholder: ""
 			});
 	
-			var encapsulation = new ui.Dropdown(l2ptv3Data.options.encapsulation, encapsulationTypes, {
+			var encapsulation = new ui.Dropdown(l2ptv3Data.options.encapsulation, make_dropdown_options(encapsulationTypes), {
 				multiple: false,
 				optional: false
 			});
 	
-			var l2HeaderType = new ui.Dropdown(l2ptv3Data.options.l2HeaderType, l2HeaderTypes, {
+			var l2HeaderType = new ui.Dropdown(l2ptv3Data.options.l2HeaderType, make_dropdown_options(l2HeaderTypes), {
 				multiple: false,
 				optional: false
 			});
