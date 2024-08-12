@@ -5,7 +5,7 @@
 <% --[[=========== LUA BACKEND ==========]] %>
 <%
 	local vpnType = "l2tp"
-	local config = "vpnconfig_" .. vpnType
+	local config = "vpnconfig"
 %>
 
 <div id="view">
@@ -116,7 +116,7 @@
     L.require("ui").then(function(ui){
         L.require("uci").then(function(uci) {
             uci.load("<%=config%>").then(function(out){
-                var sections = uci.sections('<%=config%>');
+                var sections = uci.sections('<%=config%>', '<%=vpnType%>');
                 g_l2tpData.isActive = parse_bool(sections[0]['isActive']);
                 g_l2tpData.options['server'] = sections[0]['server'];
                 g_l2tpData.options['username'] = sections[0]['username'];

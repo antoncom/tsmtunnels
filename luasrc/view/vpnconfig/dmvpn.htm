@@ -4,7 +4,7 @@
 <% --[[=========== LUA BACKEND ==========]] %>
 <%
 	local vpnType = "dmvpn"
-	local config = "vpnconfig_" .. vpnType
+	local config = "vpnconfig"
 %>
 
 <div id="view">
@@ -53,7 +53,7 @@ var firewallZones = {};
 L.require("ui").then(function(ui){
 	L.require("uci").then(function(uci) {
 		uci.load("<%=config%>").then(function(out){
-			var sections = uci.sections('<%=config%>');
+			var sections = uci.sections('<%=config%>', '<%=vpnType%>');
 			for (s in sections) {
 				var dmvpnData = new DmvpnData();
 				dmvpnData.name = sections[s]['.name'];

@@ -4,7 +4,7 @@
 <% --[[=========== LUA BACKEND ==========]] %>
 <%
 	local vpnType = "pptp"
-	local config = "vpnconfig_" .. vpnType
+	local config = "vpnconfig"
 %>
 
 <div id="view">
@@ -107,7 +107,7 @@ var g_pptpData = new PptpData();
 L.require("ui").then(function(ui){
     L.require("uci").then(function(uci) {
         uci.load("<%=config%>").then(function(out){
-            var sections = uci.sections('<%=config%>');
+            var sections = uci.sections('<%=config%>', '<%=vpnType%>');
             g_pptpData.isActive = parse_bool(sections[0]['isActive']);
             g_pptpData.options['server'] = sections[0]['server'];
             g_pptpData.options['username'] = sections[0]['username'];

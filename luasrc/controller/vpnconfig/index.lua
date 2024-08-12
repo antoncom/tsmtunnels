@@ -26,7 +26,7 @@ function do_action(action, vpnType)
 	local name = luci.http.formvalue("name")
 	local isActive = luci.http.formvalue("isActive")
 	local options = luci.jsonc.parse(luci.http.formvalue("options"))
-	local config = 'vpnconfig_' .. vpnType
+	local config = 'vpnconfig'
 
 	local commands = {
 		add= function(...)
