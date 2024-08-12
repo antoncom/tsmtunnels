@@ -1,3 +1,12 @@
+<% --[[=========== JS ==========]] %>
+<%+vpnconfig/vpnconfig.js%>
+
+<% --[[=========== LUA BACKEND ==========]] %>
+<%
+	local vpnType = "ipsec"
+	local config = "vpnconfig"
+%>
+
 <div id="view">
     <h2><%:IPSec tunnels %></h2>
 
@@ -10,6 +19,372 @@
 		</div>
 	</div>
 	<div class="cbi-page-actions">
-        <input class="cbi-button cbi-button-apply" type="button" value="Create new" onclick=""> 
+        <input class="cbi-button cbi-button-apply" type="button" value="Create new" onclick="showModal(new IpsecData())"> 
     </div>
 </div>
+
+<script type="text/javascript">
+
+var IpsecData = function() {
+	this.name = "";
+	this.isActive = false;
+	this.options = {
+		localAddr: "",
+		remoteAddr: "",
+		dpdDelay: "0",
+		localId: "",
+		remoteId: "",
+		keyExchMode: "ikev2",
+		localSubnetes: [],
+		remoteSubnets: [],
+		authType: "psk",
+		presharedKey: "",
+		phase1_lifetime: "28800",
+		phase1_ikeEncript: "aes256",
+		phase1_ikeHash: "sha256",
+		phase1_dhGroup: "14",
+		phase2_lifetime: "3600",
+		phase2_espEncript: "aes256",
+		phase2_espHash: "sha256",
+		phase2_pfsGroup: "",
+	};
+}
+
+var localAddresses = ['default', 'localhost'];
+var authTypes = ['psk'];
+var hashTypes = ['sha256'];
+var encriptTypes = ['aes265'];
+var keyExchModes = ['ikev2'];
+
+L.require("ui").then(function(ui){
+	L.require("uci").then(function(uci) {
+		uci.load("<%=config%>").then(function(out){
+			var sections = uci.sections('<%=config%>', '<%=vpnType%>');
+			for (s in sections) {
+				var data = new IpsecData();
+				data.name = sections[s]['.name'];
+				data.isActive = parse_bool(sections[s]['isActive']);
+				data.options.localAddr = sections[s]['localAddr'];
+				data.options.remoteAddr = sections[s]['remoteAddr'];
+				data.options.dpdDelay = sections[s]['dpdDelay'];
+				data.options.localId = sections[s]['localId'];
+				data.options.remoteId = sections[s]['remoteId'];
+				data.options.keyExchMode = sections[s]['keyExchMode'];
+				data.options.localSubnetes = sections[s]['localSubnetes'];
+				data.options.remoteSubnets = sections[s]['remoteSubnets'];
+				data.options.authType = sections[s]['authType'];
+				data.options.presharedKey = sections[s]['presharedKey'];
+				data.options.phase1_lifetime = sections[s]['phase1_lifetime'];
+				data.options.phase1_ikeEncript = sections[s]['phase1_ikeEncript'];
+				data.options.phase1_ikeHash = sections[s]['phase1_ikeHash'];
+				data.options.phase1_dhGroup = sections[s]['phase1_dhGroup'];
+				data.options.phase2_lifetime = sections[s]['phase2_lifetime'];
+				data.options.phase2_espEncript = sections[s]['phase2_espEncript'];
+				data.options.phase2_espHash = sections[s]['phase2_espHash'];
+				data.options.phase2_pfsGroup = sections[s]['phase2_pfsGroup'];
+
+				addRow(data);
+			}
+		});
+		
+		function addRow(data) {
+			var container = E('div', { id: data.name, class: 'tr '}, [
+				E('div', {class: 'td'}, E('div', {}, data.name)),
+				E('div', {class: 'td'}, E('div', {id: data.name+'-active'}, (data.isActive == true ? 'yes' : 'no'))),
+				E('div', {class: "nowrap cbi-section-actions td", style: "text-align: center;"}, [
+					E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {activateConfig(data);}}, _('Activate')),' ',
+					E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {showModal(data);}}, _('Edit')),' ',
+					E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {deleteConfig(data);}}, _('Delete')),
+				])
+			])
+						
+			var viewWrapper= document.getElementById('ipsec_rows');
+			viewWrapper.appendChild(container);
+		}
+	});
+});
+
+function showModal(data) {
+	L.require('ui').then(function(ui) {
+
+		var name = new ui.Textfield(data.name, {
+			opional: false,
+			placeholder: "Name",
+		});
+
+		var localAddr = new ui.Dropdown(data.options.localAddr, {}, {
+			multiple: false,
+			opional: false,
+			placeholder: "",
+		});
+
+		var remoteAddr = new ui.Textfield(data.options.remoteAddr, {
+			opional: false,
+			placeholder: "",
+		});
+
+		var dpdDelay = new ui.Textfield(data.options.dpdDelay, {
+			opional: false,
+			placeholder: "",
+		});
+
+		var localId = new ui.Textfield(data.options.localId, {
+			opional: false,
+			placeholder: "",
+		});
+
+		var remoteId = new ui.Textfield(data.options.remoteId, {
+			opional: false,
+			placeholder: "",
+		});
+
+		var keyExchMode = new ui.Dropdown(data.options.keyExchMode, {}, {
+			multiple: false,
+			opional: false,
+			placeholder: "",
+		});
+
+		var localSubnetes = new ui.Textfield(data.options.localSubnetes, {
+			opional: false,
+			placeholder: "",
+		});
+
+		var remoteSubnets = new ui.Textfield(data.options.remoteSubnets, {
+			opional: false,
+			placeholder: "",
+		});
+
+		var authType = new ui.Dropdown(data.options.authType, {}, {
+			multiple: false,
+			opional: false,
+			placeholder: "",
+		});
+
+		var presharedKey = new ui.Textfield(data.options.presharedKey, {
+			opional: false,
+			placeholder: "",
+		});
+
+		var phase1_lifetime = new ui.Textfield(data.options.phase1_lifetime, {
+			opional: false,
+			placeholder: "",
+		});
+
+		var phase1_ikeEncript = new ui.Dropdown(data.options.phase1_ikeEncript, {}, {
+			multiple: false,
+			opional: false,
+			placeholder: "",
+		});
+
+		var phase1_ikeHash = new ui.Dropdown(data.options.phase1_ikeHash, {}, {
+			multiple: false,
+			opional: false,
+			placeholder: "",
+		});
+
+		var phase1_dhGroup = new ui.Dropdown(data.options.phase1_dhGroup, {}, {
+			multiple: false,
+			opional: false,
+			placeholder: "",
+		});
+
+		var phase2_lifetime = new ui.Textfield(data.options.phase2_lifetime, {
+			opional: false,
+			placeholder: "",
+		});
+
+		var phase2_espEncript = new ui.Dropdown(data.options.phase2_espEncript, {}, {
+			multiple: false,
+			opional: false,
+			placeholder: "",
+		});
+
+		var phase2_espHash = new ui.Dropdown(data.options.phase2_espHash, {}, {
+			multiple: false,
+			opional: false,
+			placeholder: "",
+		});
+
+		var phase2_pfsGroup = new ui.Dropdown(data.options.phase2_pfsGroup, {}, {
+			multiple: false,
+			opional: false,
+			placeholder: "",
+		});
+
+		L.showModal('Configure DMVPN tunnel', [
+
+			E('div', { class: 'cbi-value' }, [
+				E('label', { 'class': 'cbi-value-title' }, _('<%:Name %>')),
+				E('div', { class: 'cbi-value-field' }, [name.render()])
+			]),	
+
+			E('div', { class: 'cbi-value' }, [
+				E('label', { 'class': 'cbi-value-title' }, _('<%:Source address %>')),
+				E('div', { class: 'cbi-value-field' }, [localAddr.render()])
+			]),	
+
+			E('div', { class: 'cbi-value' }, [
+				E('label', { 'class': 'cbi-value-title' }, _('<%:Remote address %>')),
+				E('div', { class: 'cbi-value-field' }, [remoteAddr.render()])
+			]),	
+
+			E('div', { class: 'cbi-value' }, [
+				E('label', { 'class': 'cbi-value-title' }, _('<%:DPD delay (sec) %>')),
+				E('div', { class: 'cbi-value-field' }, [dpdDelay.render()])
+			]),	
+
+			E('div', { class: 'cbi-value' }, [
+				E('label', { 'class': 'cbi-value-title' }, _('<%:Local ID %>')),
+				E('div', { class: 'cbi-value-field' }, [localId.render()])
+			]),	
+
+			E('div', { class: 'cbi-value' }, [
+				E('label', { 'class': 'cbi-value-title' }, _('<%:Remote ID %>')),
+				E('div', { class: 'cbi-value-field' }, [remoteId.render()])
+			]),	
+
+			E('div', { class: 'cbi-value' }, [
+				E('label', { 'class': 'cbi-value-title' }, _('<%:Key exchange mode %>')),
+				E('div', { class: 'cbi-value-field' }, [keyExchMode.render()])
+			]),	
+
+			E('div', { class: 'cbi-value' }, [
+				E('label', { 'class': 'cbi-value-title' }, _('<%:Local subnets %>')),
+				E('div', { class: 'cbi-value-field' }, [localSubnetes.render()])
+			]),	
+
+			E('div', { class: 'cbi-value' }, [
+				E('label', { 'class': 'cbi-value-title' }, _('<%:Remote subnets %>')),
+				E('div', { class: 'cbi-value-field' }, [remoteSubnets.render()])
+			]),	
+
+			
+			E('div', { class: 'cbi-map-section' }, [
+				E('label', { 'class': 'cbi-value-title' }, _('<%:Phase #1 %>')),
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:Lifetime %>')),
+					E('div', { class: 'cbi-value-field' }, [phase1_lifetime.render()])
+				]),	
+
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:IKE Encription %>')),
+					E('div', { class: 'cbi-value-field' }, [phase1_ikeEncript.render()])
+				]),	
+
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:IKE Hash %>')),
+					E('div', { class: 'cbi-value-field' }, [phase1_ikeHash.render()])
+				]),	
+
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:DH group %>')),
+					E('div', { class: 'cbi-value-field' }, [phase1_dhGroup.render()])
+				]),	
+			]),
+
+			E('div', { class: 'cbi-map-section' }, [
+				E('label', { 'class': 'cbi-value-title' }, _('<%:Phase #2 %>')),
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:Lifetime %>')),
+					E('div', { class: 'cbi-value-field' }, [phase2_lifetime.render()])
+				]),	
+
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:ESP Encription %>')),
+					E('div', { class: 'cbi-value-field' }, [phase2_espEncript.render()])
+				]),	
+
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:ESP Hash %>')),
+					E('div', { class: 'cbi-value-field' }, [phase2_espHash.render()])
+				]),	
+
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:PFS group %>')),
+					E('div', { class: 'cbi-value-field' }, [phase2_pfsGroup.render()])
+				]),	
+			]),
+
+			E('div', { class: 'cbi-value' }, [
+				E('label', { 'class': 'cbi-value-title' }, _('<%:Authentication method %>')),
+				E('div', { class: 'cbi-value-field' }, [authType.render()])
+			]),	
+
+			E('div', { class: 'cbi-value' }, [
+				E('label', { 'class': 'cbi-value-title' }, _('<%:Pre-shared key %>')),
+				E('div', { class: 'cbi-value-field' }, [presharedKey.render()])
+			]),	
+
+
+
+			E('div', { class: 'cbi-value-field' }, [
+				E('div', {
+					class: 'btn',
+					click: function() {
+						L.hideModal()
+					}
+				}, _('Close')),
+				' ',
+				E('div', {
+					class: 'btn success',
+					click: function() {
+						//TODO: validate and save data to config file
+						data.name = name.getValue();
+						data.options['localAddr'] = localAddr.getValue();
+						data.options['remoteAddr'] = remoteAddr.getValue();
+						data.options['dpdDelay'] = dpdDelay.getValue();
+						data.options['localId'] = localId.getValue();
+						data.options['remoteId'] = remoteId.getValue();
+						data.options['keyExchMode'] = keyExchMode.getValue();
+						data.options['localSubnetes'] = localSubnetes.getValue();
+						data.options['remoteSubnets'] = remoteSubnets.getValue();
+						data.options['authType'] = authType.getValue();
+						data.options['presharedKey'] = presharedKey.getValue();
+						data.options['phase1_lifetime'] = phase1_lifetime.getValue();
+						data.options['phase1_ikeEncript'] = phase1_ikeEncript.getValue();
+						data.options['phase1_ikeHash'] = phase1_ikeHash.getValue();
+						data.options['phase1_dhGroup'] = phase1_dhGroup.getValue();
+						data.options['phase2_lifetime'] = phase2_lifetime.getValue();
+						data.options['phase2_espEncript'] = phase2_espEncript.getValue();
+						data.options['phase2_espHash'] = phase2_espHash.getValue();
+						data.options['phase2_pfsGroup'] = phase2_pfsGroup.getValue();
+
+						commitConfig(data);
+						L.hideModal()
+					}
+				}, _('Save')),
+			]),
+		]);
+	});
+}
+
+function commitConfig(data) {
+	L.require('uci').then(function(uci){
+		var section = uci.get('<%=config%>', data.name);
+		if (!section) {
+			send_action("add", "<%=vpnType%>", data, function(){
+				location.reload();
+			});
+		} else {
+			send_action("edit", "<%=vpnType%>", data, function(){
+				location.reload();
+			});
+		}
+	});
+}
+
+function activateConfig(data) {
+	data.isActive = !data.isActive; 
+	send_action("enable", "<%=vpnType%>", data, function(){
+		location.reload();
+	});
+}
+
+function deleteConfig(data) {
+	send_action("delete", "<%=vpnType%>", data, function(){
+		location.reload();
+	});
+
+}
+
+</script>
