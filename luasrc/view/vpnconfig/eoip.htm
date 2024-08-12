@@ -1,15 +1,230 @@
+<% --[[=========== JS ==========]] %>
+<%+vpnconfig/vpnconfig.js%>
+
+
+<% --[[=========== LUA BACKEND ==========]] %>
+<%
+	local vpnType = "eoip"
+	local config = "vpnconfig"
+%>
+
 <div id="view">
     <h2><%:EoIP tunnels %></h2>
 
 	<div id="eoip_rows" class="table">
 		<div class="tr table-titles">
-			<div class="th">N</div>
 			<div class="th">Name</div>
 			<div class="th">Active</div>
 			<div class="th center nowrap cbi-section-actions"><%:Actions %></div>
 		</div>
 	</div>
 	<div class="cbi-page-actions">
-        <input class="cbi-button cbi-button-apply" type="button" value="Create new" onclick=""> 
+        <input class="cbi-button cbi-button-apply" type="button" value="Create new" onclick="showModal(new EoIPData())"> 
     </div>
 </div>
+
+<script type="text/javascript">
+
+	var EoIPData = function() {
+		this.name = "";
+		this.isActive = false;
+		this.options = {
+			localAddr: "",
+			remoteAddr: "",
+			bridge: "",
+			tunnelIp: "",
+			tunnelMask: "",
+			tunnelId: "",
+			zone: "",
+		};
+	}
+	
+	var localAddresses = {"loopback":"loopback"};
+	var bridges = {"bridge1":"bridge1", "bridge2":"bridge2"};
+	var firewallZones = {};
+	
+	L.require("ui").then(function(ui){
+		L.require("uci").then(function(uci) {
+			uci.load("<%=config%>").then(function(out){
+				var sections = uci.sections('<%=config%>', '<%=vpnType%>');
+				for (s in sections) {
+					var newEoIP = new EoIPData();
+					newEoIP.name = sections[s]['.name'];
+					newEoIP.isActive = parse_bool(sections[s]['isActive']);
+					newEoIP.options['localAddr'] = sections[s]['localAddr'];
+					newEoIP.options['remoteAddr'] = sections[s]['remoteAddr'];
+					newEoIP.options['bridge'] = sections[s]['bridge'];
+					newEoIP.options['tunnelIp'] = sections[s]['tunnelIp'];
+					newEoIP.options['tunnelMask'] = sections[s]['tunnelMask'];
+					newEoIP.options['tunnelId'] = sections[s]['tunnelId'];
+					newEoIP.options['zone'] = sections[s]['zone'];
+					addRow(newEoIP);
+				}
+			});
+			
+			function addRow(eoipData) {
+				var container = E('div', { id: eoipData.name, class: 'tr '}, [
+					E('div', {class: 'td'}, E('div', {}, eoipData.name)),
+					E('div', {class: 'td'}, E('div', {id: eoipData.name+'-active'}, (eoipData.isActive == true ? 'yes' : 'no'))),
+					E('div', {class: "nowrap cbi-section-actions td", style: "text-align: center;"}, [
+						E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {activateConfig(eoipData);}}, _('Activate')),' ',
+						E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {showModal(eoipData);}}, _('Edit')),' ',
+						E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {deleteConfig(eoipData);}}, _('Delete')),
+					])
+				])
+							
+				var viewWrapper= document.getElementById('eoip_rows');
+				viewWrapper.appendChild(container);
+			}
+		});
+	});
+	
+	
+	function showModal(eoipData) {
+		L.require('ui').then(function(ui) {
+			var name = new ui.Textfield(eoipData.name, {
+				placeholder: "Name",
+				optional: false,
+				readonly: eoipData.name.length > 0,
+				validate: function(inp) {
+					return true;
+				}
+			});
+	
+			var localAddr = new ui.Dropdown(eoipData.options.localAddr, localAddresses, {
+				multiple: false,
+				optional: false
+			});
+	
+			var remoteAddr = new ui.Textfield(eoipData.options.remoteAddr, {
+				placeholder: "Remote IP",
+				optional: false,
+			});
+	
+			var bridge = new ui.Dropdown(eoipData.options.bridge, bridges, {
+				multiple: false,
+				optional: false,
+				create: true,
+			});
+	
+			var tunnelIp = new ui.Textfield(eoipData.options.tunnelIp, {
+				optional: false,
+				placeholder: "Local IP for tunnel"
+			});
+	
+			var tunnelMask = new ui.Textfield(eoipData.options.tunnelMask, {
+				optional: false,
+				placeholder: "Netmask"
+			});
+	
+			var tunnelId = new ui.Textfield(eoipData.options.tunnelId, {
+				optional: false,
+				placeholder: ""
+			});
+	
+			var zone = new ui.Dropdown(eoipData.options.firewallZones, firewallZones, {
+				multiple: false,
+				create: true,
+				optional: false
+			});
+	
+			L.showModal('Configure GRE tunnel', [
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:Name %>')),
+					E('div', { class: 'cbi-value-field' }, [name.render()])
+				]),
+	
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:Local address %>')),
+					E('div', { class: 'cbi-value-field' }, [localAddr.render()])
+				]),
+	
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:Remote address %>')),
+					E('div', { class: 'cbi-value-field' }, [remoteAddr.render()])
+				]),
+	
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:Add to Bridge or create new %>')),
+					E('div', { class: 'cbi-value-field' }, [bridge.render()])
+				]),
+	
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:Tunnel IP %>')),
+					E('div', { class: 'cbi-value-field' }, [tunnelIp.render()])
+				]),
+	
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:Tunnel netmask %>')),
+					E('div', { class: 'cbi-value-field' }, [tunnelMask.render()])
+				]),
+	
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:GRE key %>')),
+					E('div', { class: 'cbi-value-field' }, [tunnelId.render()])
+				]),
+	
+				E('div', { class: 'cbi-value' }, [
+					E('label', { 'class': 'cbi-value-title' }, _('<%:Firewall zone %>')),
+					E('div', { class: 'cbi-value-field' }, [zone.render()])
+				]),
+	
+				E('div', { class: 'cbi-value-field' }, [
+					E('div', {
+						class: 'btn',
+						click: function() {
+							L.hideModal()
+						}
+					}, _('Close')),
+					' ',
+					E('div', {
+						class: 'btn success',
+						click: function() {
+							//TODO: validate and save data to config file
+							eoipData.name = name.getValue(); 
+							eoipData.options['localAddr'] = localAddr.getValue(); 
+							eoipData.options['remoteAddr'] = remoteAddr.getValue(); 
+							eoipData.options['bridge'] = bridge.getValue(); 
+							eoipData.options['tunnelIp'] = tunnelIp.getValue(); 
+							eoipData.options['tunnelMask'] = tunnelMask.getValue(); 
+							eoipData.options['tunnelId'] = tunnelId.getValue(); 
+							eoipData.options['zone'] = zone.getValue(); 
+							commitConfig(eoipData);
+							L.hideModal()
+						}
+					}, _('Save')),
+				]),
+			]);
+		});
+	}
+	
+	function commitConfig(eoipData) {
+		L.require('uci').then(function(uci){
+			var section = uci.get('<%=config%>', eoipData.name);
+			if (!section) {
+				send_action("add", "<%=vpnType%>", eoipData, function(){
+					location.reload();
+				});
+			} else {
+				send_action("edit", "<%=vpnType%>", eoipData, function(){
+					location.reload();
+				});
+			}
+		});
+	}
+	
+	function activateConfig(eoipData) {
+		eoipData.isActive = !eoipData.isActive; 
+		send_action("enable", "<%=vpnType%>", eoipData, function(){
+			location.reload();
+		});
+	}
+	
+	function deleteConfig(eoipData) {
+		send_action("delete", "<%=vpnType%>", eoipData, function(){
+			location.reload();
+		});
+	
+	}
+	
+	</script>
