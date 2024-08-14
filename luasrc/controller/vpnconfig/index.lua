@@ -6,10 +6,14 @@ module("luci.controller.vpnconfig.index", package.seeall)
 local http = require "luci.http"
 local uci = require "luci.model.uci".cursor()
 
+local dummy_cfg_content = 'config pptp \'pptp1\'\n\nconfig l2tp \'l2tp1\'\n'
+
 function index()
-	-- if not nixio.fs.access("/etc/config/vpnconfig") then
-	-- 	return
-	-- end
+	if not nixio.fs.access("/etc/config/vpnconfig") then
+		nixio.fs.writefile("/etc/config/vpnconfig", dummy_cfg_content);
+		return
+	end
+
 	entry({"admin", "services", "vpnconfig", "action"}, call("do_action"), nil).leaf = true
 	
 	entry({"admin", "services", "pptp"},   cbi("vpnconfig/pptp"),   _("PPTP Client"), 30).leaf = true

@@ -1,0 +1,5 @@
+config pptp 'pptp1'
+    option isActive 'false'
+
+config pptp 'l2tp1'
+    option isActive 'false'
