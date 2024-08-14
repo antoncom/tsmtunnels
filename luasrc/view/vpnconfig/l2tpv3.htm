@@ -4,7 +4,6 @@
 <% --[[=========== LUA BACKEND ==========]] %>
 <%
 	local vpnType = "l2tpv3"
-	local config = "vpnconfig"
 %>
 
 <div id="view">
@@ -26,10 +25,11 @@
 
 <script type="text/javascript">
 
-	var L2ptv3Data = function() {
-		this.name = "";
-		this.isActive = false;
-		this.options = {
+	class L2ptv3Data extends VpnData {
+		name = "";
+		type = '<%=vpnType%>';
+		isActive = false;
+		options = {
 			localAddr: "",
 			remoteAddr: "",
 			bridge: "",
@@ -70,24 +70,9 @@
 			l2ptv3Data.options['encapsulation'] = sections[s]['encapsulation'];
 			l2ptv3Data.options['l2HeaderType'] = sections[s]['isNotCachel2HeaderType'];
 				
-			addRow(l2ptv3Data);
+			addRow('l2tpv3_rows', l2ptv3Data);
 		}
 	});
-			
-	function addRow(l2ptv3Data) {
-		var container = E('div', { id: l2ptv3Data.name, class: 'tr '}, [
-			E('div', {class: 'td'}, E('div', {}, l2ptv3Data.name)),
-			E('div', {class: 'td'}, E('div', {id: l2ptv3Data.name+'-active'}, (l2ptv3Data.isActive == true ? 'yes' : 'no'))),
-			E('div', {class: "nowrap cbi-section-actions td", style: "text-align: center;"}, [
-				E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {activateConfig(l2ptv3Data);}}, _('Activate')),' ',
-				E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {showModal(l2ptv3Data);}}, _('Edit')),' ',
-				E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {deleteConfig(l2ptv3Data);}}, _('Delete')),
-			])
-		])
-					
-		var viewWrapper= document.getElementById('l2tpv3_rows');
-		viewWrapper.appendChild(container);
-	}
 	
 	function showModal(l2ptv3Data) {
 		L.require('ui').then(function(ui) {
@@ -263,33 +248,4 @@
 		});
 	}
 	
-	function commitConfig(data) {
-		L.require('uci').then(function(uci){
-			var section = uci.get('<%=config%>', data.name);
-			if (!section) {
-				send_action("add", "<%=vpnType%>", data, function(){
-					location.reload();
-				});
-			} else {
-				send_action("edit", "<%=vpnType%>", data, function(){
-					location.reload();
-				});
-			}
-		});
-	}
-	
-	function activateConfig(data) {
-		data.isActive = !data.isActive; 
-		send_action("enable", "<%=vpnType%>", data, function(){
-			location.reload();
-		});
-	}
-	
-	function deleteConfig(data) {
-		send_action("delete", "<%=vpnType%>", data, function(){
-			location.reload();
-		});
-	
-	}
-	
-	</script>
+</script>

@@ -26,7 +26,8 @@ function index()
 
 end
 
-function do_action(action, vpnType)
+function do_action(action)
+	local vpnType = luci.http.formvalue("type")
 	local name = luci.http.formvalue("name")
 	local isActive = luci.http.formvalue("isActive")
 	local options = luci.jsonc.parse(luci.http.formvalue("options"))

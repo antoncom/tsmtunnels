@@ -4,7 +4,6 @@
 <% --[[=========== LUA BACKEND ==========]] %>
 <%
 	local vpnType = "dmvpn"
-	local config = "vpnconfig"
 %>
 
 <div id="view">
@@ -26,10 +25,11 @@
 
 <script type="text/javascript">
 
-var DmvpnData = function() {
-	this.name = "";
-	this.isActive = false;
-	this.options = {
+class DmvpnData extends VpnData {
+	name = "";
+	type = '<%=vpnType%>';
+	isActive = false;
+	options = {
 		localAddr: "",
 		remoteAddr: "",
 		hubTunnelAddr: "",
@@ -73,24 +73,9 @@ get_cfg_data('<%=vpnType%>', function(sections) {
 		dmvpnData.options['isHubCisco'] = parse_bool(sections[s]['isHubCisco']);
 		dmvpnData.options['isIPSecProt'] = parse_bool(sections[s]['isIPSecProt']);
 
-		addRow(dmvpnData);
+		addRow('dmvpn_rows', dmvpnData);
 	}
 });
-		
-function addRow(dmvpnData) {
-	var container = E('div', { id: dmvpnData.name, class: 'tr '}, [
-		E('div', {class: 'td'}, E('div', {}, dmvpnData.name)),
-		E('div', {class: 'td'}, E('div', {id: dmvpnData.name+'-active'}, (dmvpnData.isActive == true ? 'yes' : 'no'))),
-		E('div', {class: "nowrap cbi-section-actions td", style: "text-align: center;"}, [
-			E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {activateConfig(dmvpnData);}}, _('Activate')),' ',
-			E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {showModal(dmvpnData);}}, _('Edit')),' ',
-			E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {deleteConfig(dmvpnData);}}, _('Delete')),
-		])
-	])
-				
-	var viewWrapper= document.getElementById('dmvpn_rows');
-	viewWrapper.appendChild(container);
-}
 
 function showModal(dmvpnData) {
 	L.require('ui').then(function(ui) {
@@ -281,35 +266,6 @@ function showModal(dmvpnData) {
 			]),
 		]);
 	});
-}
-
-function commitConfig(dmvpnData) {
-	L.require('uci').then(function(uci){
-		var section = uci.get('<%=config%>', dmvpnData.name);
-		if (!section) {
-			send_action("add", "<%=vpnType%>", dmvpnData, function(){
-				location.reload();
-			});
-		} else {
-			send_action("edit", "<%=vpnType%>", dmvpnData, function(){
-				location.reload();
-			});
-		}
-	});
-}
-
-function activateConfig(dmvpnData) {
-	dmvpnData.isActive = !dmvpnData.isActive; 
-	send_action("enable", "<%=vpnType%>", dmvpnData, function(){
-		location.reload();
-	});
-}
-
-function deleteConfig(dmvpnData) {
-	send_action("delete", "<%=vpnType%>", dmvpnData, function(){
-		location.reload();
-	});
-
 }
 
 </script>

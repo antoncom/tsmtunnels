@@ -9,6 +9,13 @@
 
 <script type="text/javascript">
 
+// base class for form data
+function VpnData(){
+	name = "";
+	type = "";
+	isActive = false;
+}
+
 function spinner(state) {
 	var element = document.getElementById("btn_enable_spinner");
 	if (state === true) {
@@ -36,16 +43,59 @@ function get_cfg_data(vpnType, callback) {
 	});
 }
 
-function send_action(action, vpnType, data, callback) {
+function addRow(elementId, data) {
+	var container = E('div', { id: data.name, class: 'tr '}, [
+		E('div', {class: 'td'}, E('div', {}, data.name)),
+		E('div', {class: 'td'}, E('div', {id: data.name+'-active'}, (data.isActive == true ? 'yes' : 'no'))),
+		E('div', {class: "nowrap cbi-section-actions td", style: "text-align: center;"}, [
+			E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {activateConfig(data);}}, _('Activate')),' ',
+			E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {showModal(data);}}, _('Edit')),' ',
+			E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {deleteConfig(data);}}, _('Delete')),
+		])
+	])
+				
+	var viewWrapper= document.getElementById(elementId);
+	viewWrapper.appendChild(container);
+}
+
+function commitConfig(data) {
+	L.require('uci').then(function(uci){
+		var section = uci.get('<%=config%>', data.name);
+		if (!section) {
+			send_action("add", data, function(){
+				location.reload();
+			});
+		} else {
+			send_action("edit", data, function(){
+				location.reload();
+			});
+		}
+	});
+}
+
+function activateConfig(data) {
+	data.isActive = !data.isActive; 
+	send_action("enable", data, function(){
+		location.reload();
+	});
+}
+
+function deleteConfig(data) {
+	send_action("delete", data, function(){
+		location.reload();
+	});
+}
+
+function send_action(action, data, callback) {
 	var xhr = new XHR(false);
-	var url = '<%=luci.dispatcher.build_url("admin", "services", config, "action")%>/'+ '%h/%h'.format(action, vpnType);
+	var url = '<%=luci.dispatcher.build_url("admin", "services", config, "action")%>/'+ '%h/%h'.format(action);
 	spinner(true);
 
 	xhr.post(url, data, function(resp) {
 		if (!resp) {
 			return;
 		}
-		console.log(action+'/'+vpnType+' success');
+		console.log(action+' success');
 		spinner(false);
 
         if(callback) callback();

@@ -4,7 +4,6 @@
 <% --[[=========== LUA BACKEND ==========]] %>
 <%
 	local vpnType = "gre"
-	local config = "vpnconfig"
 %>
 
 <div id="view">
@@ -25,10 +24,11 @@
 
 <script type="text/javascript">
 
-var GreData = function() {
-	this.name = "";
-	this.isActive = false;
-	this.options = {
+class GreData extends VpnData {
+	name = "";
+	type = '<%=vpnType%>';
+	isActive = false;
+	options = {
 		localAddr: "",
 		remoteAddr: "",
 		netType: "",
@@ -60,24 +60,9 @@ get_cfg_data('<%=vpnType%>', function(sections) {
 		newGre.options['greKey'] = sections[s]['greKey'];
 		newGre.options['zone'] = sections[s]['zone'];
 		newGre.options['notFragment'] = parse_bool(sections[s]['notFragment']);
-		addRow(newGre);
+		addRow('gre_rows', newGre);
 	}
 });
-	
-function addRow(greData) {
-	var container = E('div', { id: greData.name, class: 'tr '}, [
-		E('div', {class: 'td'}, E('div', {}, greData.name)),
-		E('div', {class: 'td'}, E('div', {id: greData.name+'-active'}, (greData.isActive == true ? 'yes' : 'no'))),
-		E('div', {class: "nowrap cbi-section-actions td", style: "text-align: center;"}, [
-			E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {activateConfig(greData);}}, _('Activate')),' ',
-			E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {showModal(greData);}}, _('Edit')),' ',
-			E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {deleteConfig(greData);}}, _('Delete')),
-		])
-	])
-				
-	var viewWrapper= document.getElementById('gre_rows');
-	viewWrapper.appendChild(container);
-}
 
 function showModal(greData) {
 	L.require('ui').then(function(ui) {
@@ -214,35 +199,6 @@ function showModal(greData) {
 			]),
 		]);
 	});
-}
-
-function commitConfig(greData) {
-	L.require('uci').then(function(uci){
-		var section = uci.get('<%=config%>', greData.name);
-		if (!section) {
-			send_action("add", "<%=vpnType%>", greData, function(){
-				location.reload();
-			});
-		} else {
-			send_action("edit", "<%=vpnType%>", greData, function(){
-				location.reload();
-			});
-		}
-	});
-}
-
-function activateConfig(greData) {
-	greData.isActive = !greData.isActive; 
-	send_action("enable", "<%=vpnType%>", greData, function(){
-		location.reload();
-	});
-}
-
-function deleteConfig(greData) {
-	send_action("delete", "<%=vpnType%>", greData, function(){
-		location.reload();
-	});
-
 }
 
 </script>

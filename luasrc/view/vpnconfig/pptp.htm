@@ -91,10 +91,11 @@
 <script type="text/javascript">
 //<![CDATA[
 
-var PptpData = function() {
-    this.name = "pptp1";
-    this.isActive = false;
-    this.options = {
+class PptpData extends VpnData {
+    name = "pptp1";
+    type = '<%=vpnType%>';
+    isActive = false;
+    options = {
         server: "",
         username: "",
         password: "",
@@ -144,11 +145,12 @@ function apply() {
     pptpData.options['isMPPE'] = $('#isMPPE').prop('checked');
     pptpData.options['isDefaultRoute'] = $('#isDefaultRoute').prop('checked');
     pptpData.isActive = $('#isActive').prop('checked');
-    send_action("edit", "<%=vpnType%>", pptpData, function(){
+    
+    send_action("edit", pptpData, function(){
         if (pptpData.isActive == g_pptpData.isActive) {
             location.reload();
         } else {
-            send_action("enable", "<%=vpnType%>", pptpData, function(){
+            send_action("enable", pptpData, function(){
                 location.reload();
             });
         }

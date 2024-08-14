@@ -1,7 +1,6 @@
 <% --[[=========== JS ==========]] %>
 <%+vpnconfig/vpnconfig.js%>
 
-
 <% --[[=========== LUA BACKEND ==========]] %>
 <%
 	local vpnType = "l2tp"
@@ -96,10 +95,11 @@
 <script type="text/javascript">
     //<![CDATA[
     
-    var L2tpData = function() {
-        this.name = "l2tp1";
-        this.isActive = false;
-        this.options = {
+    class L2tpData extends VpnData {
+        name = "l2tp1";
+		type = '<%=vpnType%>';
+        isActive = false;
+        options = {
             server: "",
             username: "",
             password: "",
@@ -153,11 +153,12 @@
         l2tpData.options['isDefaultRoute'] = $('#isDefaultRoute').prop('checked');
         l2tpData.options['isIPSecProt'] = $('#isIPSecProt').prop('checked');
         l2tpData.isActive = $('#isActive').prop('checked');
-        send_action("edit", "<%=vpnType%>", l2tpData, function(){
+        
+        send_action("edit", l2tpData, function(){
             if (l2tpData.isActive == g_l2tpData.isActive) {
                 location.reload();
             } else {
-                send_action("enable", "<%=vpnType%>", l2tpData, function(){
+                send_action("enable", l2tpData, function(){
                     location.reload();
                 });
             }

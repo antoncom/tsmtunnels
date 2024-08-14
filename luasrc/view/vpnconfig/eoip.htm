@@ -1,11 +1,9 @@
 <% --[[=========== JS ==========]] %>
 <%+vpnconfig/vpnconfig.js%>
 
-
 <% --[[=========== LUA BACKEND ==========]] %>
 <%
 	local vpnType = "eoip"
-	local config = "vpnconfig"
 %>
 
 <div id="view">
@@ -26,10 +24,11 @@
 
 <script type="text/javascript">
 
-	var EoIPData = function() {
-		this.name = "";
-		this.isActive = false;
-		this.options = {
+	class EoIPData extends VpnData {
+		name = "";
+		type = '<%=vpnType%>';
+		isActive = false;
+		options = {
 			localAddr: "",
 			remoteAddr: "",
 			bridge: "",
@@ -56,24 +55,9 @@
 			newEoIP.options['tunnelMask'] = sections[s]['tunnelMask'];
 			newEoIP.options['tunnelId'] = sections[s]['tunnelId'];
 			newEoIP.options['zone'] = sections[s]['zone'];
-			addRow(newEoIP);
+			addRow('eoip_rows', newEoIP);
 		}
 	});
-	
-	function addRow(eoipData) {
-		var container = E('div', { id: eoipData.name, class: 'tr '}, [
-			E('div', {class: 'td'}, E('div', {}, eoipData.name)),
-			E('div', {class: 'td'}, E('div', {id: eoipData.name+'-active'}, (eoipData.isActive == true ? 'yes' : 'no'))),
-			E('div', {class: "nowrap cbi-section-actions td", style: "text-align: center;"}, [
-				E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {activateConfig(eoipData);}}, _('Activate')),' ',
-				E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {showModal(eoipData);}}, _('Edit')),' ',
-				E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {deleteConfig(eoipData);}}, _('Delete')),
-			])
-		])
-					
-		var viewWrapper= document.getElementById('eoip_rows');
-		viewWrapper.appendChild(container);
-	}	
 	
 	function showModal(eoipData) {
 		L.require('ui').then(function(ui) {
@@ -193,33 +177,4 @@
 		});
 	}
 	
-	function commitConfig(eoipData) {
-		L.require('uci').then(function(uci){
-			var section = uci.get('<%=config%>', eoipData.name);
-			if (!section) {
-				send_action("add", "<%=vpnType%>", eoipData, function(){
-					location.reload();
-				});
-			} else {
-				send_action("edit", "<%=vpnType%>", eoipData, function(){
-					location.reload();
-				});
-			}
-		});
-	}
-	
-	function activateConfig(eoipData) {
-		eoipData.isActive = !eoipData.isActive; 
-		send_action("enable", "<%=vpnType%>", eoipData, function(){
-			location.reload();
-		});
-	}
-	
-	function deleteConfig(eoipData) {
-		send_action("delete", "<%=vpnType%>", eoipData, function(){
-			location.reload();
-		});
-	
-	}
-	
-	</script>
+</script>
