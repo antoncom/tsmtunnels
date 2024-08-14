@@ -50,6 +50,10 @@
 	var bridges = ["bridge1", "bridge2"];
 	var encapsulationTypes = ["ip"];
 	var l2HeaderTypes = ["none"];
+
+	get_firewall_zone_list(function(list){
+		firewallZones = list;
+	});
 	
 	get_cfg_data('<%=vpnType%>', function(sections) {
 		for (s in sections) {
@@ -101,9 +105,9 @@
 				create: true,
 			});
 	
-			var zone = new ui.Dropdown(l2ptv3Data.options.firewallZones, make_dropdown_options(firewallZones), {
+			var zone = new ui.Dropdown(l2ptv3Data.options.zone, make_dropdown_options(firewallZones), {
 				multiple: false,
-				create: true,
+				create: false,
 				optional: false
 			});
 	

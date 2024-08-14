@@ -43,6 +43,10 @@
 	var bridges = ["bridge1", "bridge2"];
 	var firewallZones = [];
 	
+	get_firewall_zone_list(function(list){
+		firewallZones = list;
+	});
+
 	get_cfg_data('<%=vpnType%>', function(sections) {
 		for (s in sections) {
 			var newEoIP = new EoIPData();
@@ -101,9 +105,9 @@
 				placeholder: ""
 			});
 	
-			var zone = new ui.Dropdown(eoipData.options.firewallZones, make_dropdown_options(firewallZones), {
+			var zone = new ui.Dropdown(eoipData.options.zone, make_dropdown_options(firewallZones), {
 				multiple: false,
-				create: true,
+				create: false,
 				optional: false
 			});
 	

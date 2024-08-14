@@ -51,6 +51,10 @@ class DmvpnData extends VpnData {
 var localAddresses = ["default"];
 var firewallZones = [];
 
+get_firewall_zone_list(function(list){
+	firewallZones = list;
+});
+
 get_cfg_data('<%=vpnType%>', function(sections) {
 	for (s in sections) {
 		var dmvpnData = new DmvpnData();
@@ -123,9 +127,9 @@ function showModal(dmvpnData) {
 			placeholder: "Leave blank if not used"
 		});
 
-		var zone = new ui.Dropdown(dmvpnData.options.firewallZones, make_dropdown_options(firewallZones), {
+		var zone = new ui.Dropdown(dmvpnData.options.zone, make_dropdown_options(firewallZones), {
 			multiple: false,
-			create: true,
+			create: false,
 			optional: false
 		});
 

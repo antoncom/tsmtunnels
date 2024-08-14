@@ -30,15 +30,13 @@ function spinner(state) {
 
 function get_cfg_data(vpnType, callback) {
 	spinner(true);
-	L.require("ui").then(function(ui){
-		L.require("uci").then(function(uci) {
-			uci.load("<%=config%>").then(function(out){
-				var sections = uci.sections('<%=config%>', vpnType);
-				if (callback) {
-					callback(sections);
-				}
-				spinner(false);
-			});
+	L.require("uci").then(function(uci) {
+		uci.load("<%=config%>").then(function(out){
+			var sections = uci.sections('<%=config%>', vpnType);
+			if (callback) {
+				callback(sections);
+			}
+			spinner(false);
 		});
 	});
 }
@@ -116,6 +114,19 @@ function make_dropdown_options(list) {
     }
 
     return result;
+}
+
+function get_firewall_zone_list(callback) {
+	L.require("uci").then(function(uci) {
+		uci.load('firewall').then(function(out){
+			var zones = uci.sections('firewall', 'zone');
+			var result = ["<none>",];
+			for (z in zones) {
+				result.push(zones[z].name);
+			}
+			callback(result);
+		});
+	});
 }
 
 </script>
