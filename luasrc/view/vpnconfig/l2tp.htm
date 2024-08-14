@@ -5,7 +5,6 @@
 <% --[[=========== LUA BACKEND ==========]] %>
 <%
 	local vpnType = "l2tp"
-	local config = "vpnconfig"
 %>
 
 <div id="view">
@@ -87,6 +86,7 @@
         </div>
 	</div>
     <div class="cbi-page-actions">
+        <span id="btn_enable_spinner" class="btn_spinner"></span> 
         <input class="cbi-button cbi-button-apply" type="button" value="Применить" onclick="apply()"> 
         <input class="cbi-button cbi-button-reset" type="button" value="Reset" onclick="reset_fields()"> 
     </div>
@@ -113,22 +113,17 @@
     
     var g_l2tpData = new L2tpData();
     
-    L.require("ui").then(function(ui){
-        L.require("uci").then(function(uci) {
-            uci.load("<%=config%>").then(function(out){
-                var sections = uci.sections('<%=config%>', '<%=vpnType%>');
-                g_l2tpData.isActive = parse_bool(sections[0]['isActive']);
-                g_l2tpData.options['server'] = sections[0]['server'];
-                g_l2tpData.options['username'] = sections[0]['username'];
-                g_l2tpData.options['password'] = sections[0]['password'];
-                g_l2tpData.options['authType'] = sections[0]['authType'];
-                g_l2tpData.options['addOptinos'] = sections[0]['addOptinos'];
-                g_l2tpData.options['isMPPE'] = parse_bool(sections[0]['isMPPE']);
-                g_l2tpData.options['isDefaultRoute'] = parse_bool(sections[0]['isDefaultRoute']);
-                g_l2tpData.options['isIPSecProt'] = parse_bool(sections[0]['isIPSecProt']);
-                fill_form(g_l2tpData);
-            });
-        });
+    get_cfg_data('<%=vpnType%>', function(sections) {
+        g_l2tpData.isActive = parse_bool(sections[0]['isActive']);
+        g_l2tpData.options['server'] = sections[0]['server'];
+        g_l2tpData.options['username'] = sections[0]['username'];
+        g_l2tpData.options['password'] = sections[0]['password'];
+        g_l2tpData.options['authType'] = sections[0]['authType'];
+        g_l2tpData.options['addOptinos'] = sections[0]['addOptinos'];
+        g_l2tpData.options['isMPPE'] = parse_bool(sections[0]['isMPPE']);
+        g_l2tpData.options['isDefaultRoute'] = parse_bool(sections[0]['isDefaultRoute']);
+        g_l2tpData.options['isIPSecProt'] = parse_bool(sections[0]['isIPSecProt']);
+        fill_form(g_l2tpData);
     });
     
     function fill_form(l2tpData) {

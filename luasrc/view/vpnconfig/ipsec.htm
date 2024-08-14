@@ -12,13 +12,13 @@
 
 	<div id="ipsec_rows" class="table">
 		<div class="tr table-titles">
-			<div class="th">N</div>
 			<div class="th">Name</div>
 			<div class="th">Active</div>
 			<div class="th center nowrap cbi-section-actions"><%:Actions %></div>
 		</div>
 	</div>
 	<div class="cbi-page-actions">
+        <span id="btn_enable_spinner" class="btn_spinner"></span> 
         <input class="cbi-button cbi-button-apply" type="button" value="Create new" onclick="showModal(new IpsecData())"> 
     </div>
 </div>
@@ -58,53 +58,48 @@ var keyExchModes = ['ikev2'];
 var dhGroups = [];
 var pfsGroups = [];
 
-L.require("ui").then(function(ui){
-	L.require("uci").then(function(uci) {
-		uci.load("<%=config%>").then(function(out){
-			var sections = uci.sections('<%=config%>', '<%=vpnType%>');
-			for (s in sections) {
-				var data = new IpsecData();
-				data.name = sections[s]['.name'];
-				data.isActive = parse_bool(sections[s]['isActive']);
-				data.options.localAddr = sections[s]['localAddr'];
-				data.options.remoteAddr = sections[s]['remoteAddr'];
-				data.options.dpdDelay = sections[s]['dpdDelay'];
-				data.options.localId = sections[s]['localId'];
-				data.options.remoteId = sections[s]['remoteId'];
-				data.options.keyExchMode = sections[s]['keyExchMode'];
-				data.options.localSubnetes = sections[s]['localSubnetes'];
-				data.options.remoteSubnets = sections[s]['remoteSubnets'];
-				data.options.authType = sections[s]['authType'];
-				data.options.presharedKey = sections[s]['presharedKey'];
-				data.options.phase1_lifetime = sections[s]['phase1_lifetime'];
-				data.options.phase1_ikeEncript = sections[s]['phase1_ikeEncript'];
-				data.options.phase1_ikeHash = sections[s]['phase1_ikeHash'];
-				data.options.phase1_dhGroup = sections[s]['phase1_dhGroup'];
-				data.options.phase2_lifetime = sections[s]['phase2_lifetime'];
-				data.options.phase2_espEncript = sections[s]['phase2_espEncript'];
-				data.options.phase2_espHash = sections[s]['phase2_espHash'];
-				data.options.phase2_pfsGroup = sections[s]['phase2_pfsGroup'];
+get_cfg_data('<%=vpnType%>', function(sections) {
+	for (s in sections) {
+		var data = new IpsecData();
+		data.name = sections[s]['.name'];
+		data.isActive = parse_bool(sections[s]['isActive']);
+		data.options.localAddr = sections[s]['localAddr'];
+		data.options.remoteAddr = sections[s]['remoteAddr'];
+		data.options.dpdDelay = sections[s]['dpdDelay'];
+		data.options.localId = sections[s]['localId'];
+		data.options.remoteId = sections[s]['remoteId'];
+		data.options.keyExchMode = sections[s]['keyExchMode'];
+		data.options.localSubnetes = sections[s]['localSubnetes'];
+		data.options.remoteSubnets = sections[s]['remoteSubnets'];
+		data.options.authType = sections[s]['authType'];
+		data.options.presharedKey = sections[s]['presharedKey'];
+		data.options.phase1_lifetime = sections[s]['phase1_lifetime'];
+		data.options.phase1_ikeEncript = sections[s]['phase1_ikeEncript'];
+		data.options.phase1_ikeHash = sections[s]['phase1_ikeHash'];
+		data.options.phase1_dhGroup = sections[s]['phase1_dhGroup'];
+		data.options.phase2_lifetime = sections[s]['phase2_lifetime'];
+		data.options.phase2_espEncript = sections[s]['phase2_espEncript'];
+		data.options.phase2_espHash = sections[s]['phase2_espHash'];
+		data.options.phase2_pfsGroup = sections[s]['phase2_pfsGroup'];
 
-				addRow(data);
-			}
-		});
-		
-		function addRow(data) {
-			var container = E('div', { id: data.name, class: 'tr '}, [
-				E('div', {class: 'td'}, E('div', {}, data.name)),
-				E('div', {class: 'td'}, E('div', {id: data.name+'-active'}, (data.isActive == true ? 'yes' : 'no'))),
-				E('div', {class: "nowrap cbi-section-actions td", style: "text-align: center;"}, [
-					E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {activateConfig(data);}}, _('Activate')),' ',
-					E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {showModal(data);}}, _('Edit')),' ',
-					E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {deleteConfig(data);}}, _('Delete')),
-				])
-			])
-						
-			var viewWrapper= document.getElementById('ipsec_rows');
-			viewWrapper.appendChild(container);
-		}
-	});
+		addRow(data);
+	}
 });
+
+function addRow(data) {
+	var container = E('div', { id: data.name, class: 'tr '}, [
+		E('div', {class: 'td'}, E('div', {}, data.name)),
+		E('div', {class: 'td'}, E('div', {id: data.name+'-active'}, (data.isActive == true ? 'yes' : 'no'))),
+		E('div', {class: "nowrap cbi-section-actions td", style: "text-align: center;"}, [
+			E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {activateConfig(data);}}, _('Activate')),' ',
+			E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {showModal(data);}}, _('Edit')),' ',
+			E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {deleteConfig(data);}}, _('Delete')),
+		])
+	])
+				
+	var viewWrapper= document.getElementById('ipsec_rows');
+	viewWrapper.appendChild(container);
+}
 
 function showModal(data) {
 	L.require('ui').then(function(ui) {

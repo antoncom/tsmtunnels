@@ -4,7 +4,6 @@
 <% --[[=========== LUA BACKEND ==========]] %>
 <%
 	local vpnType = "pptp"
-	local config = "vpnconfig"
 %>
 
 <div id="view">
@@ -60,6 +59,7 @@
                     <label class="cbi-value-title">Authentication type</label>
                     <div class="cbi-value-field">
                         <select id="authType" value="">
+                            <option value="any">any</option>
                             <option value="EAP">EAP</option>
                             <option value="PAP">PAP</option>
                             <option value="CHAP">CHAP</option>
@@ -78,7 +78,10 @@
             </div>
         </div>
 	</div>
+    
+    
     <div class="cbi-page-actions">
+        <span id="btn_enable_spinner" class="btn_spinner"></span> 
         <input class="cbi-button cbi-button-apply" type="button" value="Применить" onclick="apply()"> 
         <input class="cbi-button cbi-button-reset" type="button" value="Reset" onclick="reset_fields()"> 
     </div>
@@ -104,21 +107,16 @@ var PptpData = function() {
 
 var g_pptpData = new PptpData();
 
-L.require("ui").then(function(ui){
-    L.require("uci").then(function(uci) {
-        uci.load("<%=config%>").then(function(out){
-            var sections = uci.sections('<%=config%>', '<%=vpnType%>');
-            g_pptpData.isActive = parse_bool(sections[0]['isActive']);
-            g_pptpData.options['server'] = sections[0]['server'];
-            g_pptpData.options['username'] = sections[0]['username'];
-            g_pptpData.options['password'] = sections[0]['password'];
-            g_pptpData.options['authType'] = sections[0]['authType'];
-            g_pptpData.options['addOptinos'] = sections[0]['addOptinos'];
-            g_pptpData.options['isMPPE'] = parse_bool(sections[0]['isMPPE']);
-            g_pptpData.options['isDefaultRoute'] = parse_bool(sections[0]['isDefaultRoute']);
-            fill_form(g_pptpData);
-        });
-    });
+get_cfg_data('<%=vpnType%>', function(sections) {
+    g_pptpData.isActive = parse_bool(sections[0]['isActive']);
+    g_pptpData.options['server'] = sections[0]['server'];
+    g_pptpData.options['username'] = sections[0]['username'];
+    g_pptpData.options['password'] = sections[0]['password'];
+    g_pptpData.options['authType'] = sections[0]['authType'];
+    g_pptpData.options['addOptinos'] = sections[0]['addOptinos'];
+    g_pptpData.options['isMPPE'] = parse_bool(sections[0]['isMPPE']);
+    g_pptpData.options['isDefaultRoute'] = parse_bool(sections[0]['isDefaultRoute']);
+    fill_form(g_pptpData);
 });
 
 function fill_form(pptpData) {

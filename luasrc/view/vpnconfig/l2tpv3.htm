@@ -18,6 +18,7 @@
 		</div>
 	</div>
 	<div class="cbi-page-actions">
+        <span id="btn_enable_spinner" class="btn_spinner"></span> 
         <input class="cbi-button cbi-button-apply" type="button" value="Create new" onclick="showModal(new L2ptv3Data())"> 
     </div>
 </div>
@@ -50,48 +51,43 @@
 	var encapsulationTypes = ["ip"];
 	var l2HeaderTypes = ["none"];
 	
-	L.require("ui").then(function(ui){
-		L.require("uci").then(function(uci) {
-			uci.load("<%=config%>").then(function(out){
-				var sections = uci.sections('<%=config%>', '<%=vpnType%>');
-				for (s in sections) {
-					var l2ptv3Data = new L2ptv3Data();
-					l2ptv3Data.name = sections[s]['.name'];
-					l2ptv3Data.isActive = parse_bool(sections[s]['isActive']);
-	
-					l2ptv3Data.options['localAddr'] = sections[s]['localAddr'];
-					l2ptv3Data.options['remoteAddr'] = sections[s]['remoteAddr'];
-					l2ptv3Data.options['bridge'] = sections[s]['bridge'];
-					l2ptv3Data.options['zone'] = sections[s]['zone'];
-					l2ptv3Data.options['tunnelIp'] = sections[s]['tunnelIp'];
-					l2ptv3Data.options['tunnelMask'] = sections[s]['tunnelMask'];
-					l2ptv3Data.options['tunnelId'] = sections[s]['tunnelId'];
-					l2ptv3Data.options['remoteTunnelId'] = sections[s]['remoteTunnelId'];
-					l2ptv3Data.options['sessionId'] = sections[s]['sessionId'];
-					l2ptv3Data.options['remoteSessionId'] = sections[s]['remoteSessionId'];
-					l2ptv3Data.options['encapsulation'] = sections[s]['encapsulation'];
-					l2ptv3Data.options['l2HeaderType'] = sections[s]['isNotCachel2HeaderType'];
-						
-					addRow(l2ptv3Data);
-				}
-			});
-			
-			function addRow(l2ptv3Data) {
-				var container = E('div', { id: l2ptv3Data.name, class: 'tr '}, [
-					E('div', {class: 'td'}, E('div', {}, l2ptv3Data.name)),
-					E('div', {class: 'td'}, E('div', {id: l2ptv3Data.name+'-active'}, (l2ptv3Data.isActive == true ? 'yes' : 'no'))),
-					E('div', {class: "nowrap cbi-section-actions td", style: "text-align: center;"}, [
-						E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {activateConfig(l2ptv3Data);}}, _('Activate')),' ',
-						E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {showModal(l2ptv3Data);}}, _('Edit')),' ',
-						E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {deleteConfig(l2ptv3Data);}}, _('Delete')),
-					])
-				])
-							
-				var viewWrapper= document.getElementById('l2tpv3_rows');
-				viewWrapper.appendChild(container);
-			}
-		});
+	get_cfg_data('<%=vpnType%>', function(sections) {
+		for (s in sections) {
+			var l2ptv3Data = new L2ptv3Data();
+			l2ptv3Data.name = sections[s]['.name'];
+			l2ptv3Data.isActive = parse_bool(sections[s]['isActive']);
+
+			l2ptv3Data.options['localAddr'] = sections[s]['localAddr'];
+			l2ptv3Data.options['remoteAddr'] = sections[s]['remoteAddr'];
+			l2ptv3Data.options['bridge'] = sections[s]['bridge'];
+			l2ptv3Data.options['zone'] = sections[s]['zone'];
+			l2ptv3Data.options['tunnelIp'] = sections[s]['tunnelIp'];
+			l2ptv3Data.options['tunnelMask'] = sections[s]['tunnelMask'];
+			l2ptv3Data.options['tunnelId'] = sections[s]['tunnelId'];
+			l2ptv3Data.options['remoteTunnelId'] = sections[s]['remoteTunnelId'];
+			l2ptv3Data.options['sessionId'] = sections[s]['sessionId'];
+			l2ptv3Data.options['remoteSessionId'] = sections[s]['remoteSessionId'];
+			l2ptv3Data.options['encapsulation'] = sections[s]['encapsulation'];
+			l2ptv3Data.options['l2HeaderType'] = sections[s]['isNotCachel2HeaderType'];
+				
+			addRow(l2ptv3Data);
+		}
 	});
+			
+	function addRow(l2ptv3Data) {
+		var container = E('div', { id: l2ptv3Data.name, class: 'tr '}, [
+			E('div', {class: 'td'}, E('div', {}, l2ptv3Data.name)),
+			E('div', {class: 'td'}, E('div', {id: l2ptv3Data.name+'-active'}, (l2ptv3Data.isActive == true ? 'yes' : 'no'))),
+			E('div', {class: "nowrap cbi-section-actions td", style: "text-align: center;"}, [
+				E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {activateConfig(l2ptv3Data);}}, _('Activate')),' ',
+				E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {showModal(l2ptv3Data);}}, _('Edit')),' ',
+				E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {deleteConfig(l2ptv3Data);}}, _('Delete')),
+			])
+		])
+					
+		var viewWrapper= document.getElementById('l2tpv3_rows');
+		viewWrapper.appendChild(container);
+	}
 	
 	function showModal(l2ptv3Data) {
 		L.require('ui').then(function(ui) {

@@ -18,6 +18,7 @@
 		</div>
 	</div>
 	<div class="cbi-page-actions">
+        <span id="btn_enable_spinner" class="btn_spinner"></span> 
         <input class="cbi-button cbi-button-apply" type="button" value="Create new" onclick="showModal(new GreData())"> 
     </div>
 </div>
@@ -45,44 +46,38 @@ var bridges = ["bridge1", "bridge2"];
 var firewallZones = [];
 var networkTypes = ["L2 layer"];
 
-L.require("ui").then(function(ui){
-	L.require("uci").then(function(uci) {
-		uci.load("<%=config%>").then(function(out){
-			var sections = uci.sections('<%=config%>', '<%=vpnType%>');
-			for (s in sections) {
-				var newGre = new GreData();
-				newGre.name = sections[s]['.name'];
-				newGre.isActive = parse_bool(sections[s]['isActive']);
-				newGre.options['localAddr'] = sections[s]['localAddr'];
-				newGre.options['remoteAddr'] = sections[s]['remoteAddr'];
-				newGre.options['netType'] = sections[s]['netType'];
-				newGre.options['bridge'] = sections[s]['bridge'];
-				newGre.options['tunnelIp'] = sections[s]['tunnelIp'];
-				newGre.options['tunnelMask'] = sections[s]['tunnelMask'];
-				newGre.options['greKey'] = sections[s]['greKey'];
-				newGre.options['zone'] = sections[s]['zone'];
-				newGre.options['notFragment'] = parse_bool(sections[s]['notFragment']);
-				addRow(newGre);
-			}
-		});
-		
-		function addRow(greData) {
-			var container = E('div', { id: greData.name, class: 'tr '}, [
-				E('div', {class: 'td'}, E('div', {}, greData.name)),
-				E('div', {class: 'td'}, E('div', {id: greData.name+'-active'}, (greData.isActive == true ? 'yes' : 'no'))),
-				E('div', {class: "nowrap cbi-section-actions td", style: "text-align: center;"}, [
-					E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {activateConfig(greData);}}, _('Activate')),' ',
-					E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {showModal(greData);}}, _('Edit')),' ',
-					E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {deleteConfig(greData);}}, _('Delete')),
-				])
-			])
-						
-			var viewWrapper= document.getElementById('gre_rows');
-			viewWrapper.appendChild(container);
-		}
-	});
+get_cfg_data('<%=vpnType%>', function(sections) {
+	for (s in sections) {
+		var newGre = new GreData();
+		newGre.name = sections[s]['.name'];
+		newGre.isActive = parse_bool(sections[s]['isActive']);
+		newGre.options['localAddr'] = sections[s]['localAddr'];
+		newGre.options['remoteAddr'] = sections[s]['remoteAddr'];
+		newGre.options['netType'] = sections[s]['netType'];
+		newGre.options['bridge'] = sections[s]['bridge'];
+		newGre.options['tunnelIp'] = sections[s]['tunnelIp'];
+		newGre.options['tunnelMask'] = sections[s]['tunnelMask'];
+		newGre.options['greKey'] = sections[s]['greKey'];
+		newGre.options['zone'] = sections[s]['zone'];
+		newGre.options['notFragment'] = parse_bool(sections[s]['notFragment']);
+		addRow(newGre);
+	}
 });
-
+	
+function addRow(greData) {
+	var container = E('div', { id: greData.name, class: 'tr '}, [
+		E('div', {class: 'td'}, E('div', {}, greData.name)),
+		E('div', {class: 'td'}, E('div', {id: greData.name+'-active'}, (greData.isActive == true ? 'yes' : 'no'))),
+		E('div', {class: "nowrap cbi-section-actions td", style: "text-align: center;"}, [
+			E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {activateConfig(greData);}}, _('Activate')),' ',
+			E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {showModal(greData);}}, _('Edit')),' ',
+			E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {deleteConfig(greData);}}, _('Delete')),
+		])
+	])
+				
+	var viewWrapper= document.getElementById('gre_rows');
+	viewWrapper.appendChild(container);
+}
 
 function showModal(greData) {
 	L.require('ui').then(function(ui) {

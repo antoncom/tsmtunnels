@@ -19,6 +19,7 @@
 	</div>
 
 	<div class="cbi-page-actions">
+        <span id="btn_enable_spinner" class="btn_spinner"></span> 
         <input class="cbi-button cbi-button-apply" type="button" value="Create new" onclick="showModal(new DmvpnData())"> 
     </div>
 </div>
@@ -50,51 +51,46 @@ var DmvpnData = function() {
 var localAddresses = ["default"];
 var firewallZones = [];
 
-L.require("ui").then(function(ui){
-	L.require("uci").then(function(uci) {
-		uci.load("<%=config%>").then(function(out){
-			var sections = uci.sections('<%=config%>', '<%=vpnType%>');
-			for (s in sections) {
-				var dmvpnData = new DmvpnData();
-				dmvpnData.name = sections[s]['.name'];
-				dmvpnData.isActive = parse_bool(sections[s]['isActive']);
+get_cfg_data('<%=vpnType%>', function(sections) {
+	for (s in sections) {
+		var dmvpnData = new DmvpnData();
+		dmvpnData.name = sections[s]['.name'];
+		dmvpnData.isActive = parse_bool(sections[s]['isActive']);
 
-				dmvpnData.options['localAddr'] = sections[s]['localAddr'];
-				dmvpnData.options['remoteAddr'] = sections[s]['remoteAddr'];
-				dmvpnData.options['hubTunnelAddr'] = sections[s]['hubTunnelAddr'];
-				dmvpnData.options['hubTunnelMask'] = sections[s]['hubTunnelMask'];
-				dmvpnData.options['holdingTime'] = sections[s]['holdingTime'];
-				dmvpnData.options['tunnelIp'] = sections[s]['tunnelIp'];
-				dmvpnData.options['greKey'] = sections[s]['greKey'];
-				dmvpnData.options['zone'] = sections[s]['zone'];
-				dmvpnData.options['pingAddr'] = sections[s]['pingAddr'];
-				dmvpnData.options['pingInterval'] = sections[s]['pingInterval'];
-				dmvpnData.options['pingAttempts'] = sections[s]['pingAttempts'];
-				dmvpnData.options['isNotCache'] = parse_bool(sections[s]['isNotCache']);
-				dmvpnData.options['isAllowShortcuts'] = parse_bool(sections[s]['isAllowShortcuts']);
-				dmvpnData.options['isHubCisco'] = parse_bool(sections[s]['isHubCisco']);
-				dmvpnData.options['isIPSecProt'] = parse_bool(sections[s]['isIPSecProt']);
+		dmvpnData.options['localAddr'] = sections[s]['localAddr'];
+		dmvpnData.options['remoteAddr'] = sections[s]['remoteAddr'];
+		dmvpnData.options['hubTunnelAddr'] = sections[s]['hubTunnelAddr'];
+		dmvpnData.options['hubTunnelMask'] = sections[s]['hubTunnelMask'];
+		dmvpnData.options['holdingTime'] = sections[s]['holdingTime'];
+		dmvpnData.options['tunnelIp'] = sections[s]['tunnelIp'];
+		dmvpnData.options['greKey'] = sections[s]['greKey'];
+		dmvpnData.options['zone'] = sections[s]['zone'];
+		dmvpnData.options['pingAddr'] = sections[s]['pingAddr'];
+		dmvpnData.options['pingInterval'] = sections[s]['pingInterval'];
+		dmvpnData.options['pingAttempts'] = sections[s]['pingAttempts'];
+		dmvpnData.options['isNotCache'] = parse_bool(sections[s]['isNotCache']);
+		dmvpnData.options['isAllowShortcuts'] = parse_bool(sections[s]['isAllowShortcuts']);
+		dmvpnData.options['isHubCisco'] = parse_bool(sections[s]['isHubCisco']);
+		dmvpnData.options['isIPSecProt'] = parse_bool(sections[s]['isIPSecProt']);
 
-				addRow(dmvpnData);
-			}
-		});
-		
-		function addRow(dmvpnData) {
-			var container = E('div', { id: dmvpnData.name, class: 'tr '}, [
-				E('div', {class: 'td'}, E('div', {}, dmvpnData.name)),
-				E('div', {class: 'td'}, E('div', {id: dmvpnData.name+'-active'}, (dmvpnData.isActive == true ? 'yes' : 'no'))),
-				E('div', {class: "nowrap cbi-section-actions td", style: "text-align: center;"}, [
-					E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {activateConfig(dmvpnData);}}, _('Activate')),' ',
-					E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {showModal(dmvpnData);}}, _('Edit')),' ',
-					E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {deleteConfig(dmvpnData);}}, _('Delete')),
-				])
-			])
-						
-			var viewWrapper= document.getElementById('dmvpn_rows');
-			viewWrapper.appendChild(container);
-		}
-	});
+		addRow(dmvpnData);
+	}
 });
+		
+function addRow(dmvpnData) {
+	var container = E('div', { id: dmvpnData.name, class: 'tr '}, [
+		E('div', {class: 'td'}, E('div', {}, dmvpnData.name)),
+		E('div', {class: 'td'}, E('div', {id: dmvpnData.name+'-active'}, (dmvpnData.isActive == true ? 'yes' : 'no'))),
+		E('div', {class: "nowrap cbi-section-actions td", style: "text-align: center;"}, [
+			E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {activateConfig(dmvpnData);}}, _('Activate')),' ',
+			E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {showModal(dmvpnData);}}, _('Edit')),' ',
+			E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {deleteConfig(dmvpnData);}}, _('Delete')),
+		])
+	])
+				
+	var viewWrapper= document.getElementById('dmvpn_rows');
+	viewWrapper.appendChild(container);
+}
 
 function showModal(dmvpnData) {
 	L.require('ui').then(function(ui) {

@@ -19,6 +19,7 @@
 		</div>
 	</div>
 	<div class="cbi-page-actions">
+        <span id="btn_enable_spinner" class="btn_spinner"></span> 
         <input class="cbi-button cbi-button-apply" type="button" value="Create new" onclick="showModal(new EoIPData())"> 
     </div>
 </div>
@@ -43,42 +44,36 @@
 	var bridges = ["bridge1", "bridge2"];
 	var firewallZones = [];
 	
-	L.require("ui").then(function(ui){
-		L.require("uci").then(function(uci) {
-			uci.load("<%=config%>").then(function(out){
-				var sections = uci.sections('<%=config%>', '<%=vpnType%>');
-				for (s in sections) {
-					var newEoIP = new EoIPData();
-					newEoIP.name = sections[s]['.name'];
-					newEoIP.isActive = parse_bool(sections[s]['isActive']);
-					newEoIP.options['localAddr'] = sections[s]['localAddr'];
-					newEoIP.options['remoteAddr'] = sections[s]['remoteAddr'];
-					newEoIP.options['bridge'] = sections[s]['bridge'];
-					newEoIP.options['tunnelIp'] = sections[s]['tunnelIp'];
-					newEoIP.options['tunnelMask'] = sections[s]['tunnelMask'];
-					newEoIP.options['tunnelId'] = sections[s]['tunnelId'];
-					newEoIP.options['zone'] = sections[s]['zone'];
-					addRow(newEoIP);
-				}
-			});
-			
-			function addRow(eoipData) {
-				var container = E('div', { id: eoipData.name, class: 'tr '}, [
-					E('div', {class: 'td'}, E('div', {}, eoipData.name)),
-					E('div', {class: 'td'}, E('div', {id: eoipData.name+'-active'}, (eoipData.isActive == true ? 'yes' : 'no'))),
-					E('div', {class: "nowrap cbi-section-actions td", style: "text-align: center;"}, [
-						E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {activateConfig(eoipData);}}, _('Activate')),' ',
-						E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {showModal(eoipData);}}, _('Edit')),' ',
-						E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {deleteConfig(eoipData);}}, _('Delete')),
-					])
-				])
-							
-				var viewWrapper= document.getElementById('eoip_rows');
-				viewWrapper.appendChild(container);
-			}
-		});
+	get_cfg_data('<%=vpnType%>', function(sections) {
+		for (s in sections) {
+			var newEoIP = new EoIPData();
+			newEoIP.name = sections[s]['.name'];
+			newEoIP.isActive = parse_bool(sections[s]['isActive']);
+			newEoIP.options['localAddr'] = sections[s]['localAddr'];
+			newEoIP.options['remoteAddr'] = sections[s]['remoteAddr'];
+			newEoIP.options['bridge'] = sections[s]['bridge'];
+			newEoIP.options['tunnelIp'] = sections[s]['tunnelIp'];
+			newEoIP.options['tunnelMask'] = sections[s]['tunnelMask'];
+			newEoIP.options['tunnelId'] = sections[s]['tunnelId'];
+			newEoIP.options['zone'] = sections[s]['zone'];
+			addRow(newEoIP);
+		}
 	});
 	
+	function addRow(eoipData) {
+		var container = E('div', { id: eoipData.name, class: 'tr '}, [
+			E('div', {class: 'td'}, E('div', {}, eoipData.name)),
+			E('div', {class: 'td'}, E('div', {id: eoipData.name+'-active'}, (eoipData.isActive == true ? 'yes' : 'no'))),
+			E('div', {class: "nowrap cbi-section-actions td", style: "text-align: center;"}, [
+				E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {activateConfig(eoipData);}}, _('Activate')),' ',
+				E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {showModal(eoipData);}}, _('Edit')),' ',
+				E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {deleteConfig(eoipData);}}, _('Delete')),
+			])
+		])
+					
+		var viewWrapper= document.getElementById('eoip_rows');
+		viewWrapper.appendChild(container);
+	}	
 	
 	function showModal(eoipData) {
 		L.require('ui').then(function(ui) {
