@@ -46,9 +46,9 @@ function addRow(elementId, data) {
 		E('div', {class: 'td'}, E('div', {}, data.name)),
 		E('div', {class: 'td'}, E('div', {id: data.name+'-active'}, (data.isActive == true ? 'yes' : 'no'))),
 		E('div', {class: "nowrap cbi-section-actions td", style: "text-align: center;"}, [
-			E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {activateConfig(data);}}, _('Activate')),' ',
-			E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {showModal(data);}}, _('Edit')),' ',
-			E('div', {class: 'btn cbi-button-apply', style: "display: initial;", click: function() {deleteConfig(data);}}, _('Delete')),
+			E('div', {class: 'cbi-button cbi-button-neutral ', style: "display: initial;", click: function() {activateConfig(data);}}, _('Activate')),' ',
+			E('div', {class: 'cbi-button cbi-button-edit', style: "display: initial;", click: function() {showModal(data);}}, _('Edit')),' ',
+			E('div', {class: 'cbi-button cbi-button-remove', style: "display: initial;", click: function() {deleteConfig(data);}}, _('Delete')),
 		])
 	])
 				
