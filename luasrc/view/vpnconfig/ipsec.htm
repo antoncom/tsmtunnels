@@ -48,13 +48,17 @@ class IpsecData extends VpnData {
 	};
 }
 
-var localAddresses = ['default', 'localhost'];
+var localAddresses = [];
 var authTypes = ['psk'];
 var hashTypes = ['sha256'];
 var encriptTypes = ['aes265'];
 var keyExchModes = ['ikev2'];
 var dhGroups = [];
 var pfsGroups = [];
+
+get_list_interfaces(function(list){
+	localAddresses = list;
+});
 
 get_cfg_data('<%=vpnType%>', function(sections) {
 	for (s in sections) {

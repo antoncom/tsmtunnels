@@ -48,11 +48,15 @@ class DmvpnData extends VpnData {
 	};
 }
 
-var localAddresses = ["default"];
+var localAddresses = [];
 var firewallZones = [];
 
-get_firewall_zone_list(function(list){
+get_list_firewall_zone(function(list){
 	firewallZones = list;
+});
+
+get_list_interfaces(function(list){
+	localAddresses = list;
 });
 
 get_cfg_data('<%=vpnType%>', function(sections) {

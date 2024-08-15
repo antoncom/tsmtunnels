@@ -45,14 +45,22 @@
 		};
 	}
 	
-	var localAddresses = ["default"];
+	var localAddresses = [];
 	var firewallZones = [];
-	var bridges = ["bridge1", "bridge2"];
+	var bridges = [];
 	var encapsulationTypes = ["ip"];
 	var l2HeaderTypes = ["none"];
 
-	get_firewall_zone_list(function(list){
+	get_list_firewall_zone(function(list){
 		firewallZones = list;
+	});
+
+	get_list_bridges(function(list){
+		bridges = list;
+	});
+
+	get_list_interfaces(function(list){
+		localAddresses = list;
 	});
 	
 	get_cfg_data('<%=vpnType%>', function(sections) {
@@ -102,7 +110,7 @@
 			var bridge = new ui.Dropdown(l2ptv3Data.options.bridge, make_dropdown_options(bridges), {
 				multiple: false,
 				optional: false,
-				create: true,
+				create: false,
 			});
 	
 			var zone = new ui.Dropdown(l2ptv3Data.options.zone, make_dropdown_options(firewallZones), {

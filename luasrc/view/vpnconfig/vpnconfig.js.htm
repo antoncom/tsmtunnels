@@ -116,14 +116,39 @@ function make_dropdown_options(list) {
     return result;
 }
 
-function get_firewall_zone_list(callback) {
+function get_list_firewall_zone(callback) {
 	L.require("uci").then(function(uci) {
 		uci.load('firewall').then(function(out){
-			var zones = uci.sections('firewall', 'zone');
 			var result = ["<none>",];
-			for (z in zones) {
-				result.push(zones[z].name);
-			}
+			uci.sections('firewall', 'zone', function(item){
+				result.push(item.name);
+			});
+			callback(result);
+		});
+	});
+}
+
+function get_list_bridges(callback) {
+	L.require("uci").then(function(uci) {
+		uci.load('network').then(function(out){
+			var result = ["<none>",];
+			uci.sections('network', 'interface', function(item){
+				if (item.type && item.type == 'bridge') {
+					result.push(item['.name']);
+				}
+			});
+			callback(result);
+		});
+	});
+}
+
+function get_list_interfaces(callback) {
+	L.require("uci").then(function(uci) {
+		uci.load('network').then(function(out){
+			var result = [];
+			uci.sections('network', 'interface', function(item){
+				result.push(item['.name']);
+			});
 			callback(result);
 		});
 	});

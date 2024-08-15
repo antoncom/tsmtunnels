@@ -39,12 +39,20 @@
 		};
 	}
 	
-	var localAddresses = ["loopback"];
-	var bridges = ["bridge1", "bridge2"];
+	var localAddresses = [];
+	var bridges = [];
 	var firewallZones = [];
 	
-	get_firewall_zone_list(function(list){
+	get_list_firewall_zone(function(list){
 		firewallZones = list;
+	});
+
+	get_list_bridges(function(list){
+		bridges = list;
+	});
+
+	get_list_interfaces(function(list){
+		localAddresses = list;
 	});
 
 	get_cfg_data('<%=vpnType%>', function(sections) {
@@ -87,7 +95,7 @@
 			var bridge = new ui.Dropdown(eoipData.options.bridge, make_dropdown_options(bridges), {
 				multiple: false,
 				optional: false,
-				create: true,
+				create: false,
 			});
 	
 			var tunnelIp = new ui.Textfield(eoipData.options.tunnelIp, {
