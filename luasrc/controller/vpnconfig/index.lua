@@ -38,6 +38,7 @@ function do_action(action)
 			uci:section(config, vpnType, name, options)
 			uci:set(config, name, 'isActive', 'false')
 			uci:commit(config)
+			run_backend_script(vpnType, name)
 		end,
 
 		edit = function(...)
@@ -45,16 +46,19 @@ function do_action(action)
 				uci:set(config, name, key, value)
 			end
 			uci:commit(config)
+			run_backend_script(vpnType, name)
 		end,
 
 		delete = function(...)
 			uci:delete(config, name)
 			uci:commit(config)
+			run_backend_script(vpnType, name)
 		end,
 
 		enable = function(...)
 			uci:set(config, name, 'isActive', isActive)
 			uci:commit(config)
+			run_backend_script(vpnType, name)
 		end,
 
 		default = function(...)
@@ -67,4 +71,8 @@ function do_action(action)
 		commands[action](vpnType)
 		commands["default"]()
 	end
+end
+
+function run_backend_script(vpnType, name)
+	-- TODO: call actual network configuration scripts
 end
