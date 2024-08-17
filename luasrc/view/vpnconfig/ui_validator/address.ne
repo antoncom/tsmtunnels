@@ -10,4 +10,4 @@ URL				-> DOMAIN ("." DOMAIN):*
 DOMAIN			-> (LETTER|NUMBER|SYMBOL):+
 LETTER			-> [a-z A-Z]
 NUMBER			-> [0-9]
-SYMBOL			-> [ _ \- % / : ? & =]
+SYMBOL			-> [_\-%/:?&=]
