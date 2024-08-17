@@ -6,7 +6,7 @@ var grammar = {
     Lexer: undefined,
     ParserRules: [
     {"name": "MAIN", "symbols": ["NUMBER"]},
-    {"name": "NUMBER$ebnf$1", "symbols": [/[0-9]/]},
+    {"name": "NUMBER$ebnf$1", "symbols": []},
     {"name": "NUMBER$ebnf$1", "symbols": [/[0-9]/, "NUMBER$ebnf$1"], "postprocess": function arrconcat(d) {return [d[0]].concat(d[1]);}},
     {"name": "NUMBER", "symbols": ["NUMBER$ebnf$1"]}
 ]

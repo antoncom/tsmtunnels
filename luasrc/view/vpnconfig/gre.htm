@@ -78,106 +78,117 @@ get_cfg_data('<%=vpnType%>', function(sections) {
 
 function showModal(greData) {
 	L.require('ui').then(function(ui) {
-		var name = new ui.Textfield(greData.name, {
-			placeholder: "Name",
-			optional: false,
-			readonly: greData.name.length > 0,
-			validate: nearleyValidator('sectionName', 'Should contain letters, numbers and "_"')
-		});
+		var form = {
+			name: new ui.Textfield(greData.name, {
+				placeholder: "Name",
+				optional: false,
+				readonly: greData.name.length > 0,
+				validate: nearleyValidator('sectionName', 'Should contain letters, numbers and "_"')
+			}),
+			localAddr: new ui.Dropdown(greData.options.localAddr, make_dropdown_options(localAddresses), {
+				multiple: false,
+				optional: false
+			}),
+			remoteAddr: new ui.Textfield(greData.options.remoteAddr, {
+				placeholder: "Remote IP",
+				optional: false,
+				validate: nearleyValidator('ip4', 'Should contain numbers 0..255 and "."')
+			}),
+			netType: new ui.Dropdown(greData.options.netType, make_dropdown_options(networkTypes), {
+				multiple: false,
+				optional: false
+			}),
+			bridge: new ui.Dropdown(greData.options.bridge, make_dropdown_options(bridges), {
+				multiple: false,
+				optional: false,
+				create: false,
+			}),
+			tunnelIp: new ui.Textfield(greData.options.tunnelIp, {
+				optional: false,
+				placeholder: "Local IP for tunnel",
+				validate: nearleyValidator('ip4', 'Should contain numbers 0..255 and "."')
+			}),
+			tunnelMask: new ui.Textfield(greData.options.tunnelMask, {
+				optional: false,
+				placeholder: "Netmask",
+				validate: nearleyValidator('netmask', 'Should contain numbers 0..255 and "." or bits count 0..32')
+			}),
+			greKey: new ui.Textfield(greData.options.greKey, {
+				optional: true,
+				placeholder: "Leave blank if not used",
+				validate: function(input){
+					var v = nearleyValidator('integer', 'Should contain only digits');
+					var res = v(input);
+					if (res !== true)
+						return res;
 
-		var localAddr = new ui.Dropdown(greData.options.localAddr, make_dropdown_options(localAddresses), {
-			multiple: false,
-			optional: false
-		});
+					if (!input.length)
+						return true;
 
-		var remoteAddr = new ui.Textfield(greData.options.remoteAddr, {
-			placeholder: "Remote IP",
-			optional: false,
-		});
-
-		var netType = new ui.Dropdown(greData.options.netType, make_dropdown_options(networkTypes), {
-			multiple: false,
-			optional: false
-		});
-
-		var bridge = new ui.Dropdown(greData.options.bridge, make_dropdown_options(bridges), {
-			multiple: false,
-			optional: false,
-			create: false,
-		});
-
-		var tunnelIp = new ui.Textfield(greData.options.tunnelIp, {
-			optional: false,
-			placeholder: "Local IP for tunnel"
-		});
-
-		var tunnelMask = new ui.Textfield(greData.options.tunnelMask, {
-			optional: false,
-			placeholder: "Netmask"
-		});
-
-		var greKey = new ui.Textfield(greData.options.greKey, {
-			optional: false,
-			placeholder: "Leave blank if not used"
-		});
-
-		var zone = new ui.Dropdown(greData.options.zone, make_dropdown_options(firewallZones), {
-			multiple: false,
-			create: false,
-			optional: false
-		});
-
-		var notFragment = new ui.Checkbox(greData.options.notFragment);
+					if (Number(input) > 0 && Number(input) < 0xFFFFFFFF) {
+						return true;
+					} else {
+						return "out of range"
+					}
+				}
+			}),
+			zone: new ui.Dropdown(greData.options.zone, make_dropdown_options(firewallZones), {
+				multiple: false,
+				create: false,
+				optional: false
+			}),
+			notFragment: new ui.Checkbox(greData.options.notFragment)
+		}
 
 		L.showModal('Configure GRE tunnel', [
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Name %>')),
-				E('div', { class: 'cbi-value-field' }, [name.render()])
+				E('div', { class: 'cbi-value-field' }, [form.name.render()])
 			]),
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Local address %>')),
-				E('div', { class: 'cbi-value-field' }, [localAddr.render()])
+				E('div', { class: 'cbi-value-field' }, [form.localAddr.render()])
 			]),
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Remote address %>')),
-				E('div', { class: 'cbi-value-field' }, [remoteAddr.render()])
+				E('div', { class: 'cbi-value-field' }, [form.remoteAddr.render()])
 			]),
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Network type %>')),
-				E('div', { class: 'cbi-value-field' }, [netType.render()])
+				E('div', { class: 'cbi-value-field' }, [form.netType.render()])
 			]),
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Add to Bridge or create new %>')),
-				E('div', { class: 'cbi-value-field' }, [bridge.render()])
+				E('div', { class: 'cbi-value-field' }, [form.bridge.render()])
 			]),
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Tunnel IP %>')),
-				E('div', { class: 'cbi-value-field' }, [tunnelIp.render()])
+				E('div', { class: 'cbi-value-field' }, [form.tunnelIp.render()])
 			]),
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Tunnel netmask %>')),
-				E('div', { class: 'cbi-value-field' }, [tunnelMask.render()])
+				E('div', { class: 'cbi-value-field' }, [form.tunnelMask.render()])
 			]),
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:GRE key %>')),
-				E('div', { class: 'cbi-value-field' }, [greKey.render()])
+				E('div', { class: 'cbi-value-field' }, [form.greKey.render()])
 			]),
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Firewall zone %>')),
-				E('div', { class: 'cbi-value-field' }, [zone.render()])
+				E('div', { class: 'cbi-value-field' }, [form.zone.render()])
 			]),
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Dont fragment packets %>')),
-				E('div', { class: 'cbi-value-field' }, [notFragment.render()])
+				E('div', { class: 'cbi-value-field' }, [form.notFragment.render()])
 			]),
 
 			E('div', { class: 'cbi-value-field' }, [
@@ -191,17 +202,26 @@ function showModal(greData) {
 				E('div', {
 					class: 'btn primary cbi-button',
 					click: function() {
-						//TODO: validate and save data to config file
-						greData.name = name.getValue(); 
-						greData.options['localAddr'] = localAddr.getValue(); 
-						greData.options['remoteAddr'] = remoteAddr.getValue(); 
-						greData.options['netType'] = netType.getValue(); 
-						greData.options['bridge'] = bridge.getValue(); 
-						greData.options['tunnelIp'] = tunnelIp.getValue(); 
-						greData.options['tunnelMask'] = tunnelMask.getValue(); 
-						greData.options['greKey'] = greKey.getValue(); 
-						greData.options['zone'] = zone.getValue(); 
-						greData.options['notFragment'] = notFragment.getValue(); 
+						var isFormValid = true;
+						for (i in form) {
+							var field = form[i];
+							field.triggerValidation();
+							isFormValid &= field.isValid();
+						}
+
+						if (!isFormValid)
+							return;
+
+						greData.name = form.name.getValue(); 
+						greData.options['localAddr'] = form.localAddr.getValue(); 
+						greData.options['remoteAddr'] = form.remoteAddr.getValue(); 
+						greData.options['netType'] = form.netType.getValue(); 
+						greData.options['bridge'] = form.bridge.getValue(); 
+						greData.options['tunnelIp'] = form.tunnelIp.getValue(); 
+						greData.options['tunnelMask'] = form.tunnelMask.getValue(); 
+						greData.options['greKey'] = form.greKey.getValue(); 
+						greData.options['zone'] = form.zone.getValue(); 
+						greData.options['notFragment'] = form.notFragment.getValue(); 
 						commitConfig(greData);
 						L.hideModal()
 					}
