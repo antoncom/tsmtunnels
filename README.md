@@ -9,4 +9,4 @@ If no configure found on target system, module will create empty file /etc/confi
 
 Valid fields of vpnconfig file sections are listed on *.htm pages.
 
-Vpnconfig receives data from web UI, store it in UCI system and call run_backend_script() function. Real network configuration sould be done inside run_backend_script().
+Vpnconfig receives data from web UI, store it in UCI system and call run_backend_script() function. Real network configuration should be done inside run_backend_script().
