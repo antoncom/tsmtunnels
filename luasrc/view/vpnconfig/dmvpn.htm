@@ -91,9 +91,7 @@ function showModal(dmvpnData) {
 			placeholder: "Name",
 			optional: false,
 			readonly: dmvpnData.name.length > 0,
-			validate: function(inp) {
-				return true;
-			}
+			validate: nearleyValidator('sectionName', 'Should contain letters, numbers and "_"')
 		});
 
 		var localAddr = new ui.Dropdown(dmvpnData.options.localAddr, make_dropdown_options(localAddresses), {

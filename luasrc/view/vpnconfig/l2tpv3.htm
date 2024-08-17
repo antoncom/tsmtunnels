@@ -92,9 +92,7 @@
 				placeholder: "Name",
 				optional: false,
 				readonly: l2ptv3Data.name.length > 0,
-				validate: function(inp) {
-					return true;
-				}
+				validate: nearleyValidator('sectionName', 'Should contain letters, numbers and "_"')
 			});
 	
 			var localAddr = new ui.Dropdown(l2ptv3Data.options.localAddr, make_dropdown_options(localAddresses), {

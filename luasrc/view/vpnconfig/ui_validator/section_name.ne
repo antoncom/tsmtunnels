@@ -8,4 +8,4 @@ MAIN 			-> NAME
 NAME 			-> (LETTER|NUMBER|SYMBOL):+
 LETTER			-> [a-zA-Z]
 NUMBER			-> [0-9]
-SYMBOL			-> ["." "_" "-" "(" ")" "@" ":"]
+SYMBOL			-> [_]

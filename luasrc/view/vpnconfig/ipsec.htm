@@ -93,8 +93,10 @@ function showModal(data) {
 	L.require('ui').then(function(ui) {
 
 		var name = new ui.Textfield(data.name, {
-			opional: false,
 			placeholder: "Name",
+			optional: false,
+			readonly: data.name.length > 0,
+			validate: nearleyValidator('sectionName', 'Should contain letters, numbers and "_"')
 		});
 
 		var localAddr = new ui.Dropdown(data.options.localAddr, make_dropdown_options(localAddresses), {
