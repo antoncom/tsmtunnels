@@ -87,153 +87,166 @@ get_cfg_data('<%=vpnType%>', function(sections) {
 
 function showModal(dmvpnData) {
 	L.require('ui').then(function(ui) {
-		var name = new ui.Textfield(dmvpnData.name, {
-			placeholder: "Name",
-			optional: false,
-			readonly: dmvpnData.name.length > 0,
-			validate: nearleyValidator('sectionName', 'Should contain letters, numbers and "_"')
-		});
+		var form = {
+			name: new ui.Textfield(dmvpnData.name, {
+				placeholder: "Name",
+				optional: false,
+				readonly: dmvpnData.name.length > 0,
+				validate: nearleyValidator('sectionName', 'Should contain letters, numbers and "_"')
+			}),
+			localAddr: new ui.Dropdown(dmvpnData.options.localAddr, make_dropdown_options(localAddresses), {
+				multiple: false,
+				optional: false
+			}),
+			remoteAddr: new ui.Textfield(dmvpnData.options.remoteAddr, {
+				placeholder: "Remote IP",
+				optional: false,
+				validate: nearleyValidator('ip4', 'Should contain numbers 0..255 and "."')
+			}),
+			hubTunnelAddr: new ui.Textfield(dmvpnData.options.hubTunnelAddr, {
+				optional: false,
+				placeholder: "HUB tunnel address",
+				validate: nearleyValidator('ip4', 'Should contain numbers 0..255 and "."')
+			}),
+			hubTunnelMask: new ui.Textfield(dmvpnData.options.hubTunnelMask, {
+				optional: false,
+				placeholder: "HUB tunnel netmask",
+				validate: nearleyValidator('netmask', 'Should contain numbers 0..255 and "." or bits count 0..32')
+			}),
+			holdingTime: new ui.Textfield(dmvpnData.options.holdingTime, {
+				optional: false,
+				placeholder: "Default 7200 sec.",
+				validate: nearleyValidator('number', "Should contain digits nad ',' or '.'")
+			}),
+			tunnelIp: new ui.Textfield(dmvpnData.options.tunnelIp, {
+				optional: false,
+				placeholder: "Local IP for tunnel",
+				validate: nearleyValidator('ip4', 'Should contain numbers 0..255 and "."')
+			}),
+			greKey: new ui.Textfield(dmvpnData.options.greKey, {
+				optional: false,
+				placeholder: "Leave blank if not used",
+				validate: function(input){
+					var v = nearleyValidator('integer', 'Should contain only digits');
+					var res = v(input);
+					if (res !== true)
+						return res;
 
-		var localAddr = new ui.Dropdown(dmvpnData.options.localAddr, make_dropdown_options(localAddresses), {
-			multiple: false,
-			optional: false
-		});
+					if (!input.length)
+						return true;
 
-		var remoteAddr = new ui.Textfield(dmvpnData.options.remoteAddr, {
-			placeholder: "Remote IP",
-			optional: false,
-		});
-
-		var hubTunnelAddr = new ui.Textfield(dmvpnData.options.hubTunnelAddr, {
-			optional: false,
-			placeholder: "HUB tunnel address"
-		});
-
-		var hubTunnelMask = new ui.Textfield(dmvpnData.options.hubTunnelMask, {
-			optional: false,
-			placeholder: "HUB tunnel netmask"
-		});
-
-		var holdingTime = new ui.Textfield(dmvpnData.options.holdingTime, {
-			optional: false,
-			placeholder: "Default 7200 sec."
-		});
-
-		var tunnelIp = new ui.Textfield(dmvpnData.options.tunnelIp, {
-			optional: false,
-			placeholder: "Local IP for tunnel"
-		});
-
-		var greKey = new ui.Textfield(dmvpnData.options.greKey, {
-			optional: false,
-			placeholder: "Leave blank if not used"
-		});
-
-		var zone = new ui.Dropdown(dmvpnData.options.zone, make_dropdown_options(firewallZones), {
-			multiple: false,
-			create: false,
-			optional: false
-		});
-
-		var pingAddr = new ui.Textfield(dmvpnData.options.pingAddr, {
-			optional: false,
-			placeholder: "Address to check connection"
-		});
-
-		var pingInterval = new ui.Textfield(dmvpnData.options.pingInterval, {
-			optional: false,
-			placeholder: "Default 30 sec."
-		});
-
-		var pingAttempts = new ui.Textfield(dmvpnData.options.pingAttempts, {
-			optional: false,
-			placeholder: "3 by default"
-		});
-
-		var isNotCache = new ui.Checkbox(dmvpnData.options.isNotCache);
-		var isAllowShortcuts = new ui.Checkbox(dmvpnData.options.isAllowShortcuts);
-		var isHubCisco = new ui.Checkbox(dmvpnData.options.isHubCisco);
-		var isIPSecProt = new ui.Checkbox(dmvpnData.options.isIPSecProt);
+					if (Number(input) > 0 && Number(input) < 0xFFFFFFFF) {
+						return true;
+					} else {
+						return "out of range"
+					}
+				}
+			}),
+			zone: new ui.Dropdown(dmvpnData.options.zone, make_dropdown_options(firewallZones), {
+				multiple: false,
+				create: false,
+				optional: false
+			}),
+			pingAddr: new ui.Textfield(dmvpnData.options.pingAddr, {
+				optional: false,
+				placeholder: "Address to check connection",
+				validate: nearleyValidator('ip4', 'Should contain numbers 0..255 and "."')
+			}),
+			pingInterval: new ui.Textfield(dmvpnData.options.pingInterval, {
+				optional: false,
+				placeholder: "Default 30 sec.",
+				validate: nearleyValidator('number', "Should contain digits nad ',' or '.'")
+			}),
+			pingAttempts: new ui.Textfield(dmvpnData.options.pingAttempts, {
+				optional: false,
+				placeholder: "3 by default",
+				validate: nearleyValidator('number', "Should contain digits nad ',' or '.'")
+			}),
+			isNotCache: new ui.Checkbox(dmvpnData.options.isNotCache),
+			isAllowShortcuts: new ui.Checkbox(dmvpnData.options.isAllowShortcuts),
+			isHubCisco: new ui.Checkbox(dmvpnData.options.isHubCisco),
+			isIPSecProt: new ui.Checkbox(dmvpnData.options.isIPSecProt)
+		}
 
 		L.showModal('Configure DMVPN tunnel', [
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Name %>')),
-				E('div', { class: 'cbi-value-field' }, [name.render()])
+				E('div', { class: 'cbi-value-field' }, [form.name.render()])
 			]),
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Local NBMA address %>')),
-				E('div', { class: 'cbi-value-field' }, [localAddr.render()])
+				E('div', { class: 'cbi-value-field' }, [form.localAddr.render()])
 			]),
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Remote NBMA address %>')),
-				E('div', { class: 'cbi-value-field' }, [remoteAddr.render()])
+				E('div', { class: 'cbi-value-field' }, [form.remoteAddr.render()])
 			]),
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:HUB tunnel address %>')),
-				E('div', { class: 'cbi-value-field' }, [hubTunnelAddr.render()])
+				E('div', { class: 'cbi-value-field' }, [form.hubTunnelAddr.render()])
 			]),
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:HUB tunnel netmask %>')),
-				E('div', { class: 'cbi-value-field' }, [hubTunnelMask.render()])
+				E('div', { class: 'cbi-value-field' }, [form.hubTunnelMask.render()])
 			]),
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Holding time (sec.) %>')),
-				E('div', { class: 'cbi-value-field' }, [holdingTime.render()])
+				E('div', { class: 'cbi-value-field' }, [form.holdingTime.render()])
 			]),
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Tunnel IP %>')),
-				E('div', { class: 'cbi-value-field' }, [tunnelIp.render()])
+				E('div', { class: 'cbi-value-field' }, [form.tunnelIp.render()])
 			]),
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:GRE key %>')),
-				E('div', { class: 'cbi-value-field' }, [greKey.render()])
+				E('div', { class: 'cbi-value-field' }, [form.greKey.render()])
 			]),
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Firewall zone %>')),
-				E('div', { class: 'cbi-value-field' }, [zone.render()])
+				E('div', { class: 'cbi-value-field' }, [form.zone.render()])
 			]),
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Ping address %>')),
-				E('div', { class: 'cbi-value-field' }, [pingAddr.render()])
+				E('div', { class: 'cbi-value-field' }, [form.pingAddr.render()])
 			]),
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Ping interval (sec.) %>')),
-				E('div', { class: 'cbi-value-field' }, [pingInterval.render()])
+				E('div', { class: 'cbi-value-field' }, [form.pingInterval.render()])
 			]),
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Ping Attempts %>')),
-				E('div', { class: 'cbi-value-field' }, [pingAttempts.render()])
+				E('div', { class: 'cbi-value-field' }, [form.pingAttempts.render()])
 			]),
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:No caching %>')),
-				E('div', { class: 'cbi-value-field' }, [isNotCache.render()])
+				E('div', { class: 'cbi-value-field' }, [form.isNotCache.render()])
 			]),
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Allow shortcuts %>')),
-				E('div', { class: 'cbi-value-field' }, [isAllowShortcuts.render()])
+				E('div', { class: 'cbi-value-field' }, [form.isAllowShortcuts.render()])
 			]),
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:HUB is Sisco %>')),
-				E('div', { class: 'cbi-value-field' }, [isHubCisco.render()])
+				E('div', { class: 'cbi-value-field' }, [form.isHubCisco.render()])
 			]),
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Use IPSec protection %>')),
-				E('div', { class: 'cbi-value-field' }, [isIPSecProt.render()])
+				E('div', { class: 'cbi-value-field' }, [form.isIPSecProt.render()])
 			]),
 
 			E('div', { class: 'cbi-value-field' }, [
@@ -247,23 +260,32 @@ function showModal(dmvpnData) {
 				E('div', {
 					class: 'btn primary cbi-button',
 					click: function() {
-						//TODO: validate and save data to config file
-						dmvpnData.name = name.getValue(); 
-						dmvpnData.options['localAddr'] = localAddr.getValue(); 
-						dmvpnData.options['remoteAddr'] = remoteAddr.getValue();
-						dmvpnData.options['hubTunnelAddr'] = hubTunnelAddr.getValue(); 
-						dmvpnData.options['hubTunnelMask'] = hubTunnelMask.getValue(); 
-						dmvpnData.options['holdingTime'] = holdingTime.getValue(); 
-						dmvpnData.options['tunnelIp'] = tunnelIp.getValue(); 
-						dmvpnData.options['greKey'] = greKey.getValue(); 
-						dmvpnData.options['zone'] = zone.getValue(); 
-						dmvpnData.options['pingAddr'] = pingAddr.getValue(); 
-						dmvpnData.options['pingInterval'] = pingInterval.getValue();
-						dmvpnData.options['pingAttempts'] = pingAttempts.getValue();
-						dmvpnData.options['isNotCache'] = isNotCache.getValue();
-						dmvpnData.options['isAllowShortcuts'] = isAllowShortcuts.getValue();
-						dmvpnData.options['isHubCisco'] = isHubCisco.getValue();
-						dmvpnData.options['isIPSecProt'] = isIPSecProt.getValue();
+						var isFormValid = true;
+						for (i in form) {
+							var field = form[i];
+							field.triggerValidation();
+							isFormValid &= field.isValid();
+						}
+
+						if (!isFormValid)
+							return;
+						
+						dmvpnData.name = form.name.getValue(); 
+						dmvpnData.options['localAddr'] = form.localAddr.getValue(); 
+						dmvpnData.options['remoteAddr'] = form.remoteAddr.getValue();
+						dmvpnData.options['hubTunnelAddr'] = form.hubTunnelAddr.getValue(); 
+						dmvpnData.options['hubTunnelMask'] = form.hubTunnelMask.getValue(); 
+						dmvpnData.options['holdingTime'] = form.holdingTime.getValue(); 
+						dmvpnData.options['tunnelIp'] = form.tunnelIp.getValue(); 
+						dmvpnData.options['greKey'] = form.greKey.getValue(); 
+						dmvpnData.options['zone'] = form.zone.getValue(); 
+						dmvpnData.options['pingAddr'] = form.pingAddr.getValue(); 
+						dmvpnData.options['pingInterval'] = form.pingInterval.getValue();
+						dmvpnData.options['pingAttempts'] = form.pingAttempts.getValue();
+						dmvpnData.options['isNotCache'] = form.isNotCache.getValue();
+						dmvpnData.options['isAllowShortcuts'] = form.isAllowShortcuts.getValue();
+						dmvpnData.options['isHubCisco'] = form.isHubCisco.getValue();
+						dmvpnData.options['isIPSecProt'] = form.isIPSecProt.getValue();
 
 						commitConfig(dmvpnData);
 						L.hideModal()
