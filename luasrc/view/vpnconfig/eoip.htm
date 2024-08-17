@@ -73,89 +73,102 @@
 	
 	function showModal(eoipData) {
 		L.require('ui').then(function(ui) {
-			var name = new ui.Textfield(eoipData.name, {
-				placeholder: "Name",
-				optional: false,
-				readonly: eoipData.name.length > 0,
-				validate: nearleyValidator('sectionName', 'Should contain letters, numbers and "_"')
-			});
+			var form = {
+				name: new ui.Textfield(eoipData.name, {
+					placeholder: "Name",
+					optional: false,
+					readonly: eoipData.name.length > 0,
+					validate: nearleyValidator('sectionName', 'Should contain letters, numbers and "_"')
+				}),
+				localAddr: new ui.Dropdown(eoipData.options.localAddr, make_dropdown_options(localAddresses), {
+					multiple: false,
+					optional: false
+				}),
+				remoteAddr: new ui.Textfield(eoipData.options.remoteAddr, {
+					placeholder: "Remote IP",
+					optional: false,
+					validate: nearleyValidator('ip4', 'Should contain numbers 0..255 and "."')
+				}),
+				bridge: new ui.Dropdown(eoipData.options.bridge, make_dropdown_options(bridges), {
+					multiple: false,
+					optional: false,
+					create: false,
+				}),
+				tunnelIp: new ui.Textfield(eoipData.options.tunnelIp, {
+					optional: false,
+					placeholder: "Local IP for tunnel",
+					validate: nearleyValidator('ip4', 'Should contain numbers 0..255 and "."')
+				}),
+				tunnelMask: new ui.Textfield(eoipData.options.tunnelMask, {
+					optional: false,
+					placeholder: "Netmask",
+					validate: nearleyValidator('netmask', 'Should contain numbers 0..255 and "." or bits count 0..32')
+				}),
+				tunnelId: new ui.Textfield(eoipData.options.tunnelId, {
+					optional: true,
+					placeholder: "",
+					validate: function(input){
+						var v = nearleyValidator('integer', 'Should contain only digits');
+						var res = v(input);
+						if (res !== true)
+							return res;
+
+						if (!input.length)
+							return true;
+
+						if (Number(input) > 0 && Number(input) < 0xFFFF) {
+							return true;
+						} else {
+							return "out of range"
+						}
+					}
+				}),
+				zone: new ui.Dropdown(eoipData.options.zone, make_dropdown_options(firewallZones), {
+					multiple: false,
+					create: false,
+					optional: false
+				})
+			}
 	
-			var localAddr = new ui.Dropdown(eoipData.options.localAddr, make_dropdown_options(localAddresses), {
-				multiple: false,
-				optional: false
-			});
-	
-			var remoteAddr = new ui.Textfield(eoipData.options.remoteAddr, {
-				placeholder: "Remote IP",
-				optional: false,
-			});
-	
-			var bridge = new ui.Dropdown(eoipData.options.bridge, make_dropdown_options(bridges), {
-				multiple: false,
-				optional: false,
-				create: false,
-			});
-	
-			var tunnelIp = new ui.Textfield(eoipData.options.tunnelIp, {
-				optional: false,
-				placeholder: "Local IP for tunnel"
-			});
-	
-			var tunnelMask = new ui.Textfield(eoipData.options.tunnelMask, {
-				optional: false,
-				placeholder: "Netmask"
-			});
-	
-			var tunnelId = new ui.Textfield(eoipData.options.tunnelId, {
-				optional: false,
-				placeholder: ""
-			});
-	
-			var zone = new ui.Dropdown(eoipData.options.zone, make_dropdown_options(firewallZones), {
-				multiple: false,
-				create: false,
-				optional: false
-			});
-	
-			L.showModal('Configure GRE tunnel', [
+			L.showModal('Configure EoIP tunnel', [
 				E('div', { class: 'cbi-value' }, [
 					E('label', { 'class': 'cbi-value-title' }, _('<%:Name %>')),
-					E('div', { class: 'cbi-value-field' }, [name.render()])
+					E('div', { class: 'cbi-value-field' }, [form.name.render()])
 				]),
 	
 				E('div', { class: 'cbi-value' }, [
 					E('label', { 'class': 'cbi-value-title' }, _('<%:Local address %>')),
-					E('div', { class: 'cbi-value-field' }, [localAddr.render()])
+					E('div', { class: 'cbi-value-field' }, [form.localAddr.render()])
 				]),
 	
 				E('div', { class: 'cbi-value' }, [
 					E('label', { 'class': 'cbi-value-title' }, _('<%:Remote address %>')),
-					E('div', { class: 'cbi-value-field' }, [remoteAddr.render()])
+					E('div', { class: 'cbi-value-field' }, [form.remoteAddr.render()])
 				]),
 	
 				E('div', { class: 'cbi-value' }, [
 					E('label', { 'class': 'cbi-value-title' }, _('<%:Add to Bridge or create new %>')),
-					E('div', { class: 'cbi-value-field' }, [bridge.render()])
+					E('div', { class: 'cbi-value-field' }, [form.bridge.render()])
 				]),
 	
 				E('div', { class: 'cbi-value' }, [
 					E('label', { 'class': 'cbi-value-title' }, _('<%:Tunnel IP %>')),
-					E('div', { class: 'cbi-value-field' }, [tunnelIp.render()])
+					E('div', { class: 'cbi-value-field' }, [form.tunnelIp.render()])
 				]),
 	
 				E('div', { class: 'cbi-value' }, [
 					E('label', { 'class': 'cbi-value-title' }, _('<%:Tunnel netmask %>')),
-					E('div', { class: 'cbi-value-field' }, [tunnelMask.render()])
+					E('div', { class: 'cbi-value-field' }, [form.tunnelMask.render()])
 				]),
 	
 				E('div', { class: 'cbi-value' }, [
-					E('label', { 'class': 'cbi-value-title' }, _('<%:GRE key %>')),
-					E('div', { class: 'cbi-value-field' }, [tunnelId.render()])
+					E('label', { 'class': 'cbi-value-title' }, _('<%:Tunnel ID %>')),
+					E('div', { class: 'cbi-value-field' }, [form.tunnelId.render()])
 				]),
 	
 				E('div', { class: 'cbi-value' }, [
 					E('label', { 'class': 'cbi-value-title' }, _('<%:Firewall zone %>')),
-					E('div', { class: 'cbi-value-field' }, [zone.render()])
+					E('div', { class: 'cbi-value-field' }, [form.zone.render()])
 				]),
 	
 				E('div', { class: 'cbi-value-field' }, [
@@ -169,15 +182,24 @@
 					E('div', {
 						class: 'btn primary cbi-button',
 						click: function() {
-							//TODO: validate and save data to config file
-							eoipData.name = name.getValue(); 
-							eoipData.options['localAddr'] = localAddr.getValue(); 
-							eoipData.options['remoteAddr'] = remoteAddr.getValue(); 
-							eoipData.options['bridge'] = bridge.getValue(); 
-							eoipData.options['tunnelIp'] = tunnelIp.getValue(); 
-							eoipData.options['tunnelMask'] = tunnelMask.getValue(); 
-							eoipData.options['tunnelId'] = tunnelId.getValue(); 
-							eoipData.options['zone'] = zone.getValue(); 
+							var isFormValid = true;
+							for (i in form) {
+								var field = form[i];
+								field.triggerValidation();
+								isFormValid &= field.isValid();
+							}
+
+							if (!isFormValid)
+								return;
+							
+							eoipData.name = form.name.getValue(); 
+							eoipData.options['localAddr'] = form.localAddr.getValue(); 
+							eoipData.options['remoteAddr'] = form.remoteAddr.getValue(); 
+							eoipData.options['bridge'] = form.bridge.getValue(); 
+							eoipData.options['tunnelIp'] = form.tunnelIp.getValue(); 
+							eoipData.options['tunnelMask'] = form.tunnelMask.getValue(); 
+							eoipData.options['tunnelId'] = form.tunnelId.getValue(); 
+							eoipData.options['zone'] = form.zone.getValue(); 
 							commitConfig(eoipData);
 							L.hideModal()
 						}
