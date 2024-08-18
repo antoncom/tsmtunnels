@@ -19,7 +19,7 @@ var grammar = {
     {"name": "DOMAIN$ebnf$1$subexpression$2", "symbols": ["SYMBOL"]},
     {"name": "DOMAIN$ebnf$1", "symbols": ["DOMAIN$ebnf$1$subexpression$2", "DOMAIN$ebnf$1"], "postprocess": function arrconcat(d) {return [d[0]].concat(d[1]);}},
     {"name": "DOMAIN", "symbols": ["DOMAIN$ebnf$1"]},
-    {"name": "LETTER", "symbols": [/[a-z A-Z]/]},
+    {"name": "LETTER", "symbols": [/[a-zA-Z]/]},
     {"name": "NUMBER", "symbols": [/[0-9]/]},
     {"name": "SYMBOL", "symbols": [/[_\-%/:?&=]/]}
 ]

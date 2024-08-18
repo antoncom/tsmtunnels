@@ -8,6 +8,6 @@ MAIN 			-> URL
 URL				-> DOMAIN ("." DOMAIN):*
 					
 DOMAIN			-> (LETTER|NUMBER|SYMBOL):+
-LETTER			-> [a-z A-Z]
+LETTER			-> [a-zA-Z]
 NUMBER			-> [0-9]
 SYMBOL			-> [_\-%/:?&=]
