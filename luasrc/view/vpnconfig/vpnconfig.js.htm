@@ -127,6 +127,10 @@ function parse_bool(value) {
     return value == 'true' || value == 1;
 }
 
+function parse_string(value) {
+	return !value ? "" : String(value);
+}
+
 function make_dropdown_options(list) {
     var result = {};
     var item = "";
