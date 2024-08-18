@@ -100,46 +100,46 @@ function showModal(data) {
 			}),
 			localAddr: new ui.Dropdown(data.options.localAddr, make_dropdown_options(localAddresses), {
 				multiple: false,
-				opional: false,
+				optional: false,
 			}),
 			remoteAddr: new ui.Textfield(data.options.remoteAddr, {
-				opional: false,
+				optional: false,
 				placeholder: "Remote IP",
 				validate: nearleyValidator('ip4', 'Should contain numbers 0..255 and "."')
 			}),
 			dpdDelay: new ui.Textfield(data.options.dpdDelay, {
-				opional: false,
+				optional: false,
 				validate: nearleyValidator('number', 'Should contain only digits')
 			}),
 			localId: new ui.Textfield(data.options.localId, {
-				opional: true,
+				optional: true,
 				validate: nearleyValidator('string', 'Should contain letters, numbers and no spaces')
 			}),
 			remoteId: new ui.Textfield(data.options.remoteId, {
-				opional: true,
+				optional: true,
 				validate: nearleyValidator('string', 'Should contain letters, numbers and no spaces')
 			}),
 			keyExchMode: new ui.Dropdown(data.options.keyExchMode, make_dropdown_options(keyExchModes), {
 				multiple: false,
-				opional: false,
+				optional: false,
 			}),
 			localSubnetes: new ui.Textfield(data.options.localSubnetes, {
-				opional: false,
+				optional: false,
 				validate: nearleyValidator('ip4_list', 'Should contain IPv4 separated by comma or space')
 			}),
 			remoteSubnets: new ui.Textfield(data.options.remoteSubnets, {
-				opional: false,
+				optional: false,
 				validate: nearleyValidator('ip4_list', 'Should contain IPv4 separated by comma or space')
 			}),
 			authType: new ui.Dropdown(data.options.authType, make_dropdown_options(authTypes), {
 				multiple: false,
-				opional: false,
+				optional: false,
 			}),
 			presharedKey: new ui.Textfield(data.options.presharedKey, {
-				opional: false,
+				optional: false,
 			}),
 			phase1_lifetime: new ui.Textfield(data.options.phase1_lifetime, {
-				opional: false,
+				optional: false,
 				validate: function(input){
 					var v = nearleyValidator('integer', 'Should contain only digits');
 					var res = v(input);
@@ -155,18 +155,18 @@ function showModal(data) {
 			}),
 			phase1_ikeEncript: new ui.Dropdown(data.options.phase1_ikeEncript, make_dropdown_options(encriptTypes), {
 				multiple: false,
-				opional: false,
+				optional: false,
 			}),
 			phase1_ikeHash: new ui.Dropdown(data.options.phase1_ikeHash, make_dropdown_options(hashTypes), {
 				multiple: false,
-				opional: false,
+				optional: false,
 			}),
 			phase1_dhGroup: new ui.Dropdown(data.options.phase1_dhGroup, make_dropdown_options(dhGroups), {
 				multiple: false,
-				opional: false,
+				optional: false,
 			}),
 			phase2_lifetime: new ui.Textfield(data.options.phase2_lifetime, {
-				opional: false,
+				optional: false,
 				validate: function(input){
 					var v = nearleyValidator('integer', 'Should contain only digits');
 					var res = v(input);
@@ -182,15 +182,15 @@ function showModal(data) {
 			}),
 			phase2_espEncript: new ui.Dropdown(data.options.phase2_espEncript, make_dropdown_options(encriptTypes), {
 				multiple: false,
-				opional: false,
+				optional: false,
 			}),
 			phase2_espHash: new ui.Dropdown(data.options.phase2_espHash, make_dropdown_options(hashTypes), {
 				multiple: false,
-				opional: false,
+				optional: false,
 			}),
 			phase2_pfsGroup: new ui.Dropdown(data.options.phase2_pfsGroup, make_dropdown_options(pfsGroups), {
 				multiple: false,
-				opional: false,
+				optional: false,
 			})
 		}
 
