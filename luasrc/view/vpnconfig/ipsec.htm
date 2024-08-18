@@ -34,8 +34,8 @@ class IpsecData {
 		localId: "",
 		remoteId: "",
 		keyExchMode: "ikev2",
-		localSubnetes: [],
-		remoteSubnets: [],
+		localSubnetes: "",
+		remoteSubnets: "",
 		authType: "psk",
 		presharedKey: "",
 		phase1_lifetime: "28800",
@@ -51,11 +51,11 @@ class IpsecData {
 
 var localAddresses = [];
 var authTypes = ['psk'];
-var hashTypes = ['sha256'];
-var encriptTypes = ['aes265'];
-var keyExchModes = ['ikev2'];
-var dhGroups = [];
-var pfsGroups = [];
+var hashTypes = ['md5', 'sha1', 'sha256', 'sha512'];
+var encriptTypes = ['aes128', 'aes192', 'aes256', 'aes256gcm', '3des'];
+var keyExchModes = ['ikev1', 'ikev2', 'ike'];
+var dhGroups = ['modp768', 'modp1024', 'modp3072'];
+var pfsGroups = ['prfmd5', 'prfsha1', 'prfsha256', 'prfsha512'];
 
 get_list_interfaces(function(list){
 	localAddresses = list;
@@ -91,158 +91,154 @@ get_cfg_data('<%=vpnType%>', function(sections) {
 
 function showModal(data) {
 	L.require('ui').then(function(ui) {
+		var form = {
+			name: new ui.Textfield(data.name, {
+				placeholder: "Name",
+				optional: false,
+				readonly: data.name.length > 0,
+				validate: nearleyValidator('sectionName', 'Should contain letters, numbers and "_"')
+			}),
+			localAddr: new ui.Dropdown(data.options.localAddr, make_dropdown_options(localAddresses), {
+				multiple: false,
+				opional: false,
+			}),
+			remoteAddr: new ui.Textfield(data.options.remoteAddr, {
+				opional: false,
+				placeholder: "Remote IP",
+				validate: nearleyValidator('ip4', 'Should contain numbers 0..255 and "."')
+			}),
+			dpdDelay: new ui.Textfield(data.options.dpdDelay, {
+				opional: false,
+				validate: nearleyValidator('number', 'Should contain only digits')
+			}),
+			localId: new ui.Textfield(data.options.localId, {
+				opional: true,
+				validate: nearleyValidator('string', 'Should contain letters, numbers and no spaces')
+			}),
+			remoteId: new ui.Textfield(data.options.remoteId, {
+				opional: true,
+				validate: nearleyValidator('string', 'Should contain letters, numbers and no spaces')
+			}),
+			keyExchMode: new ui.Dropdown(data.options.keyExchMode, make_dropdown_options(keyExchModes), {
+				multiple: false,
+				opional: false,
+			}),
+			localSubnetes: new ui.Textfield(data.options.localSubnetes, {
+				opional: false,
+				validate: nearleyValidator('ip4_list', 'Should contain IPv4 separated by comma or space')
+			}),
+			remoteSubnets: new ui.Textfield(data.options.remoteSubnets, {
+				opional: false,
+				validate: nearleyValidator('ip4_list', 'Should contain IPv4 separated by comma or space')
+			}),
+			authType: new ui.Dropdown(data.options.authType, make_dropdown_options(authTypes), {
+				multiple: false,
+				opional: false,
+			}),
+			presharedKey: new ui.Textfield(data.options.presharedKey, {
+				opional: false,
+			}),
+			phase1_lifetime: new ui.Textfield(data.options.phase1_lifetime, {
+				opional: false,
+				validate: function(input){
+					var v = nearleyValidator('integer', 'Should contain only digits');
+					var res = v(input);
+					if (res !== true)
+						return res;
 
-		var name = new ui.Textfield(data.name, {
-			placeholder: "Name",
-			optional: false,
-			readonly: data.name.length > 0,
-			validate: nearleyValidator('sectionName', 'Should contain letters, numbers and "_"')
-		});
+					if (Number(input) >= 60) {
+						return true;
+					} else {
+						return "60 sec. minimum!"
+					}
+				}
+			}),
+			phase1_ikeEncript: new ui.Dropdown(data.options.phase1_ikeEncript, make_dropdown_options(encriptTypes), {
+				multiple: false,
+				opional: false,
+			}),
+			phase1_ikeHash: new ui.Dropdown(data.options.phase1_ikeHash, make_dropdown_options(hashTypes), {
+				multiple: false,
+				opional: false,
+			}),
+			phase1_dhGroup: new ui.Dropdown(data.options.phase1_dhGroup, make_dropdown_options(dhGroups), {
+				multiple: false,
+				opional: false,
+			}),
+			phase2_lifetime: new ui.Textfield(data.options.phase2_lifetime, {
+				opional: false,
+				validate: function(input){
+					var v = nearleyValidator('integer', 'Should contain only digits');
+					var res = v(input);
+					if (res !== true)
+						return res;
 
-		var localAddr = new ui.Dropdown(data.options.localAddr, make_dropdown_options(localAddresses), {
-			multiple: false,
-			opional: false,
-			placeholder: "",
-		});
-
-		var remoteAddr = new ui.Textfield(data.options.remoteAddr, {
-			opional: false,
-			placeholder: "",
-		});
-
-		var dpdDelay = new ui.Textfield(data.options.dpdDelay, {
-			opional: false,
-			placeholder: "",
-		});
-
-		var localId = new ui.Textfield(data.options.localId, {
-			opional: false,
-			placeholder: "",
-		});
-
-		var remoteId = new ui.Textfield(data.options.remoteId, {
-			opional: false,
-			placeholder: "",
-		});
-
-		var keyExchMode = new ui.Dropdown(data.options.keyExchMode, make_dropdown_options(keyExchModes), {
-			multiple: false,
-			opional: false,
-			placeholder: "",
-		});
-
-		var localSubnetes = new ui.Textfield(data.options.localSubnetes, {
-			opional: false,
-			placeholder: "",
-		});
-
-		var remoteSubnets = new ui.Textfield(data.options.remoteSubnets, {
-			opional: false,
-			placeholder: "",
-		});
-
-		var authType = new ui.Dropdown(data.options.authType, make_dropdown_options(authTypes), {
-			multiple: false,
-			opional: false,
-			placeholder: "",
-		});
-
-		var presharedKey = new ui.Textfield(data.options.presharedKey, {
-			opional: false,
-			placeholder: "",
-		});
-
-		var phase1_lifetime = new ui.Textfield(data.options.phase1_lifetime, {
-			opional: false,
-			placeholder: "",
-		});
-
-		var phase1_ikeEncript = new ui.Dropdown(data.options.phase1_ikeEncript, make_dropdown_options(encriptTypes), {
-			multiple: false,
-			opional: false,
-			placeholder: "",
-		});
-
-		var phase1_ikeHash = new ui.Dropdown(data.options.phase1_ikeHash, make_dropdown_options(hashTypes), {
-			multiple: false,
-			opional: false,
-			placeholder: "",
-		});
-
-		var phase1_dhGroup = new ui.Dropdown(data.options.phase1_dhGroup, make_dropdown_options(dhGroups), {
-			multiple: false,
-			opional: false,
-			placeholder: "",
-		});
-
-		var phase2_lifetime = new ui.Textfield(data.options.phase2_lifetime, {
-			opional: false,
-			placeholder: "",
-		});
-
-		var phase2_espEncript = new ui.Dropdown(data.options.phase2_espEncript, make_dropdown_options(encriptTypes), {
-			multiple: false,
-			opional: false,
-			placeholder: "",
-		});
-
-		var phase2_espHash = new ui.Dropdown(data.options.phase2_espHash, make_dropdown_options(hashTypes), {
-			multiple: false,
-			opional: false,
-			placeholder: "",
-		});
-
-		var phase2_pfsGroup = new ui.Dropdown(data.options.phase2_pfsGroup, make_dropdown_options(pfsGroups), {
-			multiple: false,
-			opional: false,
-			placeholder: "",
-		});
+					if (Number(input) >= 60) {
+						return true;
+					} else {
+						return "60 sec. minimum!"
+					}
+				}
+			}),
+			phase2_espEncript: new ui.Dropdown(data.options.phase2_espEncript, make_dropdown_options(encriptTypes), {
+				multiple: false,
+				opional: false,
+			}),
+			phase2_espHash: new ui.Dropdown(data.options.phase2_espHash, make_dropdown_options(hashTypes), {
+				multiple: false,
+				opional: false,
+			}),
+			phase2_pfsGroup: new ui.Dropdown(data.options.phase2_pfsGroup, make_dropdown_options(pfsGroups), {
+				multiple: false,
+				opional: false,
+			})
+		}
 
 		L.showModal('Configure DMVPN tunnel', [
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Name %>')),
-				E('div', { class: 'cbi-value-field' }, [name.render()])
+				E('div', { class: 'cbi-value-field' }, [form.name.render()])
 			]),	
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Source address %>')),
-				E('div', { class: 'cbi-value-field' }, [localAddr.render()])
+				E('div', { class: 'cbi-value-field' }, [form.localAddr.render()])
 			]),	
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Remote address %>')),
-				E('div', { class: 'cbi-value-field' }, [remoteAddr.render()])
+				E('div', { class: 'cbi-value-field' }, [form.remoteAddr.render()])
 			]),	
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:DPD delay (sec) %>')),
-				E('div', { class: 'cbi-value-field' }, [dpdDelay.render()])
+				E('div', { class: 'cbi-value-field' }, [form.dpdDelay.render()])
 			]),	
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Local ID %>')),
-				E('div', { class: 'cbi-value-field' }, [localId.render()])
+				E('div', { class: 'cbi-value-field' }, [form.localId.render()])
 			]),	
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Remote ID %>')),
-				E('div', { class: 'cbi-value-field' }, [remoteId.render()])
+				E('div', { class: 'cbi-value-field' }, [form.remoteId.render()])
 			]),	
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Key exchange mode %>')),
-				E('div', { class: 'cbi-value-field' }, [keyExchMode.render()])
+				E('div', { class: 'cbi-value-field' }, [form.keyExchMode.render()])
 			]),	
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Local subnets %>')),
-				E('div', { class: 'cbi-value-field' }, [localSubnetes.render()])
+				E('div', { class: 'cbi-value-field' }, [form.localSubnetes.render()])
 			]),	
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Remote subnets %>')),
-				E('div', { class: 'cbi-value-field' }, [remoteSubnets.render()])
+				E('div', { class: 'cbi-value-field' }, [form.remoteSubnets.render()])
 			]),	
 
 			
@@ -250,22 +246,22 @@ function showModal(data) {
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Phase #1 %>')),
 				E('div', { class: 'cbi-value' }, [
 					E('label', { 'class': 'cbi-value-title' }, _('<%:Lifetime %>')),
-					E('div', { class: 'cbi-value-field' }, [phase1_lifetime.render()])
+					E('div', { class: 'cbi-value-field' }, [form.phase1_lifetime.render()])
 				]),	
 
 				E('div', { class: 'cbi-value' }, [
 					E('label', { 'class': 'cbi-value-title' }, _('<%:IKE Encription %>')),
-					E('div', { class: 'cbi-value-field' }, [phase1_ikeEncript.render()])
+					E('div', { class: 'cbi-value-field' }, [form.phase1_ikeEncript.render()])
 				]),	
 
 				E('div', { class: 'cbi-value' }, [
 					E('label', { 'class': 'cbi-value-title' }, _('<%:IKE Hash %>')),
-					E('div', { class: 'cbi-value-field' }, [phase1_ikeHash.render()])
+					E('div', { class: 'cbi-value-field' }, [form.phase1_ikeHash.render()])
 				]),	
 
 				E('div', { class: 'cbi-value' }, [
 					E('label', { 'class': 'cbi-value-title' }, _('<%:DH group %>')),
-					E('div', { class: 'cbi-value-field' }, [phase1_dhGroup.render()])
+					E('div', { class: 'cbi-value-field' }, [form.phase1_dhGroup.render()])
 				]),	
 			]),
 
@@ -273,33 +269,33 @@ function showModal(data) {
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Phase #2 %>')),
 				E('div', { class: 'cbi-value' }, [
 					E('label', { 'class': 'cbi-value-title' }, _('<%:Lifetime %>')),
-					E('div', { class: 'cbi-value-field' }, [phase2_lifetime.render()])
+					E('div', { class: 'cbi-value-field' }, [form.phase2_lifetime.render()])
 				]),	
 
 				E('div', { class: 'cbi-value' }, [
 					E('label', { 'class': 'cbi-value-title' }, _('<%:ESP Encription %>')),
-					E('div', { class: 'cbi-value-field' }, [phase2_espEncript.render()])
+					E('div', { class: 'cbi-value-field' }, [form.phase2_espEncript.render()])
 				]),	
 
 				E('div', { class: 'cbi-value' }, [
 					E('label', { 'class': 'cbi-value-title' }, _('<%:ESP Hash %>')),
-					E('div', { class: 'cbi-value-field' }, [phase2_espHash.render()])
+					E('div', { class: 'cbi-value-field' }, [form.phase2_espHash.render()])
 				]),	
 
 				E('div', { class: 'cbi-value' }, [
 					E('label', { 'class': 'cbi-value-title' }, _('<%:PFS group %>')),
-					E('div', { class: 'cbi-value-field' }, [phase2_pfsGroup.render()])
+					E('div', { class: 'cbi-value-field' }, [form.phase2_pfsGroup.render()])
 				]),	
 			]),
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Authentication method %>')),
-				E('div', { class: 'cbi-value-field' }, [authType.render()])
+				E('div', { class: 'cbi-value-field' }, [form.authType.render()])
 			]),	
 
 			E('div', { class: 'cbi-value' }, [
 				E('label', { 'class': 'cbi-value-title' }, _('<%:Pre-shared key %>')),
-				E('div', { class: 'cbi-value-field' }, [presharedKey.render()])
+				E('div', { class: 'cbi-value-field' }, [form.presharedKey.render()])
 			]),	
 
 
@@ -315,26 +311,35 @@ function showModal(data) {
 				E('div', {
 					class: 'btn primary cbi-button',
 					click: function() {
-						//TODO: validate and save data to config file
-						data.name = name.getValue();
-						data.options['localAddr'] = localAddr.getValue();
-						data.options['remoteAddr'] = remoteAddr.getValue();
-						data.options['dpdDelay'] = dpdDelay.getValue();
-						data.options['localId'] = localId.getValue();
-						data.options['remoteId'] = remoteId.getValue();
-						data.options['keyExchMode'] = keyExchMode.getValue();
-						data.options['localSubnetes'] = localSubnetes.getValue();
-						data.options['remoteSubnets'] = remoteSubnets.getValue();
-						data.options['authType'] = authType.getValue();
-						data.options['presharedKey'] = presharedKey.getValue();
-						data.options['phase1_lifetime'] = phase1_lifetime.getValue();
-						data.options['phase1_ikeEncript'] = phase1_ikeEncript.getValue();
-						data.options['phase1_ikeHash'] = phase1_ikeHash.getValue();
-						data.options['phase1_dhGroup'] = phase1_dhGroup.getValue();
-						data.options['phase2_lifetime'] = phase2_lifetime.getValue();
-						data.options['phase2_espEncript'] = phase2_espEncript.getValue();
-						data.options['phase2_espHash'] = phase2_espHash.getValue();
-						data.options['phase2_pfsGroup'] = phase2_pfsGroup.getValue();
+						var isFormValid = true;
+						for (i in form) {
+							var field = form[i];
+							field.triggerValidation();
+							isFormValid &= field.isValid();
+						}
+
+						if (!isFormValid)
+							return;
+
+						data.name = form.name.getValue();
+						data.options['localAddr'] = form.localAddr.getValue();
+						data.options['remoteAddr'] = form.remoteAddr.getValue();
+						data.options['dpdDelay'] = form.dpdDelay.getValue();
+						data.options['localId'] = form.localId.getValue();
+						data.options['remoteId'] = form.remoteId.getValue();
+						data.options['keyExchMode'] = form.keyExchMode.getValue();
+						data.options['localSubnetes'] = form.localSubnetes.getValue();
+						data.options['remoteSubnets'] = form.remoteSubnets.getValue();
+						data.options['authType'] = form.authType.getValue();
+						data.options['presharedKey'] = form.presharedKey.getValue();
+						data.options['phase1_lifetime'] = form.phase1_lifetime.getValue();
+						data.options['phase1_ikeEncript'] = form.phase1_ikeEncript.getValue();
+						data.options['phase1_ikeHash'] = form.phase1_ikeHash.getValue();
+						data.options['phase1_dhGroup'] = form.phase1_dhGroup.getValue();
+						data.options['phase2_lifetime'] = form.phase2_lifetime.getValue();
+						data.options['phase2_espEncript'] = form.phase2_espEncript.getValue();
+						data.options['phase2_espHash'] = form.phase2_espHash.getValue();
+						data.options['phase2_pfsGroup'] = form.phase2_pfsGroup.getValue();
 
 						commitConfig(data);
 						L.hideModal()
