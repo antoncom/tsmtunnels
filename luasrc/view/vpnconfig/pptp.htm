@@ -11,8 +11,8 @@
 
 	<div class="cbi-map">
         <div class="cbi-map-section">
-	        <div class="cbi-map-section-node">
-                <div class="cbi-value">
+	        <div class="cbi-map-section-node" id="pageContent">
+                <!-- <div class="cbi-value">
                     <label class="cbi-value-title">Enable PPTP client</label>
                     <div class="cbi-value-field">
                         <input type="checkbox" id="isActive" class="cbi-input-checkbox" value="0">
@@ -74,7 +74,7 @@
                     <div class="cbi-value-field">
                         <input type="text" id="addOptions" class="cbi-input-text" value="" placeholder="Additional options">
                     </div>
-                </div>
+                </div> -->
             </div>
         </div>
 	</div>
@@ -82,14 +82,15 @@
     
     <div class="cbi-page-actions">
         <span id="btn_enable_spinner" class="btn_spinner"></span> 
-        <input class="cbi-button cbi-button-apply" type="button" value="Save" onclick="apply()"> 
-        <input class="cbi-button cbi-button-reset" type="button" value="Reset" onclick="reset_fields()"> 
+        <input id="btnApply" class="cbi-button cbi-button-apply" type="button" value="Save"> 
+        <input id="btnReset" class="cbi-button cbi-button-reset" type="button" value="Reset"> 
     </div>
 </div>
 
 
 <script type="text/javascript">
 //<![CDATA[
+L.require('ui').then(function(ui) {
 
 class PptpData {
     name = "pptp1";
@@ -107,44 +108,131 @@ class PptpData {
 }
 
 var g_pptpData = new PptpData();
+var g_form = {};
+var authTypes = ['any','EAP','PAP','CHAP','MSCHAP', 'MSCHAPv2'];
+
+function initForm(form, data) {
+    form['isActive'] = new ui.Checkbox(data.isActive);
+    form['server'] = new ui.Textfield(data.options.server, {
+        placeholder: "Server address",
+        optional: false,
+        validate: nearleyValidator('address', 'Should contain IPv4 or URL')
+    });
+    form['username'] = new ui.Textfield(data.options.username, {
+        placeholder: "Username",
+        optional: false,
+        validate: nearleyValidator('sectionName', 'Should not contain letters, numbers and "_"')
+    });
+    form['password'] = new ui.Textfield(data.options.password, {
+        placeholder: "Password",
+        optional: false,
+        password: true,
+        validate: function(input) {
+            if (input.length)
+                return true;
+
+                return 'Can not be empty';
+        }
+    })
+    form['addOptinos'] = new ui.Textfield(data.options.addOptinos, {
+        placeholder: "Additional PPTP options",
+        optional: true,
+    })
+    form['authType'] = new ui.Dropdown(data.options.authType, make_dropdown_options(authTypes), {
+        multiple: false,
+        optional: false,
+        sort: false,
+    })
+    form['isMPPE'] = new ui.Checkbox(data.options.isMPPE);
+    form['isDefaultRoute'] = new ui.Checkbox(data.options.isDefaultRoute);
+}
+
+function renderForm(form) {
+    var container = E('div', {class: 'tr '}, [
+        E('div', { class: 'cbi-value' }, [
+            E('label', { 'class': 'cbi-value-title' }, _('<%:Enable PPTP client %>')),
+            E('div', { class: 'cbi-value-field' }, [form.isActive.render()])
+        ]),
+        E('div', { class: 'cbi-value' }, [
+            E('label', { 'class': 'cbi-value-title' }, _('<%:Server %>')),
+            E('div', { class: 'cbi-value-field' }, [form.server.render()])
+        ]),
+        E('div', { class: 'cbi-value' }, [
+            E('label', { 'class': 'cbi-value-title' }, _('<%:Use as default route %>')),
+            E('div', { class: 'cbi-value-field' }, [form.isDefaultRoute.render()])
+        ]),
+        E('div', { class: 'cbi-value' }, [
+            E('label', { 'class': 'cbi-value-title' }, _('<%:Username %>')),
+            E('div', { class: 'cbi-value-field' }, [form.username.render()])
+        ]),
+        E('div', { class: 'cbi-value' }, [
+            E('label', { 'class': 'cbi-value-title' }, _('<%:Password %>')),
+            E('div', { class: 'cbi-value-field' }, [form.password.render()]),
+        ]),
+        E('div', { class: 'cbi-value' }, [
+            E('label', { 'class': 'cbi-value-title' }, _('<%:Use MPPE (MS-CHAP-V2 auth) %>')),
+            E('div', { class: 'cbi-value-field' }, [form.isMPPE.render()])
+        ]),
+        E('div', { class: 'cbi-value' }, [
+            E('label', { 'class': 'cbi-value-title' }, _('<%:Authentication type %>')),
+            E('div', { class: 'cbi-value-field' }, [form.authType.render()])
+        ]),
+        E('div', { class: 'cbi-value' }, [
+            E('label', { 'class': 'cbi-value-title' }, _('<%:Additional options %>')),
+            E('div', { class: 'cbi-value-field' }, [form.addOptinos.render()])
+        ]),
+	])
+				
+	var viewWrapper= document.getElementById('pageContent');
+	viewWrapper.appendChild(container);
+}
 
 get_cfg_data('<%=vpnType%>', function(sections) {
     g_pptpData.isActive = parse_bool(sections[0]['isActive']);
-    g_pptpData.options['server'] = sections[0]['server'];
-    g_pptpData.options['username'] = sections[0]['username'];
-    g_pptpData.options['password'] = sections[0]['password'];
-    g_pptpData.options['authType'] = sections[0]['authType'];
-    g_pptpData.options['addOptinos'] = sections[0]['addOptinos'];
+    g_pptpData.options['server'] = parse_string(sections[0]['server']);
+    g_pptpData.options['username'] = parse_string(sections[0]['username']);
+    g_pptpData.options['password'] = parse_string(sections[0]['password']);
+    g_pptpData.options['authType'] = parse_string(sections[0]['authType']);
+    g_pptpData.options['addOptinos'] = parse_string(sections[0]['addOptinos']);
     g_pptpData.options['isMPPE'] = parse_bool(sections[0]['isMPPE']);
     g_pptpData.options['isDefaultRoute'] = parse_bool(sections[0]['isDefaultRoute']);
-    fill_form(g_pptpData);
+    initForm(g_form, g_pptpData);
+    renderForm(g_form);
+    $('#btnReset').on('click', function(){ reset_fields(g_form, g_pptpData); });
+    $('#btnApply').on('click', function(){ apply(g_form); });
 });
 
-function fill_form(pptpData) {
-    $('#server').val(pptpData.options['server']);
-    $('#username').val(pptpData.options['username']);
-    $('#password').val(pptpData.options['password']);
-    $('#addOptinos').val(pptpData.options['addOptinos']);
-    $('#authType').val(pptpData.options['authType']);
-    $('#isMPPE').prop('checked', pptpData.options['isMPPE']);
-    $('#isDefaultRoute').prop('checked', pptpData.options['isDefaultRoute']);
-    $('#isActive').prop('checked', pptpData.isActive);
+function reset_fields(form, data) {
+    form.server.setValue(data.options['server']);
+    form.username.setValue(data.options['username']);
+    form.password.setValue(data.options['password']);
+    form.authType.setValue(data.options['authType']);
+    form.addOptinos.setValue(data.options['addOptinos']);
+    form.isMPPE.setValue(data.options['isMPPE']);
+    form.isDefaultRoute.setValue(data.options['isDefaultRoute']);
+    form.isActive.setValue(data.isActive);
 }
 
-function reset_fields() {
-    fill_form(g_pptpData);
-}
+function apply(form) {
+    var isFormValid = true;
+    for (i in form) {
+        var field = form[i];
+        field.triggerValidation();
+        isFormValid &= field.isValid();
+    }
 
-function apply() {
+    if (!isFormValid)
+        return;
+    
     var pptpData = new PptpData();
-    pptpData.options['server'] = $('#server').val();
-    pptpData.options['username'] = $('#username').val();
-    pptpData.options['password'] = $('#password').val();
-    pptpData.options['addOptinos'] = $('#addOptinos').val();
-    pptpData.options['authType'] = $('#authType').val();
-    pptpData.options['isMPPE'] = $('#isMPPE').prop('checked');
-    pptpData.options['isDefaultRoute'] = $('#isDefaultRoute').prop('checked');
-    pptpData.isActive = $('#isActive').prop('checked');
+    pptpData.options['server'] = form.server.getValue();   
+    pptpData.options['username'] = form.username.getValue(); 
+    pptpData.options['password'] = form.password.getValue(); 
+    pptpData.options['addOptinos'] = form.addOptinos.getValue();   
+    pptpData.options['authType'] = form.authType.getValue(); 
+    pptpData.options['isMPPE'] = form.isMPPE.getValue();   
+    pptpData.options['isDefaultRoute'] = form.isDefaultRoute.getValue();   
+    pptpData.isActive = form.isActive.getValue();
     
     send_action("edit", pptpData, function(){
         if (pptpData.isActive == g_pptpData.isActive) {
@@ -157,5 +245,6 @@ function apply() {
     });
 }
 
+});
 //]]>
 </script>
