@@ -39,21 +39,9 @@
 		};
 	}
 	
-	var localAddresses = [];
-	var bridges = [];
-	var firewallZones = [];
-	
-	get_list_firewall_zone(function(list){
-		firewallZones = list;
-	});
-
-	get_list_bridges(function(list){
-		bridges = list;
-	});
-
-	get_list_interfaces(function(list){
-		localAddresses = list;
-	});
+	var localAddresses = get_list_interfaces();
+	var bridges = get_list_bridges();
+	var firewallZones = get_list_firewall_zone();
 
 	get_cfg_data('<%=vpnType%>', function(sections) {
 		for (s in sections) {

@@ -48,16 +48,8 @@ class DmvpnData {
 	};
 }
 
-var localAddresses = [];
-var firewallZones = [];
-
-get_list_firewall_zone(function(list){
-	firewallZones = list;
-});
-
-get_list_interfaces(function(list){
-	localAddresses = list;
-});
+var localAddresses = get_list_interfaces();
+var firewallZones = get_list_firewall_zone();
 
 get_cfg_data('<%=vpnType%>', function(sections) {
 	for (s in sections) {

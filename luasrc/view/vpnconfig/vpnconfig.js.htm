@@ -1,6 +1,28 @@
 <% --[[=========== LUA BACKEND ==========]] %>
 <%
 	local config = "vpnconfig"
+
+	local uci = require "luci.model.uci".cursor()
+
+	local function getInterfaces()
+		uci:foreach('network', 'interface', function(a)
+			print("'" ..  a['.name'] .. "',")
+		end)
+	end
+
+	local function getBridges()
+		uci:foreach('network', 'interface', function(a)
+			if a['type'] == 'bridge' then
+				print("'" ..  a['.name'] .. "',")
+			end
+		end)
+	end
+
+	local function getFirewallZones()
+		uci:foreach('firewall', 'zone', function(a)
+			print("'" ..  a['name'] .. "',")
+		end)
+	end
 %>
 
 <script src="<%=resource%>/tsmodem/jquery/jquery-3.5.1.min.js"
@@ -143,42 +165,16 @@ function make_dropdown_options(list) {
     return result;
 }
 
-function get_list_firewall_zone(callback) {
-	L.require("uci").then(function(uci) {
-		uci.load('firewall').then(function(out){
-			var result = ["<none>",];
-			uci.sections('firewall', 'zone', function(item){
-				result.push(item.name);
-			});
-			callback(result);
-		});
-	});
+function get_list_firewall_zone() {
+	return [<% getFirewallZones() %>];
 }
 
-function get_list_bridges(callback) {
-	L.require("uci").then(function(uci) {
-		uci.load('network').then(function(out){
-			var result = ["<none>",];
-			uci.sections('network', 'interface', function(item){
-				if (item.type && item.type == 'bridge') {
-					result.push(item['.name']);
-				}
-			});
-			callback(result);
-		});
-	});
+function get_list_bridges() {
+	return [<% getBridges() %>];
 }
 
-function get_list_interfaces(callback) {
-	L.require("uci").then(function(uci) {
-		uci.load('network').then(function(out){
-			var result = [];
-			uci.sections('network', 'interface', function(item){
-				result.push(item['.name']);
-			});
-			callback(result);
-		});
-	});
+function get_list_interfaces() {
+	return [<% getInterfaces() %>];
 }
 
 </script>
