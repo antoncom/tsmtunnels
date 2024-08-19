@@ -23,38 +23,38 @@
 </div>
 
 <script type="text/javascript">
+	
+	var localAddresses = get_list_interfaces();
+	var bridges = get_list_bridges();
+	var firewallZones = get_list_firewall_zone();
 
 	class EoIPData {
 		name = "";
 		type = '<%=vpnType%>';
 		isActive = false;
 		options = {
-			localAddr: "",
+			localAddr: localAddresses[0],
 			remoteAddr: "",
-			bridge: "",
+			bridge: bridges[0],
 			tunnelIp: "",
 			tunnelMask: "",
 			tunnelId: "",
-			zone: "",
+			zone: firewallZones[0],
 		};
 	}
-	
-	var localAddresses = get_list_interfaces();
-	var bridges = get_list_bridges();
-	var firewallZones = get_list_firewall_zone();
 
 	get_cfg_data('<%=vpnType%>', function(sections) {
 		for (s in sections) {
 			var newEoIP = new EoIPData();
-			newEoIP.name = sections[s]['.name'];
+			newEoIP.name = parse_string(sections[s]['.name']);
 			newEoIP.isActive = parse_bool(sections[s]['isActive']);
-			newEoIP.options['localAddr'] = sections[s]['localAddr'];
-			newEoIP.options['remoteAddr'] = sections[s]['remoteAddr'];
-			newEoIP.options['bridge'] = sections[s]['bridge'];
-			newEoIP.options['tunnelIp'] = sections[s]['tunnelIp'];
-			newEoIP.options['tunnelMask'] = sections[s]['tunnelMask'];
-			newEoIP.options['tunnelId'] = sections[s]['tunnelId'];
-			newEoIP.options['zone'] = sections[s]['zone'];
+			newEoIP.options['localAddr'] = parse_string(sections[s]['localAddr']);
+			newEoIP.options['remoteAddr'] = parse_string(sections[s]['remoteAddr']);
+			newEoIP.options['bridge'] = parse_string(sections[s]['bridge']);
+			newEoIP.options['tunnelIp'] = parse_string(sections[s]['tunnelIp']);
+			newEoIP.options['tunnelMask'] = parse_string(sections[s]['tunnelMask']);
+			newEoIP.options['tunnelId'] = parse_string(sections[s]['tunnelId']);
+			newEoIP.options['zone'] = parse_string(sections[s]['zone']);
 			addRow('eoip_rows', newEoIP);
 		}
 	});
@@ -70,6 +70,7 @@
 				}),
 				localAddr: new ui.Dropdown(eoipData.options.localAddr, make_dropdown_options(localAddresses), {
 					multiple: false,
+					sort: false,
 					optional: false
 				}),
 				remoteAddr: new ui.Textfield(eoipData.options.remoteAddr, {
@@ -80,6 +81,7 @@
 				bridge: new ui.Dropdown(eoipData.options.bridge, make_dropdown_options(bridges), {
 					multiple: false,
 					optional: false,
+					sort: false,
 					create: false,
 				}),
 				tunnelIp: new ui.Textfield(eoipData.options.tunnelIp, {
@@ -114,6 +116,7 @@
 				zone: new ui.Dropdown(eoipData.options.zone, make_dropdown_options(firewallZones), {
 					multiple: false,
 					create: false,
+					sort: false,
 					optional: false
 				})
 			}
@@ -166,6 +169,16 @@
 							L.hideModal()
 						}
 					}, _('Close')),
+					' ',
+					E('div', {
+						class: 'btn',
+						click: function() {
+							for (i in form) {
+								form[i].setValue(eoipData[i] != undefined ? eoipData[i] : eoipData.options[i]);
+								form[i].triggerValidation();
+							}
+						}
+					}, _('Reset')),
 					' ',
 					E('div', {
 						class: 'btn primary cbi-button',
