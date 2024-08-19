@@ -24,41 +24,41 @@
 
 <script type="text/javascript">
 
-class GreData {
-	name = "";
-	type = '<%=vpnType%>';
-	isActive = false;
-	options = {
-		localAddr: "",
-		remoteAddr: "",
-		netType: "",
-		bridge: "",
-		tunnelIp: "",
-		tunnelMask: "",
-		greKey: "",
-		zone: "",
-		notFragment : "1",
-	};
-}
-
 var localAddresses = get_list_interfaces();
 var bridges = get_list_bridges();
 var firewallZones = get_list_firewall_zone();
 var networkTypes = ["L2 layer"];
 
+class GreData {
+	name = "";
+	type = '<%=vpnType%>';
+	isActive = false;
+	options = {
+		localAddr: localAddresses[0],
+		remoteAddr: "",
+		netType: networkTypes[0],
+		bridge: bridges[0],
+		tunnelIp: "",
+		tunnelMask: "",
+		greKey: "",
+		zone: firewallZones[0],
+		notFragment : true,
+	};
+}
+
 get_cfg_data('<%=vpnType%>', function(sections) {
 	for (s in sections) {
 		var newGre = new GreData();
-		newGre.name = sections[s]['.name'];
+		newGre.name = parse_string(sections[s]['.name']);
 		newGre.isActive = parse_bool(sections[s]['isActive']);
-		newGre.options['localAddr'] = sections[s]['localAddr'];
-		newGre.options['remoteAddr'] = sections[s]['remoteAddr'];
-		newGre.options['netType'] = sections[s]['netType'];
-		newGre.options['bridge'] = sections[s]['bridge'];
-		newGre.options['tunnelIp'] = sections[s]['tunnelIp'];
-		newGre.options['tunnelMask'] = sections[s]['tunnelMask'];
-		newGre.options['greKey'] = sections[s]['greKey'];
-		newGre.options['zone'] = sections[s]['zone'];
+		newGre.options['localAddr'] = parse_string(sections[s]['localAddr']);
+		newGre.options['remoteAddr'] = parse_string(sections[s]['remoteAddr']);
+		newGre.options['netType'] = parse_string(sections[s]['netType']);
+		newGre.options['bridge'] = parse_string(sections[s]['bridge']);
+		newGre.options['tunnelIp'] = parse_string(sections[s]['tunnelIp']);
+		newGre.options['tunnelMask'] = parse_string(sections[s]['tunnelMask']);
+		newGre.options['greKey'] = parse_string(sections[s]['greKey']);
+		newGre.options['zone'] = parse_string(sections[s]['zone']);
 		newGre.options['notFragment'] = parse_bool(sections[s]['notFragment']);
 		addRow('gre_rows', newGre);
 	}
@@ -75,7 +75,8 @@ function showModal(greData) {
 			}),
 			localAddr: new ui.Dropdown(greData.options.localAddr, make_dropdown_options(localAddresses), {
 				multiple: false,
-				optional: false
+				optional: false,
+				sort: false
 			}),
 			remoteAddr: new ui.Textfield(greData.options.remoteAddr, {
 				placeholder: "Remote IP",
@@ -84,11 +85,13 @@ function showModal(greData) {
 			}),
 			netType: new ui.Dropdown(greData.options.netType, make_dropdown_options(networkTypes), {
 				multiple: false,
+				sort: false,
 				optional: false
 			}),
 			bridge: new ui.Dropdown(greData.options.bridge, make_dropdown_options(bridges), {
 				multiple: false,
 				optional: false,
+				sort: false,
 				create: false,
 			}),
 			tunnelIp: new ui.Textfield(greData.options.tunnelIp, {
@@ -123,6 +126,7 @@ function showModal(greData) {
 			zone: new ui.Dropdown(greData.options.zone, make_dropdown_options(firewallZones), {
 				multiple: false,
 				create: false,
+				sort: false,
 				optional: false
 			}),
 			notFragment: new ui.Checkbox(greData.options.notFragment)
@@ -186,6 +190,16 @@ function showModal(greData) {
 						L.hideModal()
 					}
 				}, _('Close')),
+				' ',
+				E('div', {
+					class: 'btn',
+					click: function() {
+						for (i in form) {
+							form[i].setValue(greData[i] != undefined ? greData[i] : greData.options[i]);
+							form[i].triggerValidation();
+						}
+					}
+				}, _('Reset')),
 				' ',
 				E('div', {
 					class: 'btn primary cbi-button',
