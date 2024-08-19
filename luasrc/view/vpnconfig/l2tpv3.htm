@@ -24,51 +24,50 @@
 
 
 <script type="text/javascript">
-
-	class L2ptv3Data {
-		name = "";
-		type = '<%=vpnType%>';
-		isActive = false;
-		options = {
-			localAddr: "",
-			remoteAddr: "",
-			bridge: "",
-			zone: "",
-			tunnelIp: "",
-			tunnelMask: "",
-			tunnelId: "0",
-			remoteTunnelId: "",
-			sessionId: "0",
-			remoteSessionId: "",
-			encapsulation: "ip",
-			l2HeaderType: "none",
-		};
-	}
 	
 	var localAddresses = get_list_interfaces();
 	var bridges = get_list_bridges();
 	var firewallZones = get_list_firewall_zone();
 	var encapsulationTypes = ["ip"];
 	var l2HeaderTypes = ["none"];
+
+	class L2ptv3Data {
+		name = "";
+		type = '<%=vpnType%>';
+		isActive = false;
+		options = {
+			localAddr: localAddresses[0],
+			remoteAddr: "",
+			bridge: bridges[0],
+			zone: firewallZones[0],
+			tunnelIp: "",
+			tunnelMask: "",
+			tunnelId: "0",
+			remoteTunnelId: "",
+			sessionId: "0",
+			remoteSessionId: "",
+			encapsulation: encapsulationTypes[0],
+			l2HeaderType: l2HeaderTypes[0],
+		};
+	}
 	
 	get_cfg_data('<%=vpnType%>', function(sections) {
 		for (s in sections) {
 			var l2ptv3Data = new L2ptv3Data();
-			l2ptv3Data.name = sections[s]['.name'];
+			l2ptv3Data.name = parse_string(sections[s]['.name']);
 			l2ptv3Data.isActive = parse_bool(sections[s]['isActive']);
-
-			l2ptv3Data.options['localAddr'] = sections[s]['localAddr'];
-			l2ptv3Data.options['remoteAddr'] = sections[s]['remoteAddr'];
-			l2ptv3Data.options['bridge'] = sections[s]['bridge'];
-			l2ptv3Data.options['zone'] = sections[s]['zone'];
-			l2ptv3Data.options['tunnelIp'] = sections[s]['tunnelIp'];
-			l2ptv3Data.options['tunnelMask'] = sections[s]['tunnelMask'];
-			l2ptv3Data.options['tunnelId'] = sections[s]['tunnelId'];
-			l2ptv3Data.options['remoteTunnelId'] = sections[s]['remoteTunnelId'];
-			l2ptv3Data.options['sessionId'] = sections[s]['sessionId'];
-			l2ptv3Data.options['remoteSessionId'] = sections[s]['remoteSessionId'];
-			l2ptv3Data.options['encapsulation'] = sections[s]['encapsulation'];
-			l2ptv3Data.options['l2HeaderType'] = sections[s]['isNotCachel2HeaderType'];
+			l2ptv3Data.options['localAddr'] = parse_string(sections[s]['localAddr']);
+			l2ptv3Data.options['remoteAddr'] = parse_string(sections[s]['remoteAddr']);
+			l2ptv3Data.options['bridge'] = parse_string(sections[s]['bridge']);
+			l2ptv3Data.options['zone'] = parse_string(sections[s]['zone']);
+			l2ptv3Data.options['tunnelIp'] = parse_string(sections[s]['tunnelIp']);
+			l2ptv3Data.options['tunnelMask'] = parse_string(sections[s]['tunnelMask']);
+			l2ptv3Data.options['tunnelId'] = parse_string(sections[s]['tunnelId']);
+			l2ptv3Data.options['remoteTunnelId'] = parse_string(sections[s]['remoteTunnelId']);
+			l2ptv3Data.options['sessionId'] = parse_string(sections[s]['sessionId']);
+			l2ptv3Data.options['remoteSessionId'] = parse_string(sections[s]['remoteSessionId']);
+			l2ptv3Data.options['encapsulation'] = parse_string(sections[s]['encapsulation']);
+			l2ptv3Data.options['l2HeaderType'] = parse_string(sections[s]['isNotCachel2HeaderType']);
 				
 			addRow('l2tpv3_rows', l2ptv3Data);
 		}
@@ -85,6 +84,7 @@
 				}),		
 				localAddr: new ui.Dropdown(l2ptv3Data.options.localAddr, make_dropdown_options(localAddresses), {
 					multiple: false,
+					sort: false,
 					optional: false
 				}),		
 				remoteAddr: new ui.Textfield(l2ptv3Data.options.remoteAddr, {
@@ -94,11 +94,13 @@
 				}),
 				bridge: new ui.Dropdown(l2ptv3Data.options.bridge, make_dropdown_options(bridges), {
 					multiple: false,
+					sort: false,
 					optional: false,
 					create: false,
 				}),		
 				zone: new ui.Dropdown(l2ptv3Data.options.zone, make_dropdown_options(firewallZones), {
 					multiple: false,
+					sort: false,
 					create: false,
 					optional: false
 				}),		
@@ -134,10 +136,12 @@
 				}),		
 				encapsulation: new ui.Dropdown(l2ptv3Data.options.encapsulation, make_dropdown_options(encapsulationTypes), {
 					multiple: false,
+					sort: false,
 					optional: false
 				}),		
 				l2HeaderType: new ui.Dropdown(l2ptv3Data.options.l2HeaderType, make_dropdown_options(l2HeaderTypes), {
 					multiple: false,
+					sort: false,
 					optional: false
 				})
 			}
@@ -215,6 +219,16 @@
 							L.hideModal()
 						}
 					}, _('Close')),
+					' ',
+					E('div', {
+						class: 'btn',
+						click: function() {
+							for (i in form) {
+								form[i].setValue(l2ptv3Data[i] != undefined ? l2ptv3Data[i] : l2ptv3Data.options[i]);
+								form[i].triggerValidation();
+							}
+						}
+					}, _('Reset')),
 					' ',
 					E('div', {
 						class: 'btn primary cbi-button',
