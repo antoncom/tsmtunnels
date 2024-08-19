@@ -24,11 +24,19 @@
 
 <script type="text/javascript">
 
+var localAddresses = get_list_interfaces();
+var authTypes = ['psk'];
+var hashTypes = ['md5', 'sha1', 'sha256', 'sha512'];
+var encriptTypes = ['aes128', 'aes192', 'aes256', 'aes256gcm', '3des'];
+var keyExchModes = ['ikev1', 'ikev2', 'ike'];
+var dhGroups = ['modp768', 'modp1024', 'modp3072'];
+var pfsGroups = ['prfmd5', 'prfsha1', 'prfsha256', 'prfsha512'];
+
 class IpsecData {
 	name = "";
 	type = '<%=vpnType%>';
 	options = {
-		localAddr: "",
+		localAddr: localAddresses[0],
 		remoteAddr: "",
 		dpdDelay: "0",
 		localId: "",
@@ -49,37 +57,29 @@ class IpsecData {
 	};
 }
 
-var localAddresses = get_list_interfaces();
-var authTypes = ['psk'];
-var hashTypes = ['md5', 'sha1', 'sha256', 'sha512'];
-var encriptTypes = ['aes128', 'aes192', 'aes256', 'aes256gcm', '3des'];
-var keyExchModes = ['ikev1', 'ikev2', 'ike'];
-var dhGroups = ['modp768', 'modp1024', 'modp3072'];
-var pfsGroups = ['prfmd5', 'prfsha1', 'prfsha256', 'prfsha512'];
-
 get_cfg_data('<%=vpnType%>', function(sections) {
 	for (s in sections) {
 		var data = new IpsecData();
-		data.name = sections[s]['.name'];
+		data.name = parse_string(sections[s]['.name']);
 		data.isActive = parse_bool(sections[s]['isActive']);
-		data.options.localAddr = sections[s]['localAddr'];
-		data.options.remoteAddr = sections[s]['remoteAddr'];
-		data.options.dpdDelay = sections[s]['dpdDelay'];
-		data.options.localId = sections[s]['localId'];
-		data.options.remoteId = sections[s]['remoteId'];
-		data.options.keyExchMode = sections[s]['keyExchMode'];
-		data.options.localSubnetes = sections[s]['localSubnetes'];
-		data.options.remoteSubnets = sections[s]['remoteSubnets'];
-		data.options.authType = sections[s]['authType'];
-		data.options.presharedKey = sections[s]['presharedKey'];
-		data.options.phase1_lifetime = sections[s]['phase1_lifetime'];
-		data.options.phase1_ikeEncript = sections[s]['phase1_ikeEncript'];
-		data.options.phase1_ikeHash = sections[s]['phase1_ikeHash'];
-		data.options.phase1_dhGroup = sections[s]['phase1_dhGroup'];
-		data.options.phase2_lifetime = sections[s]['phase2_lifetime'];
-		data.options.phase2_espEncript = sections[s]['phase2_espEncript'];
-		data.options.phase2_espHash = sections[s]['phase2_espHash'];
-		data.options.phase2_pfsGroup = sections[s]['phase2_pfsGroup'];
+		data.options.localAddr = parse_string(sections[s]['localAddr']);
+		data.options.remoteAddr = parse_string(sections[s]['remoteAddr']);
+		data.options.dpdDelay = parse_string(sections[s]['dpdDelay']);
+		data.options.localId = parse_string(sections[s]['localId']);
+		data.options.remoteId = parse_string(sections[s]['remoteId']);
+		data.options.keyExchMode = parse_string(sections[s]['keyExchMode']);
+		data.options.localSubnetes = parse_string(sections[s]['localSubnetes']);
+		data.options.remoteSubnets = parse_string(sections[s]['remoteSubnets']);
+		data.options.authType = parse_string(sections[s]['authType']);
+		data.options.presharedKey = parse_string(sections[s]['presharedKey']);
+		data.options.phase1_lifetime = parse_string(sections[s]['phase1_lifetime']);
+		data.options.phase1_ikeEncript = parse_string(sections[s]['phase1_ikeEncript']);
+		data.options.phase1_ikeHash = parse_string(sections[s]['phase1_ikeHash']);
+		data.options.phase1_dhGroup = parse_string(sections[s]['phase1_dhGroup']);
+		data.options.phase2_lifetime = parse_string(sections[s]['phase2_lifetime']);
+		data.options.phase2_espEncript = parse_string(sections[s]['phase2_espEncript']);
+		data.options.phase2_espHash = parse_string(sections[s]['phase2_espHash']);
+		data.options.phase2_pfsGroup = parse_string(sections[s]['phase2_pfsGroup']);
 
 		addRow("ipsec_rows", data);
 	}
@@ -96,6 +96,7 @@ function showModal(data) {
 			}),
 			localAddr: new ui.Dropdown(data.options.localAddr, make_dropdown_options(localAddresses), {
 				multiple: false,
+				sort: false,
 				optional: false,
 			}),
 			remoteAddr: new ui.Textfield(data.options.remoteAddr, {
@@ -117,6 +118,7 @@ function showModal(data) {
 			}),
 			keyExchMode: new ui.Dropdown(data.options.keyExchMode, make_dropdown_options(keyExchModes), {
 				multiple: false,
+				sort: false,
 				optional: false,
 			}),
 			localSubnetes: new ui.Textfield(data.options.localSubnetes, {
@@ -129,6 +131,7 @@ function showModal(data) {
 			}),
 			authType: new ui.Dropdown(data.options.authType, make_dropdown_options(authTypes), {
 				multiple: false,
+				sort: false,
 				optional: false,
 			}),
 			presharedKey: new ui.Textfield(data.options.presharedKey, {
@@ -151,14 +154,17 @@ function showModal(data) {
 			}),
 			phase1_ikeEncript: new ui.Dropdown(data.options.phase1_ikeEncript, make_dropdown_options(encriptTypes), {
 				multiple: false,
+				sort: false,
 				optional: false,
 			}),
 			phase1_ikeHash: new ui.Dropdown(data.options.phase1_ikeHash, make_dropdown_options(hashTypes), {
 				multiple: false,
+				sort: false,
 				optional: false,
 			}),
 			phase1_dhGroup: new ui.Dropdown(data.options.phase1_dhGroup, make_dropdown_options(dhGroups), {
 				multiple: false,
+				sort: false,
 				optional: false,
 			}),
 			phase2_lifetime: new ui.Textfield(data.options.phase2_lifetime, {
@@ -178,14 +184,17 @@ function showModal(data) {
 			}),
 			phase2_espEncript: new ui.Dropdown(data.options.phase2_espEncript, make_dropdown_options(encriptTypes), {
 				multiple: false,
+				sort: false,
 				optional: false,
 			}),
 			phase2_espHash: new ui.Dropdown(data.options.phase2_espHash, make_dropdown_options(hashTypes), {
 				multiple: false,
+				sort: false,
 				optional: false,
 			}),
 			phase2_pfsGroup: new ui.Dropdown(data.options.phase2_pfsGroup, make_dropdown_options(pfsGroups), {
 				multiple: false,
+				sort: false,
 				optional: false,
 			})
 		}
@@ -303,6 +312,16 @@ function showModal(data) {
 						L.hideModal()
 					}
 				}, _('Close')),
+				' ',
+				E('div', {
+					class: 'btn',
+					click: function() {
+						for (i in form) {
+							form[i].setValue(data[i] != undefined ? data[i] : data.options[i]);
+							form[i].triggerValidation();
+						}
+					}
+				}, _('Reset')),
 				' ',
 				E('div', {
 					class: 'btn primary cbi-button',
