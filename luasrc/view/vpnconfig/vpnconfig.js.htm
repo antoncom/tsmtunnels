@@ -11,6 +11,7 @@
 	end
 
 	local function getBridges()
+		print("'<none>',")
 		uci:foreach('network', 'interface', function(a)
 			if a['type'] == 'bridge' then
 				print("'" ..  a['.name'] .. "',")
@@ -19,6 +20,7 @@
 	end
 
 	local function getFirewallZones()
+		print("'<none>',")
 		uci:foreach('firewall', 'zone', function(a)
 			print("'" ..  a['name'] .. "',")
 		end)
