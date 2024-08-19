@@ -25,19 +25,22 @@
 
 <script type="text/javascript">
 
+var localAddresses = get_list_interfaces();
+var firewallZones = get_list_firewall_zone();
+
 class DmvpnData {
 	name = "";
 	type = '<%=vpnType%>';
 	isActive = false;
 	options = {
-		localAddr: "",
+		localAddr: localAddresses[0],
 		remoteAddr: "",
 		hubTunnelAddr: "",
 		hubTunnelMask: "",
 		holdingTime: "7200",
 		tunnelIp: "",
 		greKey: "",
-		zone: "",
+		zone: firewallZones[0],
 		pingAddr: "",
 		pingInterval: "30",
 		pingAttempts: "3",
@@ -48,26 +51,22 @@ class DmvpnData {
 	};
 }
 
-var localAddresses = get_list_interfaces();
-var firewallZones = get_list_firewall_zone();
-
 get_cfg_data('<%=vpnType%>', function(sections) {
 	for (s in sections) {
 		var dmvpnData = new DmvpnData();
-		dmvpnData.name = sections[s]['.name'];
+		dmvpnData.name = parse_string(sections[s]['.name']);
 		dmvpnData.isActive = parse_bool(sections[s]['isActive']);
-
-		dmvpnData.options['localAddr'] = sections[s]['localAddr'];
-		dmvpnData.options['remoteAddr'] = sections[s]['remoteAddr'];
-		dmvpnData.options['hubTunnelAddr'] = sections[s]['hubTunnelAddr'];
-		dmvpnData.options['hubTunnelMask'] = sections[s]['hubTunnelMask'];
-		dmvpnData.options['holdingTime'] = sections[s]['holdingTime'];
-		dmvpnData.options['tunnelIp'] = sections[s]['tunnelIp'];
-		dmvpnData.options['greKey'] = sections[s]['greKey'];
-		dmvpnData.options['zone'] = sections[s]['zone'];
-		dmvpnData.options['pingAddr'] = sections[s]['pingAddr'];
-		dmvpnData.options['pingInterval'] = sections[s]['pingInterval'];
-		dmvpnData.options['pingAttempts'] = sections[s]['pingAttempts'];
+		dmvpnData.options['localAddr'] = parse_string(sections[s]['localAddr']);
+		dmvpnData.options['remoteAddr'] = parse_string(sections[s]['remoteAddr']);
+		dmvpnData.options['hubTunnelAddr'] = parse_string(sections[s]['hubTunnelAddr']);
+		dmvpnData.options['hubTunnelMask'] = parse_string(sections[s]['hubTunnelMask']);
+		dmvpnData.options['holdingTime'] = parse_string(sections[s]['holdingTime']);
+		dmvpnData.options['tunnelIp'] = parse_string(sections[s]['tunnelIp']);
+		dmvpnData.options['greKey'] = parse_string(sections[s]['greKey']);
+		dmvpnData.options['zone'] = parse_string(sections[s]['zone']);
+		dmvpnData.options['pingAddr'] = parse_string(sections[s]['pingAddr']);
+		dmvpnData.options['pingInterval'] = parse_string(sections[s]['pingInterval']);
+		dmvpnData.options['pingAttempts'] = parse_string(sections[s]['pingAttempts']);
 		dmvpnData.options['isNotCache'] = parse_bool(sections[s]['isNotCache']);
 		dmvpnData.options['isAllowShortcuts'] = parse_bool(sections[s]['isAllowShortcuts']);
 		dmvpnData.options['isHubCisco'] = parse_bool(sections[s]['isHubCisco']);
@@ -88,7 +87,8 @@ function showModal(dmvpnData) {
 			}),
 			localAddr: new ui.Dropdown(dmvpnData.options.localAddr, make_dropdown_options(localAddresses), {
 				multiple: false,
-				optional: false
+				optional: false,
+				sort: false
 			}),
 			remoteAddr: new ui.Textfield(dmvpnData.options.remoteAddr, {
 				placeholder: "Remote IP",
@@ -137,6 +137,7 @@ function showModal(dmvpnData) {
 			zone: new ui.Dropdown(dmvpnData.options.zone, make_dropdown_options(firewallZones), {
 				multiple: false,
 				create: false,
+				sort: false,
 				optional: false
 			}),
 			pingAddr: new ui.Textfield(dmvpnData.options.pingAddr, {
@@ -248,6 +249,16 @@ function showModal(dmvpnData) {
 						L.hideModal()
 					}
 				}, _('Close')),
+				' ',
+				E('div', {
+					class: 'btn',
+					click: function() {
+						for (i in form) {
+							form[i].setValue(dmvpnData[i] != undefined ? dmvpnData[i] : dmvpnData.options[i]);
+							form[i].triggerValidation();
+						}
+					}
+				}, _('Reset')),
 				' ',
 				E('div', {
 					class: 'btn primary cbi-button',
