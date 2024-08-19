@@ -149,6 +149,10 @@ function reset_fields(form, data) {
     form.isMPPE.setValue(data.options['isMPPE']);
     form.isDefaultRoute.setValue(data.options['isDefaultRoute']);
     form.isActive.setValue(data.isActive);
+
+    for (i in form) {
+        form[i].triggerValidation();
+    }
 }
 
 function apply(form) {

@@ -154,6 +154,10 @@ L.require('ui').then(function(ui) {
         form.isDefaultRoute.setValue(data.options['isDefaultRoute']);
         form.isIPSecProt.setValue(data.options['isIPSecProt']);
         form.isActive.setValue(data.isActive);
+
+        for (i in form) {
+            form[i].triggerValidation();
+        }
     }
     
     function apply(form) {
