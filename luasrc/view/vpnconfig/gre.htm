@@ -129,68 +129,82 @@ function showModal(greData) {
 				sort: false,
 				optional: false
 			}),
-			notFragment: new ui.Checkbox(greData.options.notFragment)
+			notFragment: new ui.Checkbox(greData.options.notFragment, {
+				id: 'notFragment'
+			})
 		}
 
 		L.showModal('Configure GRE tunnel', [
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Name %>')),
-				E('div', { class: 'cbi-value-field' }, [form.name.render()])
+			E('div', {class: "modal-row"}, [
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:Name %>')),
+					form.name.render()
+				]),
 			]),
 
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Local address %>')),
-				E('div', { class: 'cbi-value-field' }, [form.localAddr.render()])
+			E('div', {class: "modal-row"}, [
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:Local address %>')),
+					form.localAddr.render()
+				]),
+
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:Remote address %>')),
+					form.remoteAddr.render()
+				]),
 			]),
 
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Remote address %>')),
-				E('div', { class: 'cbi-value-field' }, [form.remoteAddr.render()])
+			E('div', { class: 'modal-row' }, [
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:Network type %>')),
+					form.netType.render()
+				]),
 			]),
 
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Network type %>')),
-				E('div', { class: 'cbi-value-field' }, [form.netType.render()])
+			E('div', { class: 'modal-row' }, [
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:Add to Bridge or create new %>')),
+					form.bridge.render()
+				]),
 			]),
 
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Add to Bridge or create new %>')),
-				E('div', { class: 'cbi-value-field' }, [form.bridge.render()])
+			E('div', { class: 'modal-row' }, [
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:Tunnel IP %>')),
+					form.tunnelIp.render()
+				]),
+
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:Tunnel netmask %>')),
+					form.tunnelMask.render()
+				]),
 			]),
 
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Tunnel IP %>')),
-				E('div', { class: 'cbi-value-field' }, [form.tunnelIp.render()])
+			E('div', { class: 'modal-row' }, [
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:GRE key %>')),
+					form.greKey.render()
+				]),
+
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:Firewall zone %>')),
+					form.zone.render()
+				]),
 			]),
 
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Tunnel netmask %>')),
-				E('div', { class: 'cbi-value-field' }, [form.tunnelMask.render()])
+			E('div', { class: 'modal-value modal-checkbox' }, [
+				form.notFragment.render(),
+				E('label', { 'class': 'modal-val-title', for: 'notFragment'}, _('<%:Dont fragment packets %>')),
 			]),
 
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:GRE key %>')),
-				E('div', { class: 'cbi-value-field' }, [form.greKey.render()])
-			]),
-
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Firewall zone %>')),
-				E('div', { class: 'cbi-value-field' }, [form.zone.render()])
-			]),
-
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Dont fragment packets %>')),
-				E('div', { class: 'cbi-value-field' }, [form.notFragment.render()])
-			]),
-
-			E('div', { class: 'cbi-value-field' }, [
+			E('div', { class: 'modal-buttons' }, [
 				E('div', {
 					class: 'btn',
 					click: function() {
 						L.hideModal()
 					}
 				}, _('Close')),
-				' ',
+				
 				E('div', {
 					class: 'btn',
 					click: function() {
@@ -200,9 +214,9 @@ function showModal(greData) {
 						}
 					}
 				}, _('Reset')),
-				' ',
+				
 				E('div', {
-					class: 'btn primary cbi-button',
+					class: 'btn primary',
 					click: function() {
 						var isFormValid = true;
 						for (i in form) {
