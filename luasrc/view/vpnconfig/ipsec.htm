@@ -201,118 +201,131 @@ function showModal(data) {
 
 		L.showModal('Configure IPSec', [
 
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Name %>')),
-				E('div', { class: 'cbi-value-field' }, [form.name.render()])
-			]),	
+			E('div', {class: "modal-row"}, [
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:Name %>')),
+					form.name.render()
+				]),	
+			]),
+	
+			E('div', {class: "modal-row"}, [
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:Source address %>')),
+					form.localAddr.render()
+				]),	
 
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Source address %>')),
-				E('div', { class: 'cbi-value-field' }, [form.localAddr.render()])
-			]),	
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:Remote address %>')),
+					form.remoteAddr.render()
+				]),	
 
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Remote address %>')),
-				E('div', { class: 'cbi-value-field' }, [form.remoteAddr.render()])
-			]),	
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:DPD delay (sec) %>')),
+					form.dpdDelay.render()
+				]),	
+			]),
+	
+			E('div', {class: "modal-row"}, [
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:Local ID %>')),
+					form.localId.render()
+				]),	
 
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:DPD delay (sec) %>')),
-				E('div', { class: 'cbi-value-field' }, [form.dpdDelay.render()])
-			]),	
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:Remote ID %>')),
+					form.remoteId.render()
+				]),	
+			]),
+	
+			E('div', {class: "modal-row"}, [
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:Key exchange mode %>')),
+					form.keyExchMode.render()
+				]),	
+			]),
+	
+			E('div', {class: "modal-row"}, [
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:Local subnets %>')),
+					form.localSubnetes.render()
+				]),	
 
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Local ID %>')),
-				E('div', { class: 'cbi-value-field' }, [form.localId.render()])
-			]),	
-
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Remote ID %>')),
-				E('div', { class: 'cbi-value-field' }, [form.remoteId.render()])
-			]),	
-
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Key exchange mode %>')),
-				E('div', { class: 'cbi-value-field' }, [form.keyExchMode.render()])
-			]),	
-
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Local subnets %>')),
-				E('div', { class: 'cbi-value-field' }, [form.localSubnetes.render()])
-			]),	
-
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Remote subnets %>')),
-				E('div', { class: 'cbi-value-field' }, [form.remoteSubnets.render()])
-			]),	
-
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:Remote subnets %>')),
+					form.remoteSubnets.render()
+				]),	
+			]),
+	
+			E('div', {class: "modal-row"}, [
 			
-			E('div', { class: 'cbi-map-section' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Phase #1 %>')),
-				E('div', { class: 'cbi-value' }, [
-					E('label', { 'class': 'cbi-value-title' }, _('<%:Lifetime %>')),
-					E('div', { class: 'cbi-value-field' }, [form.phase1_lifetime.render()])
-				]),	
+				E('div', { class: 'modal-section' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:Phase #1 %>')),
+					E('div', { class: 'modal-value' }, [
+						E('label', { 'class': 'modal-val-title' }, _('<%:Lifetime %>')),
+						form.phase1_lifetime.render()
+					]),	
 
-				E('div', { class: 'cbi-value' }, [
-					E('label', { 'class': 'cbi-value-title' }, _('<%:IKE Encription %>')),
-					E('div', { class: 'cbi-value-field' }, [form.phase1_ikeEncript.render()])
-				]),	
+					E('div', { class: 'modal-value' }, [
+						E('label', { 'class': 'modal-val-title' }, _('<%:IKE Encription %>')),
+						form.phase1_ikeEncript.render()
+					]),	
 
-				E('div', { class: 'cbi-value' }, [
-					E('label', { 'class': 'cbi-value-title' }, _('<%:IKE Hash %>')),
-					E('div', { class: 'cbi-value-field' }, [form.phase1_ikeHash.render()])
-				]),	
+					E('div', { class: 'modal-value' }, [
+						E('label', { 'class': 'modal-val-title' }, _('<%:IKE Hash %>')),
+						form.phase1_ikeHash.render()
+					]),	
 
-				E('div', { class: 'cbi-value' }, [
-					E('label', { 'class': 'cbi-value-title' }, _('<%:DH group %>')),
-					E('div', { class: 'cbi-value-field' }, [form.phase1_dhGroup.render()])
+					E('div', { class: 'modal-value' }, [
+						E('label', { 'class': 'modal-val-title' }, _('<%:DH group %>')),
+						form.phase1_dhGroup.render()
+					]),	
+				]),
+
+				E('div', { class: 'modal-section' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:Phase #2 %>')),
+					E('div', { class: 'modal-value' }, [
+						E('label', { 'class': 'modal-val-title' }, _('<%:Lifetime %>')),
+						form.phase2_lifetime.render()
+					]),	
+
+					E('div', { class: 'modal-value' }, [
+						E('label', { 'class': 'modal-val-title' }, _('<%:ESP Encription %>')),
+						form.phase2_espEncript.render()
+					]),	
+
+					E('div', { class: 'modal-value' }, [
+						E('label', { 'class': 'modal-val-title' }, _('<%:ESP Hash %>')),
+						form.phase2_espHash.render()
+					]),	
+
+					E('div', { class: 'modal-value' }, [
+						E('label', { 'class': 'modal-val-title' }, _('<%:PFS group %>')),
+						form.phase2_pfsGroup.render()
+					]),	
+				]),
+			]),
+	
+			E('div', {class: "modal-row"}, [
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:Authentication method %>')),
+					form.authType.render()
 				]),	
 			]),
-
-			E('div', { class: 'cbi-map-section' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Phase #2 %>')),
-				E('div', { class: 'cbi-value' }, [
-					E('label', { 'class': 'cbi-value-title' }, _('<%:Lifetime %>')),
-					E('div', { class: 'cbi-value-field' }, [form.phase2_lifetime.render()])
-				]),	
-
-				E('div', { class: 'cbi-value' }, [
-					E('label', { 'class': 'cbi-value-title' }, _('<%:ESP Encription %>')),
-					E('div', { class: 'cbi-value-field' }, [form.phase2_espEncript.render()])
-				]),	
-
-				E('div', { class: 'cbi-value' }, [
-					E('label', { 'class': 'cbi-value-title' }, _('<%:ESP Hash %>')),
-					E('div', { class: 'cbi-value-field' }, [form.phase2_espHash.render()])
-				]),	
-
-				E('div', { class: 'cbi-value' }, [
-					E('label', { 'class': 'cbi-value-title' }, _('<%:PFS group %>')),
-					E('div', { class: 'cbi-value-field' }, [form.phase2_pfsGroup.render()])
+	
+			E('div', {class: "modal-row"}, [
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:Pre-shared key %>')),
+					form.presharedKey.render()
 				]),	
 			]),
-
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Authentication method %>')),
-				E('div', { class: 'cbi-value-field' }, [form.authType.render()])
-			]),	
-
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Pre-shared key %>')),
-				E('div', { class: 'cbi-value-field' }, [form.presharedKey.render()])
-			]),	
-
-
-
-			E('div', { class: 'cbi-value-field' }, [
+	
+			E('div', { class: 'modal-buttons' }, [
 				E('div', {
 					class: 'btn',
 					click: function() {
 						L.hideModal()
 					}
 				}, _('Close')),
-				' ',
 				E('div', {
 					class: 'btn',
 					click: function() {
@@ -322,9 +335,8 @@ function showModal(data) {
 						}
 					}
 				}, _('Reset')),
-				' ',
 				E('div', {
-					class: 'btn primary cbi-button',
+					class: 'btn primary',
 					click: function() {
 						var isFormValid = true;
 						for (i in form) {
