@@ -162,87 +162,98 @@ function showModal(dmvpnData) {
 		}
 
 		L.showModal('Configure DMVPN tunnel', [
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Name %>')),
-				E('div', { class: 'cbi-value-field' }, [form.name.render()])
+			E('div', {class: "modal-row"}, [
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:Name %>')),
+					form.name.render()
+				]),
+
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:Local NBMA address %>')),
+					form.localAddr.render()
+				]),
+
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:Remote NBMA address %>')),
+					form.remoteAddr.render()
+				]),
 			]),
 
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Local NBMA address %>')),
-				E('div', { class: 'cbi-value-field' }, [form.localAddr.render()])
+			E('div', {class: "modal-row"}, [
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:HUB tunnel address %>')),
+					form.hubTunnelAddr.render()
+				]),
+
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:HUB tunnel netmask %>')),
+					form.hubTunnelMask.render()
+				]),
+
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:Holding time (sec.) %>')),
+					form.holdingTime.render()
+				]),
 			]),
 
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Remote NBMA address %>')),
-				E('div', { class: 'cbi-value-field' }, [form.remoteAddr.render()])
+			E('div', {class: "modal-row"}, [
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:Tunnel IP %>')),
+					form.tunnelIp.render()
+				]),
+
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:GRE key %>')),
+					form.greKey.render()
+				]),
+
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:Firewall zone %>')),
+					form.zone.render()
+				]),
 			]),
 
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:HUB tunnel address %>')),
-				E('div', { class: 'cbi-value-field' }, [form.hubTunnelAddr.render()])
+			E('div', {class: "modal-row"}, [
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:Ping address %>')),
+					form.pingAddr.render()
+				]),
+
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:Ping interval (sec.) %>')),
+					form.pingInterval.render()
+				]),
+
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('<%:Ping Attempts %>')),
+					form.pingAttempts.render()
+				]),
 			]),
 
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:HUB tunnel netmask %>')),
-				E('div', { class: 'cbi-value-field' }, [form.hubTunnelMask.render()])
+			E('div', {class: "modal-row"}, [
+				E('div', { class: 'modal-value modal-checkbox' }, [
+					form.isNotCache.render(),
+					E('label', { 'class': 'modal-val-title' }, _('<%:No caching %>')),
+				]),
+
+				E('div', { class: 'modal-value modal-checkbox' }, [
+					form.isAllowShortcuts.render(),
+					E('label', { 'class': 'modal-val-title' }, _('<%:Allow shortcuts %>')),
+				]),
+				E('div', { class: 'modal-value' }),	/* invisible element for checkbox 3-rd column*/
 			]),
 
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Holding time (sec.) %>')),
-				E('div', { class: 'cbi-value-field' }, [form.holdingTime.render()])
+			E('div', { class: 'modal-value modal-checkbox' }, [
+				form.isHubCisco.render(),
+				E('label', { 'class': 'modal-val-title' }, _('<%:HUB is Sisco %>')),
 			]),
 
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Tunnel IP %>')),
-				E('div', { class: 'cbi-value-field' }, [form.tunnelIp.render()])
+			E('div', { class: 'modal-value modal-checkbox' }, [
+				form.isIPSecProt.render(),
+				E('label', { 'class': 'modal-val-title' }, _('<%:Use IPSec protection %>')),
 			]),
 
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:GRE key %>')),
-				E('div', { class: 'cbi-value-field' }, [form.greKey.render()])
-			]),
-
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Firewall zone %>')),
-				E('div', { class: 'cbi-value-field' }, [form.zone.render()])
-			]),
-
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Ping address %>')),
-				E('div', { class: 'cbi-value-field' }, [form.pingAddr.render()])
-			]),
-
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Ping interval (sec.) %>')),
-				E('div', { class: 'cbi-value-field' }, [form.pingInterval.render()])
-			]),
-
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Ping Attempts %>')),
-				E('div', { class: 'cbi-value-field' }, [form.pingAttempts.render()])
-			]),
-
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:No caching %>')),
-				E('div', { class: 'cbi-value-field' }, [form.isNotCache.render()])
-			]),
-
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Allow shortcuts %>')),
-				E('div', { class: 'cbi-value-field' }, [form.isAllowShortcuts.render()])
-			]),
-
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:HUB is Sisco %>')),
-				E('div', { class: 'cbi-value-field' }, [form.isHubCisco.render()])
-			]),
-
-			E('div', { class: 'cbi-value' }, [
-				E('label', { 'class': 'cbi-value-title' }, _('<%:Use IPSec protection %>')),
-				E('div', { class: 'cbi-value-field' }, [form.isIPSecProt.render()])
-			]),
-
-			E('div', { class: 'cbi-value-field' }, [
+			E('div', { class: 'modal-buttons' }, [
 				E('div', {
 					class: 'btn',
 					click: function() {
@@ -261,7 +272,7 @@ function showModal(dmvpnData) {
 				}, _('Reset')),
 				' ',
 				E('div', {
-					class: 'btn primary cbi-button',
+					class: 'btn primary',
 					click: function() {
 						var isFormValid = true;
 						for (i in form) {
