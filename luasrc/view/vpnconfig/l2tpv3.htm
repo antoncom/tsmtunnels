@@ -147,79 +147,92 @@
 			}
 	
 			L.showModal('Configure L2TPv3 tunnel', [
-				E('div', { class: 'cbi-value' }, [
-					E('label', { 'class': 'cbi-value-title' }, _('<%:Name %>')),
-					E('div', { class: 'cbi-value-field' }, [form.name.render()])
+				E('div', {class: "modal-row"}, [
+					E('div', { class: 'modal-value' }, [
+						E('label', { 'class': 'modal-val-title' }, _('<%:Name %>')),
+						form.name.render()
+					]),
 				]),
 	
-				E('div', { class: 'cbi-value' }, [
-					E('label', { 'class': 'cbi-value-title' }, _('<%:Local address %>')),
-					E('div', { class: 'cbi-value-field' }, [form.localAddr.render()])
+				E('div', {class: "modal-row"}, [
+					E('div', { class: 'modal-value' }, [
+						E('label', { 'class': 'modal-val-title' }, _('<%:Local address %>')),
+						form.localAddr.render()
+					]),
+		
+					E('div', { class: 'modal-value' }, [
+						E('label', { 'class': 'modal-val-title' }, _('<%:Remote address %>')),
+						form.remoteAddr.render()
+					]),
 				]),
 	
-				E('div', { class: 'cbi-value' }, [
-					E('label', { 'class': 'cbi-value-title' }, _('<%:Remote address %>')),
-					E('div', { class: 'cbi-value-field' }, [form.remoteAddr.render()])
-				]),
+				E('div', {class: "modal-row"}, [
+					E('div', { class: 'modal-value' }, [
+						E('label', { 'class': 'modal-val-title' }, _('<%:Add to bridge or Create new %>')),
+						form.bridge.render()
+					]),
 
-				E('div', { class: 'cbi-value' }, [
-					E('label', { 'class': 'cbi-value-title' }, _('<%:Add to bridge or Create new %>')),
-					E('div', { class: 'cbi-value-field' }, [form.bridge.render()])
+					E('div', { class: 'modal-value' }, [
+						E('label', { 'class': 'modal-val-title' }, _('<%:Firewall zone %>')),
+						form.zone.render()
+					]),
 				]),
+	
+				E('div', {class: "modal-row"}, [
+					E('div', { class: 'modal-value' }, [
+						E('label', { 'class': 'modal-val-title' }, _('<%:Tunnel IP %>')),
+						form.tunnelIp.render()
+					]),
+		
+					E('div', { class: 'modal-value' }, [
+						E('label', { 'class': 'modal-val-title' }, _('<%:Tunnel netmask %>')),
+						form.tunnelMask.render()
+					]),
+				]),
+	
+				E('div', {class: "modal-row"}, [
+					E('div', { class: 'modal-value' }, [
+						E('label', { 'class': 'modal-val-title' }, _('<%:Tunnel ID %>')),
+						form.tunnelId.render()
+					]),
+		
+					E('div', { class: 'modal-value' }, [
+						E('label', { 'class': 'modal-val-title' }, _('<%:Remote tunnel ID %>')),
+						form.remoteTunnelId.render()
+					]),
+				]),
+	
+				E('div', {class: "modal-row"}, [
+					E('div', { class: 'modal-value' }, [
+						E('label', { 'class': 'modal-val-title' }, _('<%:Session ID %>')),
+						form.sessionId.render()
+					]),
 
-				E('div', { class: 'cbi-value' }, [
-					E('label', { 'class': 'cbi-value-title' }, _('<%:Firewall zone %>')),
-					E('div', { class: 'cbi-value-field' }, [form.zone.render()])
+					E('div', { class: 'modal-value' }, [
+						E('label', { 'class': 'modal-val-title' }, _('<%:Remote Session ID %>')),
+						form.remoteSessionId.render()
+					]),
 				]),
 	
-				E('div', { class: 'cbi-value' }, [
-					E('label', { 'class': 'cbi-value-title' }, _('<%:Tunnel IP %>')),
-					E('div', { class: 'cbi-value-field' }, [form.tunnelIp.render()])
+				E('div', {class: "modal-row"}, [
+					E('div', { class: 'modal-value' }, [
+						E('label', { 'class': 'modal-val-title' }, _('<%:Encapsulation %>')),
+						form.encapsulation.render()
+					]),
+		
+					E('div', { class: 'modal-value' }, [
+						E('label', { 'class': 'modal-val-title' }, _('<%:L2 Specific Header type %>')),
+						form.l2HeaderType.render()
+					]),
 				]),
 	
-				E('div', { class: 'cbi-value' }, [
-					E('label', { 'class': 'cbi-value-title' }, _('<%:Tunnel netmask %>')),
-					E('div', { class: 'cbi-value-field' }, [form.tunnelMask.render()])
-				]),
-	
-				E('div', { class: 'cbi-value' }, [
-					E('label', { 'class': 'cbi-value-title' }, _('<%:Tunnel ID %>')),
-					E('div', { class: 'cbi-value-field' }, [form.tunnelId.render()])
-				]),
-	
-				E('div', { class: 'cbi-value' }, [
-					E('label', { 'class': 'cbi-value-title' }, _('<%:Remote tunnel ID %>')),
-					E('div', { class: 'cbi-value-field' }, [form.remoteTunnelId.render()])
-				]),
-	
-				E('div', { class: 'cbi-value' }, [
-					E('label', { 'class': 'cbi-value-title' }, _('<%:Session ID %>')),
-					E('div', { class: 'cbi-value-field' }, [form.sessionId.render()])
-				]),
-
-				E('div', { class: 'cbi-value' }, [
-					E('label', { 'class': 'cbi-value-title' }, _('<%:Remote Session ID %>')),
-					E('div', { class: 'cbi-value-field' }, [form.remoteSessionId.render()])
-				]),
-	
-				E('div', { class: 'cbi-value' }, [
-					E('label', { 'class': 'cbi-value-title' }, _('<%:Encapsulation %>')),
-					E('div', { class: 'cbi-value-field' }, [form.encapsulation.render()])
-				]),
-	
-				E('div', { class: 'cbi-value' }, [
-					E('label', { 'class': 'cbi-value-title' }, _('<%:L2 Specific Header type %>')),
-					E('div', { class: 'cbi-value-field' }, [form.l2HeaderType.render()])
-				]),
-	
-				E('div', { class: 'cbi-value-field' }, [
+				E('div', { class: 'modal-buttons' }, [
 					E('div', {
 						class: 'btn',
 						click: function() {
 							L.hideModal()
 						}
 					}, _('Close')),
-					' ',
 					E('div', {
 						class: 'btn',
 						click: function() {
@@ -229,9 +242,8 @@
 							}
 						}
 					}, _('Reset')),
-					' ',
 					E('div', {
-						class: 'btn primary cbi-button',
+						class: 'btn primary',
 						click: function() {
 							var isFormValid = true;
 							for (i in form) {
