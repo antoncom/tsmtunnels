@@ -27,38 +27,36 @@ function index()
 end
 
 function do_action(action)
-	local vpnType = luci.http.formvalue("type")
-	local name = luci.http.formvalue("name")
-	local isActive = luci.http.formvalue("isActive")
-	local options = luci.jsonc.parse(luci.http.formvalue("options"))
 	local config = 'vpnconfig'
+	local data = {}
+	data.vpnType = luci.http.formvalue("type")
+	data.name = luci.http.formvalue("name")
+	data.isActive = luci.http.formvalue("isActive")
+	data.options = luci.jsonc.parse(luci.http.formvalue("options"))
 
 	local commands = {
 		add= function(...)
-			uci:section(config, vpnType, name, options)
-			uci:set(config, name, 'isActive', 'false')
-			uci:commit(config)
-			return run_backend_script(vpnType, name)
+			uci:section(config, data.vpnType, data.name, data.options)
+			uci:set(config, data.name, 'isActive', 'false')
+			return run_backend_script(action, data)
+
 		end,
 
 		edit = function(...)
-			for key, value in pairs(options) do
-				uci:set(config, name, key, value)
+			for key, value in pairs(data.options) do
+				uci:set(config, data.name, key, value)
 			end
-			uci:commit(config)
-			return run_backend_script(vpnType, name)
+			return run_backend_script(action, data)
 		end,
 
 		delete = function(...)
-			uci:delete(config, name)
-			uci:commit(config)
-			return run_backend_script(vpnType, name)
+			uci:delete(config, data.name)
+			return run_backend_script(action, data)
 		end,
 
 		enable = function(...)
-			uci:set(config, name, 'isActive', isActive)
-			uci:commit(config)
-			return run_backend_script(vpnType, name)
+			uci:set(config, data.name, 'isActive', data.isActive)
+			return run_backend_script(action, data)
 		end
 	}
 
@@ -79,18 +77,30 @@ function do_action(action)
 	end
 
 	if commands[action] then
-		local success = commands[action](vpnType)
+		local success = commands[action]()
 		if (success) then
 			send_response(200, "Configuration applyed successfully")
+			uci:commit(config)
 		else
 			send_response(500, "Failed to apply configuration")
+			uci:revert(config)
 		end
 	else
 		send_response(400, 'Unexpected vpnconfig action')
 	end
 end
 
-function run_backend_script(vpnType, name)
+function run_backend_script(action, data)
 	-- TODO: call actual network configuration scripts
+
+	-- action - add | edit | delete | enable
+	-- data: 
+	--    data.vpnType - type of uci config section
+	--    data.name - name of uci config section
+	--    data.isActive - is this VPN client enabled
+	--    data.options - object with VPN client parameters - see on corresponding client page
+	
+	-- UCI changes will be committed if this function return 'true'. Otherwise UCI changes will be reverted.
+	
 	return true -- 'true' on success, 'false' on error
 end
