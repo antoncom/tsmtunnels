@@ -46,7 +46,7 @@ class GreData {
 	};
 }
 
-get_cfg_data('<%=vpnType%>', function(sections) {
+getCfgData('<%=vpnType%>', function(sections) {
 	for (s in sections) {
 		var newGre = new GreData();
 		newGre.name = parse_string(sections[s]['.name']);

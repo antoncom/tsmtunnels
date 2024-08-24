@@ -43,7 +43,7 @@
 		};
 	}
 
-	get_cfg_data('<%=vpnType%>', function(sections) {
+	getCfgData('<%=vpnType%>', function(sections) {
 		for (s in sections) {
 			var newEoIP = new EoIPData();
 			newEoIP.name = parse_string(sections[s]['.name']);

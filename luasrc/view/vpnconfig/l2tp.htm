@@ -128,7 +128,7 @@ L.require('ui').then(function(ui) {
         viewWrapper.appendChild(container);
     }
 
-    get_cfg_data('<%=vpnType%>', function(sections) {
+    getCfgData('<%=vpnType%>', function(sections) {
         g_l2tpData.isActive = parse_bool(sections[0]['isActive']);
         g_l2tpData.options['server'] = parse_string(sections[0]['server']);
         g_l2tpData.options['username'] = parse_string(sections[0]['username']);

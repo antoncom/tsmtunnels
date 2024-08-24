@@ -125,7 +125,7 @@ function renderForm(form) {
 	viewWrapper.appendChild(container);
 }
 
-get_cfg_data('<%=vpnType%>', function(sections) {
+getCfgData('<%=vpnType%>', function(sections) {
     g_pptpData.isActive = parse_bool(sections[0]['isActive']);
     g_pptpData.options['server'] = parse_string(sections[0]['server']);
     g_pptpData.options['username'] = parse_string(sections[0]['username']);

@@ -78,7 +78,7 @@ function spinner(state) {
 	}
 }
 
-function get_cfg_data(vpnType, callback) {
+function getCfgData(vpnType, callback) {
 	spinner(true);
 	L.require("uci").then(function(uci) {
 		uci.load("<%=config%>").then(function(out){

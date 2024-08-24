@@ -51,7 +51,7 @@
 		};
 	}
 	
-	get_cfg_data('<%=vpnType%>', function(sections) {
+	getCfgData('<%=vpnType%>', function(sections) {
 		for (s in sections) {
 			var l2ptv3Data = new L2ptv3Data();
 			l2ptv3Data.name = parse_string(sections[s]['.name']);

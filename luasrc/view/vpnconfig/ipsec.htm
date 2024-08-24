@@ -57,7 +57,7 @@ class IpsecData {
 	};
 }
 
-get_cfg_data('<%=vpnType%>', function(sections) {
+getCfgData('<%=vpnType%>', function(sections) {
 	for (s in sections) {
 		var data = new IpsecData();
 		data.name = parse_string(sections[s]['.name']);
