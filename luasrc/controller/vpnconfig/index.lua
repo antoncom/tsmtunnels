@@ -38,7 +38,7 @@ function do_action(action)
 			uci:section(config, vpnType, name, options)
 			uci:set(config, name, 'isActive', 'false')
 			uci:commit(config)
-			run_backend_script(vpnType, name)
+			return run_backend_script(vpnType, name)
 		end,
 
 		edit = function(...)
@@ -46,40 +46,51 @@ function do_action(action)
 				uci:set(config, name, key, value)
 			end
 			uci:commit(config)
-			run_backend_script(vpnType, name)
+			return run_backend_script(vpnType, name)
 		end,
 
 		delete = function(...)
 			uci:delete(config, name)
 			uci:commit(config)
-			run_backend_script(vpnType, name)
+			return run_backend_script(vpnType, name)
 		end,
 
 		enable = function(...)
 			uci:set(config, name, 'isActive', isActive)
 			uci:commit(config)
-			run_backend_script(vpnType, name)
-		end,
-
-		default = function(...)
-			local response = {}
-			response.action = action
-			response.status = 'success'
-			-- response.status = 'error'
-			response.message = 'Message'
-
-			http.status(200)
-			http.prepare_content("text/json")
-			http.write_json(response)
+			return run_backend_script(vpnType, name)
 		end
 	}
 
+	function send_response(code, message)
+		local response = {}
+		response.action = action
+		response.message = message
+
+		if code == 200 then
+			response.status = 'success'
+		else
+			response.status = 'error'
+		end
+	
+		http.status(code)
+		http.prepare_content("text/json")
+		http.write_json(response)
+	end
+
 	if commands[action] then
-		commands[action](vpnType)
-		commands["default"]()
+		local success = commands[action](vpnType)
+		if (success) then
+			send_response(200, "Configuration applyed successfully")
+		else
+			send_response(500, "Failed to apply configuration")
+		end
+	else
+		send_response(400, 'Unexpected vpnconfig action')
 	end
 end
 
 function run_backend_script(vpnType, name)
 	-- TODO: call actual network configuration scripts
+	return true -- 'true' on success, 'false' on error
 end
