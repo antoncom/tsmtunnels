@@ -62,8 +62,15 @@ function do_action(action)
 		end,
 
 		default = function(...)
-			http.prepare_content("text/plain")
-			http.write(config)
+			local response = {}
+			response.action = action
+			response.status = 'success'
+			-- response.status = 'error'
+			response.message = 'Message'
+
+			http.status(200)
+			http.prepare_content("text/json")
+			http.write_json(response)
 		end
 	}
 

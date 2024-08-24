@@ -110,31 +110,23 @@ function commitConfig(data) {
 	L.require('uci').then(function(uci){
 		var section = uci.get('<%=config%>', data.name);
 		if (!section) {
-			send_action("add", data, function(){
-				location.reload();
-			});
+			sendAction("add", data, handleActionResult);
 		} else {
-			send_action("edit", data, function(){
-				location.reload();
-			});
+			sendAction("edit", data, handleActionResult);
 		}
 	});
 }
 
 function activateConfig(data) {
 	data.isActive = !data.isActive; 
-	send_action("enable", data, function(){
-		location.reload();
-	});
+	sendAction("enable", data, handleActionResult);
 }
 
 function deleteConfig(data) {
-	send_action("delete", data, function(){
-		location.reload();
-	});
+	sendAction("delete", data, handleActionResult);
 }
 
-function send_action(action, data, callback) {
+function sendAction(action, data, callback) {
 	var xhr = new XHR(false);
 	var url = '<%=luci.dispatcher.build_url("admin", "services", config, "action")%>/'+ '%h/%h'.format(action);
 	spinner(true);
@@ -143,10 +135,45 @@ function send_action(action, data, callback) {
 		if (!resp) {
 			return;
 		}
-		console.log(action+' success');
+		var result = JSON.parse(resp.response);
 		spinner(false);
 
-        if(callback) callback();
+        if(callback) 
+			callback(result);
+	});
+}
+
+function handleActionResult(result) {
+	if (!result) return;
+
+	switch(result.status) {
+		case 'success':
+			console.log(result.action, result.status);
+			location.reload();
+			break;
+		case 'error':
+			console.log(result);
+			showMessageWindow(_('Error'), result.message);
+			break;
+		default:
+			console.log('unexpected status', result);
+	}
+}
+
+function showMessageWindow(title, message) {
+	L.require('ui').then(function(ui) {
+		L.showModal(title, [
+			E('span', message),
+			E('div', { class: 'modal-buttons' }, [
+				E('div', {
+					class: 'btn',
+					click: function() {
+						L.hideModal();
+						location.reload(); //reload page to restore form data
+					}
+				}, _('Close'))
+			])
+		]);
 	});
 }
 
