@@ -28,8 +28,8 @@
 	var localAddresses = get_list_interfaces();
 	var bridges = get_list_bridges();
 	var firewallZones = get_list_firewall_zone();
-	var encapsulationTypes = ["ip"];
-	var l2HeaderTypes = ["none"];
+	var encapsulationTypes = ["ip", "udp"];
+	var l2HeaderTypes = ["none", "default", "ATM", "MPT", "PSP"];
 
 	class L2ptv3Data {
 		name = "";
