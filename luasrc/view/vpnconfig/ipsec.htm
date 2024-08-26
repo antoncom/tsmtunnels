@@ -136,6 +136,7 @@ function showModal(data) {
 			}),
 			presharedKey: new ui.Textfield(data.options.presharedKey, {
 				optional: false,
+				password: true,
 			}),
 			phase1_lifetime: new ui.Textfield(data.options.phase1_lifetime, {
 				optional: false,
@@ -315,7 +316,7 @@ function showModal(data) {
 			E('div', {class: "modal-row"}, [
 				E('div', { class: 'modal-value' }, [
 					E('label', { 'class': 'modal-val-title' }, _('<%:Pre-shared key %>')),
-					form.presharedKey.render()
+					E('div', {class: 'modal-password'}, form.presharedKey.render())
 				]),	
 			]),
 	
