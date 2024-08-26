@@ -25,12 +25,35 @@
 <script type="text/javascript">
 
 var localAddresses = get_list_interfaces();
-var authTypes = ['psk'];
-var hashTypes = ['md5', 'sha1', 'sha256', 'sha512'];
-var encriptTypes = ['aes128', 'aes192', 'aes256', 'aes256gcm', '3des'];
+var authTypes = ['psk', 'pubkey'];
+var hashTypes = ['md5', 'sha1', 'sha256', 'sha512', 'sha384'];
+var encriptTypes = ['aes128', 'aes192', 'aes256', '3des'];
 var keyExchModes = ['ikev1', 'ikev2', 'ike'];
-var dhGroups = ['modp768', 'modp1024', 'modp3072'];
-var pfsGroups = ['prfmd5', 'prfsha1', 'prfsha256', 'prfsha512'];
+var dhGroupsRFC = {
+	'0':	'NONE',
+	'2':	'1024-bit MODP Group',
+	'5':	'1536-bit MODP Group',
+	'14':	'2048-bit MODP Group',
+	'15':	'3072-bit MODP Group',
+	'16':	'4096-bit MODP Group',
+	'17':	'6144-bit MODP Group',
+	'18':	'8192-bit MODP Group',
+	'19':	'256-bit random ECP group',
+	'20':	'384-bit random ECP group',
+	'21':	'521-bit random ECP group',
+	'23':	'2048-bit MODP with 224-bit subgrout',
+	'24':	'2048-bit MODP with 256-bit subgrout',
+	'25':	'192-bit Random ECP Group',
+	'26':	'224-bit Random ECP Group',
+	'27':	'brainpoolP224r1',
+	'28':	'brainpoolP256r1',
+	'29':	'brainpoolP384r1',
+	'30':	'brainpoolP512r1',
+	'31':	'Curve25519',
+	'32':	'Curve448',
+	'33':	'GOST3410_2012_256',
+	'34':	'GOST3410_2012_512',
+}
 
 class IpsecData {
 	name = "";
@@ -163,7 +186,7 @@ function showModal(data) {
 				sort: false,
 				optional: false,
 			}),
-			phase1_dhGroup: new ui.Dropdown(data.options.phase1_dhGroup, make_dropdown_options(dhGroups), {
+			phase1_dhGroup: new ui.Dropdown(data.options.phase1_dhGroup, dhGroupsRFC, {
 				multiple: false,
 				sort: false,
 				optional: false,
@@ -193,7 +216,7 @@ function showModal(data) {
 				sort: false,
 				optional: false,
 			}),
-			phase2_pfsGroup: new ui.Dropdown(data.options.phase2_pfsGroup, make_dropdown_options(pfsGroups), {
+			phase2_pfsGroup: new ui.Dropdown(data.options.phase2_pfsGroup, dhGroupsRFC, {
 				multiple: false,
 				sort: false,
 				optional: false,
