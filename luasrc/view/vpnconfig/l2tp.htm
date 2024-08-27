@@ -18,8 +18,8 @@
 	</div>
     <div class="cbi-page-actions">
         <span id="btn_enable_spinner" class="btn_spinner"></span> 
-        <input id="btnApply" class="cbi-button cbi-button-apply" type="button" value="Save"> 
-        <input id="btnReset" class="cbi-button cbi-button-reset" type="button" value="Reset"> 
+        <input id="btnApply" class="cbi-button cbi-button-apply" type="button" value="<%:Save%>"> 
+        <input id="btnReset" class="cbi-button cbi-button-reset" type="button" value="<%:Reset%>"> 
     </div>
 </div>
 
@@ -51,27 +51,27 @@ L.require('ui').then(function(ui) {
     function initForm(form, data) {
         form['isActive'] = new ui.Checkbox(data.isActive);
         form['server'] = new ui.Textfield(data.options.server, {
-            placeholder: "Server address",
+            placeholder: _("Server address"),
             optional: false,
-            validate: nearleyValidator('address', 'Should contain IPv4 or URL')
+            validate: nearleyValidator('address', _('Should contain IPv4 or URL'))
         });
         form['username'] = new ui.Textfield(data.options.username, {
-            placeholder: "Username",
+            placeholder: _(" Username"),
             optional: false,
-            validate: nearleyValidator('sectionName', 'Should not contain letters, numbers and "_"')
+            validate: nearleyValidator('sectionName', _('Should not contain letters, numbers and "_"'))
         });
         form['password'] = new ui.Textfield(data.options.password, {
-            placeholder: "Password",
+            placeholder: _(" Password"),
             optional: false,
             password: true,
             validate: function(input) {
                 if (input.length)
                     return true;
-                return 'Can not be empty';
+                return _('Can not be empty');
             }
         })
         form['addOptinos'] = new ui.Textfield(data.options.addOptinos, {
-            placeholder: "Additional PPTP options",
+            placeholder: _("Additional PPTP options"),
             optional: true,
         })
         form['authType'] = new ui.Dropdown(data.options.authType, make_dropdown_options(authTypes), {
@@ -87,39 +87,39 @@ L.require('ui').then(function(ui) {
     function renderForm(form) {
         var container = E('div', {class: 'tr '}, [
             E('div', { class: 'cbi-value' }, [
-                E('label', { 'class': 'cbi-value-title' }, _('<%:Enable PPTP client %>')),
+                E('label', { 'class': 'cbi-value-title' }, _('Enable L2TP client')),
                 E('div', { class: 'cbi-value-field' }, [form.isActive.render()])
             ]),
             E('div', { class: 'cbi-value' }, [
-                E('label', { 'class': 'cbi-value-title' }, _('<%:Server %>')),
+                E('label', { 'class': 'cbi-value-title' }, _('Server')),
                 E('div', { class: 'cbi-value-field' }, [form.server.render()])
             ]),
             E('div', { class: 'cbi-value' }, [
-                E('label', { 'class': 'cbi-value-title' }, _('<%:Use as default route %>')),
+                E('label', { 'class': 'cbi-value-title' }, _('Use as default route')),
                 E('div', { class: 'cbi-value-field' }, [form.isDefaultRoute.render()])
             ]),
             E('div', { class: 'cbi-value' }, [
-                E('label', { 'class': 'cbi-value-title' }, _('<%:Username %>')),
+                E('label', { 'class': 'cbi-value-title' }, _('Username')),
                 E('div', { class: 'cbi-value-field' }, [form.username.render()])
             ]),
             E('div', { class: 'cbi-value' }, [
-                E('label', { 'class': 'cbi-value-title' }, _('<%:Password %>')),
+                E('label', { 'class': 'cbi-value-title' }, _('Password')),
                 E('div', { class: 'cbi-value-field' }, [form.password.render()]),
             ]),
             E('div', { class: 'cbi-value' }, [
-                E('label', { 'class': 'cbi-value-title' }, _('<%:Use MPPE (MS-CHAP-V2 auth) %>')),
+                E('label', { 'class': 'cbi-value-title' }, _('Use MPPE (MS-CHAP-V2 auth)')),
                 E('div', { class: 'cbi-value-field' }, [form.isMPPE.render()])
             ]),
             E('div', { class: 'cbi-value' }, [
-                E('label', { 'class': 'cbi-value-title' }, _('<%:Authentication type %>')),
+                E('label', { 'class': 'cbi-value-title' }, _('Authentication type')),
                 E('div', { class: 'cbi-value-field' }, [form.authType.render()])
             ]),
             E('div', { class: 'cbi-value' }, [
-                E('label', { 'class': 'cbi-value-title' }, _('<%:Additional options %>')),
+                E('label', { 'class': 'cbi-value-title' }, _('Additional options')),
                 E('div', { class: 'cbi-value-field' }, [form.addOptinos.render()])
             ]),
             E('div', { class: 'cbi-value' }, [
-                E('label', { 'class': 'cbi-value-title' }, _('<%:Use IPSec protection %>')),
+                E('label', { 'class': 'cbi-value-title' }, _('Use IPSec protection')),
                 E('div', { class: 'cbi-value-field' }, [form.isIPSecProt.render()])
             ]),
         ])
