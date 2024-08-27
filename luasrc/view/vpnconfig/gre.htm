@@ -11,14 +11,14 @@
 
 	<div id="gre_rows" class="table">
 		<div class="tr table-titles">
-			<div class="th">Name</div>
-			<div class="th">Active</div>
+			<div class="th"><%:Name %></div>
+			<div class="th"><%:Active %></div>
 			<div class="th center nowrap cbi-section-actions"><%:Actions %></div>
 		</div>
 	</div>
 	<div class="cbi-page-actions">
         <span id="btn_enable_spinner" class="btn_spinner"></span> 
-        <input class="cbi-button cbi-button-apply" type="button" value="Create new" onclick="showModal(new GreData())"> 
+        <input class="cbi-button cbi-button-apply" type="button" value="<%:Create %>" onclick="showModal(new GreData())"> 
     </div>
 </div>
 
@@ -68,10 +68,10 @@ function showModal(greData) {
 	L.require('ui').then(function(ui) {
 		var form = {
 			name: new ui.Textfield(greData.name, {
-				placeholder: "Name",
+				placeholder: _(" Name"),
 				optional: false,
 				readonly: greData.name.length > 0,
-				validate: nearleyValidator('sectionName', 'Should contain letters, numbers and "_"')
+				validate: nearleyValidator('sectionName', _('Should contain letters, numbers and "_"'))
 			}),
 			localAddr: new ui.Dropdown(greData.options.localAddr, make_dropdown_options(localAddresses), {
 				multiple: false,
@@ -79,9 +79,9 @@ function showModal(greData) {
 				sort: false
 			}),
 			remoteAddr: new ui.Textfield(greData.options.remoteAddr, {
-				placeholder: "Remote IP",
+				placeholder: _("Remote IP"),
 				optional: false,
-				validate: nearleyValidator('ip4', 'Should contain numbers 0..255 and "."')
+				validate: nearleyValidator('ip4', _('Should contain numbers 0..255 and "."'))
 			}),
 			netType: new ui.Dropdown(greData.options.netType, make_dropdown_options(networkTypes), {
 				multiple: false,
@@ -96,19 +96,19 @@ function showModal(greData) {
 			}),
 			tunnelIp: new ui.Textfield(greData.options.tunnelIp, {
 				optional: false,
-				placeholder: "Local IP for tunnel",
-				validate: nearleyValidator('ip4', 'Should contain numbers 0..255 and "."')
+				placeholder: _("Local IP for tunnel %."),
+				validate: nearleyValidator('ip4', _('Should contain numbers 0..255 and "."'))
 			}),
 			tunnelMask: new ui.Textfield(greData.options.tunnelMask, {
 				optional: false,
-				placeholder: "Netmask",
-				validate: nearleyValidator('netmask', 'Should contain numbers 0..255 and "." or bits count 0..32')
+				placeholder: _(" Netmask"),
+				validate: nearleyValidator('netmask', _('Should contain numbers 0..255 and "." or bits count 0..32'))
 			}),
 			greKey: new ui.Textfield(greData.options.greKey, {
 				optional: true,
-				placeholder: "Leave blank if not used",
+				placeholder: _("Leave blank if not used"),
 				validate: function(input){
-					var v = nearleyValidator('integer', 'Should contain only digits');
+					var v = nearleyValidator('integer', _('Should contain only digits'));
 					var res = v(input);
 					if (res !== true)
 						return res;
@@ -119,7 +119,7 @@ function showModal(greData) {
 					if (Number(input) > 0 && Number(input) < 0xFFFFFFFF) {
 						return true;
 					} else {
-						return "out of range"
+						return _("out of range");
 					}
 				}
 			}),
@@ -137,64 +137,64 @@ function showModal(greData) {
 		L.showModal('Configure GRE tunnel', [
 			E('div', {class: "modal-row"}, [
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('<%:Name %>')),
+					E('label', { 'class': 'modal-val-title' }, _('Name')),
 					form.name.render()
 				]),
 			]),
 
 			E('div', {class: "modal-row"}, [
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('<%:Local address %>')),
+					E('label', { 'class': 'modal-val-title' }, _('Local address')),
 					form.localAddr.render()
 				]),
 
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('<%:Remote address %>')),
+					E('label', { 'class': 'modal-val-title' }, _('Remote address')),
 					form.remoteAddr.render()
 				]),
 			]),
 
 			E('div', { class: 'modal-row' }, [
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('<%:Network type %>')),
+					E('label', { 'class': 'modal-val-title' }, _('Network type')),
 					form.netType.render()
 				]),
 			]),
 
 			E('div', { class: 'modal-row' }, [
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('<%:Add to Bridge or create new %>')),
+					E('label', { 'class': 'modal-val-title' }, _('Add to Bridge or create new')),
 					form.bridge.render()
 				]),
 			]),
 
 			E('div', { class: 'modal-row' }, [
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('<%:Tunnel IP %>')),
+					E('label', { 'class': 'modal-val-title' }, _('Tunnel IP')),
 					form.tunnelIp.render()
 				]),
 
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('<%:Tunnel netmask %>')),
+					E('label', { 'class': 'modal-val-title' }, _('Tunnel netmask')),
 					form.tunnelMask.render()
 				]),
 			]),
 
 			E('div', { class: 'modal-row' }, [
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('<%:GRE key %>')),
+					E('label', { 'class': 'modal-val-title' }, _('GRE key')),
 					form.greKey.render()
 				]),
 
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('<%:Firewall zone %>')),
+					E('label', { 'class': 'modal-val-title' }, _('Firewall zone')),
 					form.zone.render()
 				]),
 			]),
 
 			E('div', { class: 'modal-value modal-checkbox' }, [
 				form.notFragment.render(),
-				E('label', { 'class': 'modal-val-title', for: 'notFragment'}, _('<%:Dont fragment packets %>')),
+				E('label', { 'class': 'modal-val-title', for: 'notFragment'}, _('Dont fragment packets')),
 			]),
 
 			E('div', { class: 'modal-buttons' }, [
