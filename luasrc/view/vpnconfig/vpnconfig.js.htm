@@ -94,7 +94,7 @@ function getCfgData(vpnType, callback) {
 function addRow(elementId, data) {
 	var container = E('div', { id: data.name, class: 'tr '}, [
 		E('div', {class: 'td'}, E('div', {}, data.name)),
-		E('div', {class: 'td'}, E('div', {id: data.name+'-active'}, (data.isActive == true ? 'yes' : 'no'))),
+		E('div', {class: 'td'}, E('div', {id: data.name+'-active'}, (data.isActive == true ? _('yes') : _('no')))),
 		E('div', {class: "nowrap cbi-section-actions td", style: "text-align: center;"}, [
 			E('div', {class: 'cbi-button cbi-button-neutral ', style: "display: initial;", click: function() {activateConfig(data);}}, (data.isActive == true ? _('Disable') : _('Enable'))),' ',
 			E('div', {class: 'cbi-button cbi-button-edit', style: "display: initial;", click: function() {showModal(data);}}, _('Edit')),' ',

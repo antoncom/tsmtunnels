@@ -11,15 +11,15 @@
 
 	<div id="dmvpn_rows" class="table">
 		<div class="tr table-titles">
-			<div class="th">Name</div>
-			<div class="th">Active</div>
+			<div class="th"><%:Name %></div>
+			<div class="th"><%:Active %></div>
 			<div class="th center nowrap cbi-section-actions"><%:Actions %></div>
 		</div>
 	</div>
 
 	<div class="cbi-page-actions">
         <span id="btn_enable_spinner" class="btn_spinner"></span> 
-        <input class="cbi-button cbi-button-apply" type="button" value="Create new" onclick="showModal(new DmvpnData())"> 
+        <input class="cbi-button cbi-button-apply" type="button" value="<%:Add %>" onclick="showModal(new DmvpnData())"> 
     </div>
 </div>
 
@@ -80,10 +80,10 @@ function showModal(dmvpnData) {
 	L.require('ui').then(function(ui) {
 		var form = {
 			name: new ui.Textfield(dmvpnData.name, {
-				placeholder: "Name",
+				placeholder: _("Name"),
 				optional: false,
 				readonly: dmvpnData.name.length > 0,
-				validate: nearleyValidator('sectionName', 'Should contain letters, numbers and "_"')
+				validate: nearleyValidator('sectionName', _('Should contain letters, numbers and "_"'))
 			}),
 			localAddr: new ui.Dropdown(dmvpnData.options.localAddr, make_dropdown_options(localAddresses), {
 				multiple: false,
@@ -91,35 +91,35 @@ function showModal(dmvpnData) {
 				sort: false
 			}),
 			remoteAddr: new ui.Textfield(dmvpnData.options.remoteAddr, {
-				placeholder: "Remote IP",
+				placeholder: _("Remote IP"),
 				optional: false,
-				validate: nearleyValidator('ip4', 'Should contain numbers 0..255 and "."')
+				validate: nearleyValidator('ip4', _('Should contain numbers 0..255 and "."'))
 			}),
 			hubTunnelAddr: new ui.Textfield(dmvpnData.options.hubTunnelAddr, {
 				optional: false,
-				placeholder: "HUB tunnel address",
-				validate: nearleyValidator('ip4', 'Should contain numbers 0..255 and "."')
+				placeholder: _("HUB tunnel address"),
+				validate: nearleyValidator('ip4', _('Should contain numbers 0..255 and "."'))
 			}),
 			hubTunnelMask: new ui.Textfield(dmvpnData.options.hubTunnelMask, {
 				optional: false,
-				placeholder: "HUB tunnel netmask",
-				validate: nearleyValidator('netmask', 'Should contain numbers 0..255 and "." or bits count 0..32')
+				placeholder: _("HUB tunnel netmask"),
+				validate: nearleyValidator('netmask', _('Should contain numbers 0..255 and "." or bits count 0..32'))
 			}),
 			holdingTime: new ui.Textfield(dmvpnData.options.holdingTime, {
 				optional: false,
-				placeholder: "Default 7200 sec.",
-				validate: nearleyValidator('number', "Should contain digits nad ',' or '.'")
+				placeholder: _("Default 7200 sec."),
+				validate: nearleyValidator('number', _("Should contain digits nad ',' or '.'"))
 			}),
 			tunnelIp: new ui.Textfield(dmvpnData.options.tunnelIp, {
 				optional: false,
-				placeholder: "Local IP for tunnel",
-				validate: nearleyValidator('ip4', 'Should contain numbers 0..255 and "."')
+				placeholder: _("Local IP for tunnel"),
+				validate: nearleyValidator('ip4', _('Should contain numbers 0..255 and "."'))
 			}),
 			greKey: new ui.Textfield(dmvpnData.options.greKey, {
 				optional: false,
-				placeholder: "Leave blank if not used",
+				placeholder: _("Leave blank if not used"),
 				validate: function(input){
-					var v = nearleyValidator('integer', 'Should contain only digits');
+					var v = nearleyValidator('integer', _('Should contain only digits'));
 					var res = v(input);
 					if (res !== true)
 						return res;
@@ -130,7 +130,7 @@ function showModal(dmvpnData) {
 					if (Number(input) > 0 && Number(input) < 0xFFFFFFFF) {
 						return true;
 					} else {
-						return "out of range"
+						return _("out of range")
 					}
 				}
 			}),
@@ -142,18 +142,18 @@ function showModal(dmvpnData) {
 			}),
 			pingAddr: new ui.Textfield(dmvpnData.options.pingAddr, {
 				optional: false,
-				placeholder: "Address to check connection",
-				validate: nearleyValidator('ip4', 'Should contain numbers 0..255 and "."')
+				placeholder: _("Address to check connection"),
+				validate: nearleyValidator('ip4', _('Should contain numbers 0..255 and "."'))
 			}),
 			pingInterval: new ui.Textfield(dmvpnData.options.pingInterval, {
 				optional: false,
-				placeholder: "Default 30 sec.",
-				validate: nearleyValidator('number', "Should contain digits nad ',' or '.'")
+				placeholder: _("Default 30 sec."),
+				validate: nearleyValidator('number', _("Should contain digits nad ',' or '.'"))
 			}),
 			pingAttempts: new ui.Textfield(dmvpnData.options.pingAttempts, {
 				optional: false,
-				placeholder: "3 by default",
-				validate: nearleyValidator('number', "Should contain digits nad ',' or '.'")
+				placeholder: _("3 by default"),
+				validate: nearleyValidator('number', _("Should contain digits nad ',' or '.'"))
 			}),
 			isNotCache: new ui.Checkbox(dmvpnData.options.isNotCache),
 			isAllowShortcuts: new ui.Checkbox(dmvpnData.options.isAllowShortcuts),
@@ -161,71 +161,71 @@ function showModal(dmvpnData) {
 			isIPSecProt: new ui.Checkbox(dmvpnData.options.isIPSecProt)
 		}
 
-		L.showModal('Configure DMVPN tunnel', [
+		L.showModal(_('Configure DMVPN tunnel'), [
 			E('div', {class: "modal-row"}, [
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('<%:Name %>')),
+					E('label', { 'class': 'modal-val-title' }, _('Name')),
 					form.name.render()
 				]),
 
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('<%:Local NBMA address %>')),
+					E('label', { 'class': 'modal-val-title' }, _('Local NBMA address')),
 					form.localAddr.render()
 				]),
 
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('<%:Remote NBMA address %>')),
+					E('label', { 'class': 'modal-val-title' }, _('Remote NBMA address')),
 					form.remoteAddr.render()
 				]),
 			]),
 
 			E('div', {class: "modal-row"}, [
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('<%:HUB tunnel address %>')),
+					E('label', { 'class': 'modal-val-title' }, _('HUB tunnel address')),
 					form.hubTunnelAddr.render()
 				]),
 
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('<%:HUB tunnel netmask %>')),
+					E('label', { 'class': 'modal-val-title' }, _('HUB tunnel netmask')),
 					form.hubTunnelMask.render()
 				]),
 
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('<%:Holding time (sec.) %>')),
+					E('label', { 'class': 'modal-val-title' }, _('Holding time (sec.)')),
 					form.holdingTime.render()
 				]),
 			]),
 
 			E('div', {class: "modal-row"}, [
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('<%:Tunnel IP %>')),
+					E('label', { 'class': 'modal-val-title' }, _('Tunnel IP')),
 					form.tunnelIp.render()
 				]),
 
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('<%:GRE key %>')),
+					E('label', { 'class': 'modal-val-title' }, _('GRE key')),
 					form.greKey.render()
 				]),
 
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('<%:Firewall zone %>')),
+					E('label', { 'class': 'modal-val-title' }, _('Firewall zone')),
 					form.zone.render()
 				]),
 			]),
 
 			E('div', {class: "modal-row"}, [
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('<%:Ping address %>')),
+					E('label', { 'class': 'modal-val-title' }, _('Ping address')),
 					form.pingAddr.render()
 				]),
 
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('<%:Ping interval (sec.) %>')),
+					E('label', { 'class': 'modal-val-title' }, _('Ping interval (sec.)')),
 					form.pingInterval.render()
 				]),
 
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('<%:Ping Attempts %>')),
+					E('label', { 'class': 'modal-val-title' }, _('Ping Attempts')),
 					form.pingAttempts.render()
 				]),
 			]),
@@ -233,24 +233,24 @@ function showModal(dmvpnData) {
 			E('div', {class: "modal-row"}, [
 				E('div', { class: 'modal-value modal-checkbox' }, [
 					form.isNotCache.render(),
-					E('label', { 'class': 'modal-val-title' }, _('<%:No caching %>')),
+					E('label', { 'class': 'modal-val-title' }, _('No caching')),
 				]),
 
 				E('div', { class: 'modal-value modal-checkbox' }, [
 					form.isAllowShortcuts.render(),
-					E('label', { 'class': 'modal-val-title' }, _('<%:Allow shortcuts %>')),
+					E('label', { 'class': 'modal-val-title' }, _('Allow shortcuts')),
 				]),
 				E('div', { class: 'modal-value' }),	/* invisible element for checkbox 3-rd column*/
 			]),
 
 			E('div', { class: 'modal-value modal-checkbox' }, [
 				form.isHubCisco.render(),
-				E('label', { 'class': 'modal-val-title' }, _('<%:HUB is Sisco %>')),
+				E('label', { 'class': 'modal-val-title' }, _('HUB is Sisco')),
 			]),
 
 			E('div', { class: 'modal-value modal-checkbox' }, [
 				form.isIPSecProt.render(),
-				E('label', { 'class': 'modal-val-title' }, _('<%:Use IPSec protection %>')),
+				E('label', { 'class': 'modal-val-title' }, _('Use IPSec protection')),
 			]),
 
 			E('div', { class: 'modal-buttons' }, [

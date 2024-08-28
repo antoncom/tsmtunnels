@@ -11,14 +11,14 @@
 
 	<div id="l2tpv3_rows" class="table">
 		<div class="tr table-titles">
-			<div class="th">Name</div>
-			<div class="th">Active</div>
+			<div class="th"><%:Name %></div>
+			<div class="th"><%:Active %></div>
 			<div class="th center nowrap cbi-section-actions"><%:Actions %></div>
 		</div>
 	</div>
 	<div class="cbi-page-actions">
         <span id="btn_enable_spinner" class="btn_spinner"></span> 
-        <input class="cbi-button cbi-button-apply" type="button" value="Create new" onclick="showModal(new L2ptv3Data())"> 
+        <input class="cbi-button cbi-button-apply" type="button" value="<%:Add %>" onclick="showModal(new L2ptv3Data())"> 
     </div>
 </div>
 
@@ -77,10 +77,10 @@
 		L.require('ui').then(function(ui) {
 			var form = {
 				name: new ui.Textfield(l2ptv3Data.name, {
-					placeholder: "Name",
+					placeholder: _("Name"),
 					optional: false,
 					readonly: l2ptv3Data.name.length > 0,
-					validate: nearleyValidator('sectionName', 'Should contain letters, numbers and "_"')
+					validate: nearleyValidator('sectionName', _('Should contain letters, numbers and "_"'))
 				}),		
 				localAddr: new ui.Dropdown(l2ptv3Data.options.localAddr, make_dropdown_options(localAddresses), {
 					multiple: false,
@@ -88,9 +88,9 @@
 					optional: false
 				}),		
 				remoteAddr: new ui.Textfield(l2ptv3Data.options.remoteAddr, {
-					placeholder: "Remote IP",
+					placeholder: _("Remote IP"),
 					optional: false,
-					validate: nearleyValidator('ip4', 'Should contain numbers 0..255 and "."')
+					validate: nearleyValidator('ip4', _('Should contain numbers 0..255 and "."'))
 				}),
 				bridge: new ui.Dropdown(l2ptv3Data.options.bridge, make_dropdown_options(bridges), {
 					multiple: false,
@@ -106,33 +106,33 @@
 				}),		
 				tunnelIp: new ui.Textfield(l2ptv3Data.options.tunnelIp, {
 					optional: false,
-					placeholder: "Local IP for tunnel",
-					validate: nearleyValidator('ip4', 'Should contain numbers 0..255 and "."')
+					placeholder: _("Local IP for tunnel"),
+					validate: nearleyValidator('ip4', _('Should contain numbers 0..255 and "."'))
 				}),		
 				tunnelMask: new ui.Textfield(l2ptv3Data.options.tunnelMask, {
 					optional: false,
-					placeholder: "tunnel netmask",
-					validate: nearleyValidator('netmask', 'Should contain numbers 0..255 and "." or bits count 0..32')
+					placeholder: _("Tunnel netmask"),
+					validate: nearleyValidator('netmask', _('Should contain numbers 0..255 and "." or bits count 0..32'))
 				}),				
 				tunnelId: new ui.Textfield(l2ptv3Data.options.tunnelId, {
 					optional: false,
-					placeholder: "",
-					validate: nearleyValidator('integer', 'Should contain only digits')
+					placeholder: _("Tunnel ID"),
+					validate: nearleyValidator('integer', _('Should contain only digits'))
 				}),		
 				remoteTunnelId: new ui.Textfield(l2ptv3Data.options.remoteTunnelId, {
 					optional: false,
-					placeholder: "",
-					validate: nearleyValidator('integer', 'Should contain only digits')
+					placeholder: _("Tunnel ID"),
+					validate: nearleyValidator('integer', _('Should contain only digits'))
 				}),		
 				sessionId: new ui.Textfield(l2ptv3Data.options.sessionId, {
 					optional: false,
-					placeholder: "",
-					validate: nearleyValidator('integer', 'Should contain only digits')
+					placeholder: _("Session ID"),
+					validate: nearleyValidator('integer', _('Should contain only digits'))
 				}),		
 				remoteSessionId: new ui.Textfield(l2ptv3Data.options.remoteSessionId, {
 					optional: true,
-					placeholder: "",
-					validate: nearleyValidator('integer', 'Should contain only digits')
+					placeholder: _("Session ID"),
+					validate: nearleyValidator('integer', _('Should contain only digits'))
 				}),		
 				encapsulation: new ui.Dropdown(l2ptv3Data.options.encapsulation, make_dropdown_options(encapsulationTypes), {
 					multiple: false,
@@ -146,82 +146,82 @@
 				})
 			}
 	
-			L.showModal('Configure L2TPv3 tunnel', [
+			L.showModal(_('Configure L2TPv3 tunnel'), [
 				E('div', {class: "modal-row"}, [
 					E('div', { class: 'modal-value' }, [
-						E('label', { 'class': 'modal-val-title' }, _('<%:Name %>')),
+						E('label', { 'class': 'modal-val-title' }, _('Name')),
 						form.name.render()
 					]),
 				]),
 	
 				E('div', {class: "modal-row"}, [
 					E('div', { class: 'modal-value' }, [
-						E('label', { 'class': 'modal-val-title' }, _('<%:Local address %>')),
+						E('label', { 'class': 'modal-val-title' }, _('Local address')),
 						form.localAddr.render()
 					]),
 		
 					E('div', { class: 'modal-value' }, [
-						E('label', { 'class': 'modal-val-title' }, _('<%:Remote address %>')),
+						E('label', { 'class': 'modal-val-title' }, _('Remote address')),
 						form.remoteAddr.render()
 					]),
 				]),
 	
 				E('div', {class: "modal-row"}, [
 					E('div', { class: 'modal-value' }, [
-						E('label', { 'class': 'modal-val-title' }, _('<%:Add to bridge or Create new %>')),
+						E('label', { 'class': 'modal-val-title' }, _('Add to bridge or Create new')),
 						form.bridge.render()
 					]),
 
 					E('div', { class: 'modal-value' }, [
-						E('label', { 'class': 'modal-val-title' }, _('<%:Firewall zone %>')),
+						E('label', { 'class': 'modal-val-title' }, _('Firewall zone')),
 						form.zone.render()
 					]),
 				]),
 	
 				E('div', {class: "modal-row"}, [
 					E('div', { class: 'modal-value' }, [
-						E('label', { 'class': 'modal-val-title' }, _('<%:Tunnel IP %>')),
+						E('label', { 'class': 'modal-val-title' }, _('Tunnel IP')),
 						form.tunnelIp.render()
 					]),
 		
 					E('div', { class: 'modal-value' }, [
-						E('label', { 'class': 'modal-val-title' }, _('<%:Tunnel netmask %>')),
+						E('label', { 'class': 'modal-val-title' }, _('Tunnel netmask')),
 						form.tunnelMask.render()
 					]),
 				]),
 	
 				E('div', {class: "modal-row"}, [
 					E('div', { class: 'modal-value' }, [
-						E('label', { 'class': 'modal-val-title' }, _('<%:Tunnel ID %>')),
+						E('label', { 'class': 'modal-val-title' }, _('Tunnel ID')),
 						form.tunnelId.render()
 					]),
 		
 					E('div', { class: 'modal-value' }, [
-						E('label', { 'class': 'modal-val-title' }, _('<%:Remote tunnel ID %>')),
+						E('label', { 'class': 'modal-val-title' }, _('Remote tunnel ID')),
 						form.remoteTunnelId.render()
 					]),
 				]),
 	
 				E('div', {class: "modal-row"}, [
 					E('div', { class: 'modal-value' }, [
-						E('label', { 'class': 'modal-val-title' }, _('<%:Session ID %>')),
+						E('label', { 'class': 'modal-val-title' }, _('Session ID')),
 						form.sessionId.render()
 					]),
 
 					E('div', { class: 'modal-value' }, [
-						E('label', { 'class': 'modal-val-title' }, _('<%:Remote Session ID %>')),
+						E('label', { 'class': 'modal-val-title' }, _('Remote Session ID')),
 						form.remoteSessionId.render()
 					]),
 				]),
 	
 				E('div', {class: "modal-row"}, [
 					E('div', { class: 'modal-value' }, [
-						E('label', { 'class': 'modal-val-title' }, _('<%:Encapsulation %>')),
+						E('label', { 'class': 'modal-val-title' }, _('Encapsulation')),
 						form.encapsulation.render()
 					]),
 		
 					E('div', { class: 'modal-value' }, [
-						E('label', { 'class': 'modal-val-title' }, _('<%:L2 Specific Header type %>')),
+						E('label', { 'class': 'modal-val-title' }, _('L2 Specific Header type')),
 						form.l2HeaderType.render()
 					]),
 				]),

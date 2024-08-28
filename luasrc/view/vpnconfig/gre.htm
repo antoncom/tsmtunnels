@@ -18,7 +18,7 @@
 	</div>
 	<div class="cbi-page-actions">
         <span id="btn_enable_spinner" class="btn_spinner"></span> 
-        <input class="cbi-button cbi-button-apply" type="button" value="<%:Create %>" onclick="showModal(new GreData())"> 
+        <input class="cbi-button cbi-button-apply" type="button" value="<%:Add %>" onclick="showModal(new GreData())"> 
     </div>
 </div>
 
@@ -134,7 +134,7 @@ function showModal(greData) {
 			})
 		}
 
-		L.showModal('Configure GRE tunnel', [
+		L.showModal(_('Configure GRE tunnel'), [
 			E('div', {class: "modal-row"}, [
 				E('div', { class: 'modal-value' }, [
 					E('label', { 'class': 'modal-val-title' }, _('Name')),
