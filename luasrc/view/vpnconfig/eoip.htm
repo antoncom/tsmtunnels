@@ -82,7 +82,8 @@
 					multiple: false,
 					optional: false,
 					sort: false,
-					create: false,
+					create: true,
+					validate: nearleyValidator('string', _('Should contain letters, numbers and "_"'))
 				}),
 				tunnelIp: new ui.Textfield(eoipData.options.tunnelIp, {
 					optional: false,
@@ -115,9 +116,10 @@
 				}),
 				zone: new ui.Dropdown(eoipData.options.zone, make_dropdown_options(firewallZones), {
 					multiple: false,
-					create: false,
+					create: true,
 					sort: false,
-					optional: false
+					optional: false,
+					validate: nearleyValidator('string', _('Should contain letters, numbers and "_"'))
 				})
 			}
 	

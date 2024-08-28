@@ -96,14 +96,16 @@
 					multiple: false,
 					sort: false,
 					optional: false,
-					create: false,
+					create: true,
+					validate: nearleyValidator('string', _('Should contain letters, numbers and "_"'))
 				}),		
 				zone: new ui.Dropdown(l2ptv3Data.options.zone, make_dropdown_options(firewallZones), {
 					multiple: false,
 					sort: false,
-					create: false,
-					optional: false
-				}),		
+					create: true,
+					optional: false,
+					validate: nearleyValidator('string', _('Should contain letters, numbers and "_"'))
+				}),
 				tunnelIp: new ui.Textfield(l2ptv3Data.options.tunnelIp, {
 					optional: false,
 					placeholder: _("Local IP for tunnel"),

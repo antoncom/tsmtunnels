@@ -136,9 +136,10 @@ function showModal(dmvpnData) {
 			}),
 			zone: new ui.Dropdown(dmvpnData.options.zone, make_dropdown_options(firewallZones), {
 				multiple: false,
-				create: false,
+				create: true,
 				sort: false,
-				optional: false
+				optional: false,
+				validate: nearleyValidator('string', _('Should contain letters, numbers and "_"'))
 			}),
 			pingAddr: new ui.Textfield(dmvpnData.options.pingAddr, {
 				optional: false,
