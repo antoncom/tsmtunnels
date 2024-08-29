@@ -126,6 +126,21 @@ function deleteConfig(data) {
 	sendAction("delete", data, handleActionResult);
 }
 
+function uploadFile(data) {
+	// sendAction() cant send files
+	var xhr = new XMLHttpRequest();
+	var url = '<%=luci.dispatcher.build_url("admin", "services", config, "action")%>/'+ '%h/%h'.format('upload_file');
+	xhr.open('POST', url, true);
+	xhr.onload = function () {
+		if (xhr.status === 200) {
+			console.log('File successfully uploaded');
+		} else {
+			alert('File upload failed!');
+		}
+	};
+	xhr.send(data);
+}
+
 function sendAction(action, data, callback) {
 	var xhr = new XHR(false);
 	var url = '<%=luci.dispatcher.build_url("admin", "services", config, "action")%>/'+ '%h/%h'.format(action);
@@ -149,7 +164,7 @@ function handleActionResult(result) {
 	switch(result.status) {
 		case 'success':
 			console.log(result.action, result.status);
-			location.reload();
+			// location.reload();
 			break;
 		case 'error':
 			console.log(result);
@@ -169,7 +184,7 @@ function showMessageWindow(title, message) {
 					class: 'btn',
 					click: function() {
 						L.hideModal();
-						location.reload(); //reload page to restore form data
+						// location.reload(); //reload page to restore form data
 					}
 				}, _('Close'))
 			])

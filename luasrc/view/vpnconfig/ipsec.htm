@@ -69,6 +69,9 @@ class IpsecData {
 		remoteSubnets: "",
 		authType: "psk",
 		presharedKey: "",
+		fileCaCertificate: "",
+		fileLocalCertificate: "",
+		filePubkey: "",
 		phase1_lifetime: "28800",
 		phase1_ikeEncript: "aes256",
 		phase1_ikeHash: "sha256",
@@ -158,6 +161,7 @@ function showModal(data) {
 				validate: nearleyValidator('ip4_list', _('Should contain IPv4 separated by comma or space'))
 			}),
 			authType: new ui.Dropdown(data.options.authType, make_dropdown_options(authTypes), {
+				id: 'cbAuthType',
 				multiple: false,
 				sort: false,
 				optional: false,
@@ -342,11 +346,30 @@ function showModal(data) {
 				]),	
 			]),
 	
-			E('div', {class: "modal-row"}, [
+			E('div', {class: "modal-row psk-key"}, [
 				E('div', { class: 'modal-value' }, [
 					E('label', { 'class': 'modal-val-title' }, _('Pre-shared key')),
 					E('div', {class: 'modal-password'}, form.presharedKey.render())
 				]),	
+			]),
+
+			E('div', {class: "modal-row pub-key"}, [
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('CA PEM Certificate')),
+					E('input', {type: "file", id: "fileCaCertificate", nam: "fileCaCertificate"}),
+				]),	
+			]),
+			E('div', {class: "modal-row pub-key"}, [
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('Local certificate')),
+					E('input', {type: "file", id: "fileLocalCertificate", nam: "fileLocalCertificate"}),
+				]),
+			]),
+			E('div', {class: "modal-row pub-key"}, [
+				E('div', { class: 'modal-value' }, [
+					E('label', { 'class': 'modal-val-title' }, _('PEM key')),
+					E('input', {type: "file", id: "filePubkey", nam: "filePubkey"}),
+				]),
 			]),
 	
 			E('div', { class: 'modal-buttons' }, [
@@ -398,13 +421,39 @@ function showModal(data) {
 						data.options['phase2_espHash'] = form.phase2_espHash.getValue();
 						data.options['phase2_pfsGroup'] = form.phase2_pfsGroup.getValue();
 
+						if (form.authType.getValue() == 'pubkey') {
+							sendFile('fileCaCertificate', data);
+							sendFile('fileLocalCertificate', data);
+							sendFile('filePubkey', data);
+
+							data.options['fileCaCertificate'] = $('#fileCaCertificate').val().split('\\').pop();
+							data.options['fileLocalCertificate'] = $('#fileLocalCertificate').val().split('\\').pop();
+							data.options['filePubkey'] = $('#filePubkey').val().split('\\').pop();
+						}
+
 						commitConfig(data);
 						L.hideModal()
 					}
 				}, _('Save')),
 			]),
 		]);
+
 	});
+}
+
+function sendFile(inputId, ipsecData) {
+	var fileData = new FormData();
+	var input = document.querySelector('#'+inputId);
+
+	if (!input || !input.files || !input.files.length) {
+		console.log('no file for ' + inputId);
+		return;
+	}
+
+	fileData.append('type', ipsecData.type);
+	fileData.append('name', ipsecData.name);
+	fileData.append(inputId, input.files[0]);
+	uploadFile(fileData);
 }
 
 
