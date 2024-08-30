@@ -346,29 +346,33 @@ function showModal(data) {
 				]),	
 			]),
 	
-			E('div', {class: "modal-row psk-key"}, [
-				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('Pre-shared key')),
-					E('div', {class: 'modal-password'}, form.presharedKey.render())
-				]),	
-			]),
-
-			E('div', {class: "modal-row pub-key"}, [
-				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('CA PEM Certificate')),
-					E('input', {type: "file", id: "fileCaCertificate", nam: "fileCaCertificate"}),
-				]),	
-			]),
-			E('div', {class: "modal-row pub-key"}, [
-				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('Local certificate')),
-					E('input', {type: "file", id: "fileLocalCertificate", nam: "fileLocalCertificate"}),
+			E('div', {id: "psk-key", class: (form.authType.getValue() != 'psk' ? 'hidden' : '')}, [
+				E('div', {class: "modal-row"}, [
+					E('div', { class: 'modal-value' }, [
+						E('label', { 'class': 'modal-val-title' }, _('Pre-shared key')),
+						E('div', {class: 'modal-password'}, form.presharedKey.render())
+					]),	
 				]),
 			]),
-			E('div', {class: "modal-row pub-key"}, [
-				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('PEM key')),
-					E('input', {type: "file", id: "filePubkey", nam: "filePubkey"}),
+
+			E('div', {id: "pub-key", class: (form.authType.getValue() != 'pubkey' ? 'hidden' : '')}, [
+				E('div', {class: "modal-row"}, [
+					E('div', { class: 'modal-value' }, [
+						E('label', { 'class': 'modal-val-title' }, _('CA PEM Certificate')),
+						E('input', {type: "file", id: "fileCaCertificate", nam: "fileCaCertificate"}),
+					]),	
+				]),
+				E('div', {class: "modal-row"}, [
+					E('div', { class: 'modal-value' }, [
+						E('label', { 'class': 'modal-val-title' }, _('Local certificate')),
+						E('input', {type: "file", id: "fileLocalCertificate", nam: "fileLocalCertificate"}),
+					]),
+				]),
+				E('div', {class: "modal-row"}, [
+					E('div', { class: 'modal-value' }, [
+						E('label', { 'class': 'modal-val-title' }, _('PEM key')),
+						E('input', {type: "file", id: "filePubkey", nam: "filePubkey"}),
+					]),
 				]),
 			]),
 	
@@ -438,6 +442,20 @@ function showModal(data) {
 			]),
 		]);
 
+		$('#cbAuthType').on('click', function(e){
+			switch(this.value) {
+				case 'psk': 
+					$("#pub-key").addClass('hidden');
+					$("#psk-key").removeClass('hidden');
+					break;
+				case 'pubkey': 
+					$("#pub-key").removeClass('hidden');
+					$("#psk-key").addClass('hidden');
+					break;
+				default:
+					break;
+			}
+		});
 	});
 }
 
