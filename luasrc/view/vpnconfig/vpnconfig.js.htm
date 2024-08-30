@@ -164,7 +164,7 @@ function handleActionResult(result) {
 	switch(result.status) {
 		case 'success':
 			console.log(result.action, result.status);
-			// location.reload();
+			location.reload();
 			break;
 		case 'error':
 			console.log(result);
@@ -184,7 +184,7 @@ function showMessageWindow(title, message) {
 					class: 'btn',
 					click: function() {
 						L.hideModal();
-						// location.reload(); //reload page to restore form data
+						location.reload(); //reload page to restore form data
 					}
 				}, _('Close'))
 			])
