@@ -52,4 +52,32 @@
         margin: 0px 5px;
         padding: 0px 5px 10px 5px;
     }
+
+    .modal-file-button input[type=file] {
+        width: 100% !important;
+        border: 1px solid #ccc;
+        box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);;
+        padding: 0.5em;
+        margin-left: -2px !important;
+    }
+
+    .modal-file-button input[type="file"]::-webkit-file-upload-button {
+        display: none;
+    }
+    .modal-file-button input[type="file"]::file-selector-button {
+        display: none;
+    }
+    .modal-file-button label {
+        width: 140px;
+        text-align: center;
+    }
+
+    .modal-file-button:hover label {
+        background-color: #dde0e3;
+        cursor: pointer;
+    }
+
+    .cbi-input-invalid input[type="file"] {
+        border: 1px solid red;
+    }
 </style>

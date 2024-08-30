@@ -86,6 +86,7 @@ class IpsecData {
 class MyFileUpload {
 	value = "";
 	valid = false;
+	input = null;
 	validate = function(input) {
 		if (input.length)
 			return true;
@@ -97,24 +98,43 @@ class MyFileUpload {
 	};
 	setValue = function(val) {
 		this.value = val;
+		if (this.input) {
+			this.input.val('');
+		}
 	};
 	isValid = function() {
 		return (this.valid == true);
 	};
 	triggerValidation = function() {
 		this.valid = this.validate(this.value);
+		if (!this.input)
+			return;
+
+		if (!this.valid)
+			this.input.addClass('cbi-input-invalid');
+		else
+			this.input.removeClass('cbi-input-invalid');
 	};
 	render = function(fieldName) {
 		var that = this;
-		return E('input', {
-			'type': "file", 
-			'id': fieldName, 
-			'name': fieldName,
-			'change': function() {
-				that.value = this.value.split('\\').pop();
-				console.log(that.value);
-			},
-		});
+		var el = E('div', { class: 'modal-row modal-file-button' }, [
+					E('label', {
+						'class':"btn input-group-text", 
+						'for': fieldName
+					}, [_("Choose file")]),
+					E('input', {
+						'type': "file", 
+						'class': "modal-file-input",
+						'id': fieldName, 
+						'name': fieldName,
+						'change': function() {
+							that.value = this.value.split('\\').pop();
+							console.log(that.value);
+						},
+					})
+				]);
+		that.input = $(el);
+		return el;
 	}
 }
 
