@@ -16,6 +16,6 @@ Vpnconfig receives data from web UI, store it in UCI system and call run_backend
 # FILES UPLOAD
 For IPSec configuration may be needed to upload files (certificates, public key). Server receives files througth POST request with action "upload_file" (client runs it on "Save" button click).
 
-Server write files to /etc/config/vpnconfig_files with names "<cfg section name>_<input filename>". File names are stored in options of this section as well.
+Server write files to /etc/config/vpnconfig_files with names "\<cfg section name\>_\<input filename\>". File names are stored in options of this section as well.
 
 Plees, check that files exist before apply network configurations. Return 'false' if tey dont.
