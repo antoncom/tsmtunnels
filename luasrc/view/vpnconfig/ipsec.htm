@@ -169,7 +169,13 @@ function showModal(data) {
 			presharedKey: new ui.Textfield(data.options.presharedKey, {
 				optional: false,
 				password: true,
-				placeholder: _("Password")
+				placeholder: _("Password"),
+				validate: function(input) {
+					if (input.length)
+						return true;
+
+					return _('Can not be empty');
+				}
 			}),
 			phase1_lifetime: new ui.Textfield(data.options.phase1_lifetime, {
 				optional: false,
@@ -390,6 +396,7 @@ function showModal(data) {
 							form[i].setValue(data[i] != undefined ? data[i] : data.options[i]);
 							form[i].triggerValidation();
 						}
+						showKeyFields(form.authType.getValue());
 					}
 				}, _('Reset')),
 				E('div', {
@@ -443,20 +450,24 @@ function showModal(data) {
 		]);
 
 		$('#cbAuthType').on('click', function(e){
-			switch(this.value) {
-				case 'psk': 
-					$("#pub-key").addClass('hidden');
-					$("#psk-key").removeClass('hidden');
-					break;
-				case 'pubkey': 
-					$("#pub-key").removeClass('hidden');
-					$("#psk-key").addClass('hidden');
-					break;
-				default:
-					break;
-			}
+			showKeyFields(this.value);
 		});
 	});
+}
+
+function showKeyFields(type) {
+	switch(type) {
+		case 'psk': 
+			$("#pub-key").addClass('hidden');
+			$("#psk-key").removeClass('hidden');
+			break;
+		case 'pubkey': 
+			$("#pub-key").removeClass('hidden');
+			$("#psk-key").addClass('hidden');
+			break;
+		default:
+			break;
+	}
 }
 
 function sendFile(inputId, ipsecData) {
