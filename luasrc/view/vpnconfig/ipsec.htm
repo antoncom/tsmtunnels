@@ -83,6 +83,41 @@ class IpsecData {
 	};
 }
 
+class MyFileUpload {
+	value = "";
+	valid = false;
+	validate = function(input) {
+		if (input.length)
+			return true;
+		else
+			return false;
+	};
+	getValue = function() {
+		return this.value;
+	};
+	setValue = function(val) {
+		this.value = val;
+	};
+	isValid = function() {
+		return (this.valid == true);
+	};
+	triggerValidation = function() {
+		this.valid = this.validate(this.value);
+	};
+	render = function(fieldName) {
+		var that = this;
+		return E('input', {
+			'type': "file", 
+			'id': fieldName, 
+			'name': fieldName,
+			'change': function() {
+				that.value = this.value.split('\\').pop();
+				console.log(that.value);
+			},
+		});
+	}
+}
+
 getCfgData('<%=vpnType%>', function(sections) {
 	for (s in sections) {
 		var data = new IpsecData();
@@ -177,6 +212,9 @@ function showModal(data) {
 					return _('Can not be empty');
 				}
 			}),
+			fileCaCertificate: new MyFileUpload(),
+			fileLocalCertificate: new MyFileUpload(),
+			filePubkey: new MyFileUpload(),
 			phase1_lifetime: new ui.Textfield(data.options.phase1_lifetime, {
 				optional: false,
 				validate: function(input){
@@ -365,19 +403,19 @@ function showModal(data) {
 				E('div', {class: "modal-row"}, [
 					E('div', { class: 'modal-value' }, [
 						E('label', { 'class': 'modal-val-title' }, _('CA PEM Certificate')),
-						E('input', {type: "file", id: "fileCaCertificate", name: "fileCaCertificate"}),
+						form.fileCaCertificate.render('fileCaCertificate'),
 					]),	
 				]),
 				E('div', {class: "modal-row"}, [
 					E('div', { class: 'modal-value' }, [
 						E('label', { 'class': 'modal-val-title' }, _('Local certificate')),
-						E('input', {type: "file", id: "fileLocalCertificate", name: "fileLocalCertificate"}),
+						form.fileLocalCertificate.render('fileLocalCertificate'),
 					]),
 				]),
 				E('div', {class: "modal-row"}, [
 					E('div', { class: 'modal-value' }, [
 						E('label', { 'class': 'modal-val-title' }, _('PEM key')),
-						E('input', {type: "file", id: "filePubkey", name: "filePubkey"}),
+						form.filePubkey.render('filePubkey'),
 					]),
 				]),
 			]),
@@ -403,7 +441,19 @@ function showModal(data) {
 					class: 'btn primary',
 					click: function() {
 						var isFormValid = true;
+						var authType = form.authType.getValue();
+
 						for (i in form) {
+							switch(authType) {
+								case 'pubkey':
+									if (i == 'presharedKey') continue;
+									break;
+								case 'psk':
+									if (i == 'fileCaCertificate') continue;
+									if (i == 'fileLocalCertificate') continue;
+									if (i == 'filePubkey') continue;
+									break;
+							}
 							var field = form[i];
 							field.triggerValidation();
 							isFormValid &= field.isValid();
@@ -421,8 +471,6 @@ function showModal(data) {
 						data.options['keyExchMode'] = form.keyExchMode.getValue();
 						data.options['localSubnetes'] = form.localSubnetes.getValue();
 						data.options['remoteSubnets'] = form.remoteSubnets.getValue();
-						data.options['authType'] = form.authType.getValue();
-						data.options['presharedKey'] = form.presharedKey.getValue();
 						data.options['phase1_lifetime'] = form.phase1_lifetime.getValue();
 						data.options['phase1_ikeEncript'] = form.phase1_ikeEncript.getValue();
 						data.options['phase1_ikeHash'] = form.phase1_ikeHash.getValue();
@@ -431,15 +479,24 @@ function showModal(data) {
 						data.options['phase2_espEncript'] = form.phase2_espEncript.getValue();
 						data.options['phase2_espHash'] = form.phase2_espHash.getValue();
 						data.options['phase2_pfsGroup'] = form.phase2_pfsGroup.getValue();
+						data.options['authType'] = authType;
 
-						if (form.authType.getValue() == 'pubkey') {
+						if (authType == 'pubkey') {
 							sendFile('fileCaCertificate', data);
 							sendFile('fileLocalCertificate', data);
 							sendFile('filePubkey', data);
 
-							data.options['fileCaCertificate'] = $('#fileCaCertificate').val().split('\\').pop();
-							data.options['fileLocalCertificate'] = $('#fileLocalCertificate').val().split('\\').pop();
-							data.options['filePubkey'] = $('#filePubkey').val().split('\\').pop();
+							data.options['presharedKey'] = "";
+							data.options['fileCaCertificate'] = form.fileCaCertificate.getValue();
+							data.options['fileLocalCertificate'] = form.fileLocalCertificate.getValue();
+							data.options['filePubkey'] = form.filePubkey.getValue();
+						}
+
+						if (authType == 'psk') {
+							data.options['presharedKey'] = form.presharedKey.getValue();
+							data.options['fileCaCertificate'] = "";
+							data.options['fileLocalCertificate'] = "";
+							data.options['filePubkey'] = "";
 						}
 
 						commitConfig(data);
