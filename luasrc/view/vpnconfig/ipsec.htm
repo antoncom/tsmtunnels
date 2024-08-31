@@ -121,7 +121,7 @@ class MyFileUpload {
 					E('label', {
 						'class':"btn input-group-text", 
 						'for': fieldName
-					}, [_("Choose file")]),
+					}, "<%:Choose file%>"),
 					E('input', {
 						'type': "file", 
 						'class': "modal-file-input",
@@ -170,10 +170,10 @@ function showModal(data) {
 	L.require('ui').then(function(ui) {
 		var form = {
 			name: new ui.Textfield(data.name, {
-				placeholder: _("Name"),
+				placeholder: "<%:Name%>",
 				optional: false,
 				readonly: data.name.length > 0,
-				validate: nearleyValidator('sectionName', _('Should contain letters, numbers and "_"'))
+				validate: nearleyValidator('sectionName', '<%:Should contain letters, numbers and "_"%>')
 			}),
 			localAddr: new ui.Dropdown(data.options.localAddr, make_dropdown_options(localAddresses), {
 				multiple: false,
@@ -182,23 +182,23 @@ function showModal(data) {
 			}),
 			remoteAddr: new ui.Textfield(data.options.remoteAddr, {
 				optional: false,
-				placeholder: _("Remote IP"),
-				validate: nearleyValidator('ip4', _('Should contain numbers 0..255 and "."'))
+				placeholder: "<%:Remote IP%>",
+				validate: nearleyValidator('ip4', '<%:Should contain numbers 0..255 and "."%>')
 			}),
 			dpdDelay: new ui.Textfield(data.options.dpdDelay, {
 				optional: false,
-				placeholder: _("Delay"),
-				validate: nearleyValidator('number', _('Should contain only digits'))
+				placeholder: "<%:Delay%>",
+				validate: nearleyValidator('number', '<%:Should contain only digits%>')
 			}),
 			localId: new ui.Textfield(data.options.localId, {
 				optional: true,
-				placeholder: _("Local ID"),
-				validate: nearleyValidator('string', _('Should contain letters, numbers and no spaces'))
+				placeholder: "<%:Local ID%>",
+				validate: nearleyValidator('string', '<%:Should contain letters, numbers and no spaces%>')
 			}),
 			remoteId: new ui.Textfield(data.options.remoteId, {
 				optional: true,
-				placeholder: _("Remote ID"),
-				validate: nearleyValidator('string', _('Should contain letters, numbers and no spaces'))
+				placeholder: "<%:Remote ID%>",
+				validate: nearleyValidator('string', '<%:Should contain letters, numbers and no spaces%>')
 			}),
 			keyExchMode: new ui.Dropdown(data.options.keyExchMode, make_dropdown_options(keyExchModes), {
 				multiple: false,
@@ -207,13 +207,13 @@ function showModal(data) {
 			}),
 			localSubnetes: new ui.Textfield(data.options.localSubnetes, {
 				optional: false,
-				placeholder: _("Subnets list"),
-				validate: nearleyValidator('ip4_list', _('Should contain IPv4 separated by comma or space'))
+				placeholder: "<%:Subnets list%>",
+				validate: nearleyValidator('ip4_list', '<%:Should contain IPv4 separated by comma or space%>')
 			}),
 			remoteSubnets: new ui.Textfield(data.options.remoteSubnets, {
 				optional: false,
-				placeholder: _("Subnets list"),
-				validate: nearleyValidator('ip4_list', _('Should contain IPv4 separated by comma or space'))
+				placeholder: "<%:Subnets list%>",
+				validate: nearleyValidator('ip4_list', '<%:Should contain IPv4 separated by comma or space%>')
 			}),
 			authType: new ui.Dropdown(data.options.authType, make_dropdown_options(authTypes), {
 				id: 'cbAuthType',
@@ -224,12 +224,12 @@ function showModal(data) {
 			presharedKey: new ui.Textfield(data.options.presharedKey, {
 				optional: false,
 				password: true,
-				placeholder: _("Password"),
+				placeholder: "<%:Password%>",
 				validate: function(input) {
 					if (input.length)
 						return true;
 
-					return _('Can not be empty');
+					return '<%:Can not be empty%>';
 				}
 			}),
 			fileCaCertificate: new MyFileUpload(),
@@ -238,7 +238,7 @@ function showModal(data) {
 			phase1_lifetime: new ui.Textfield(data.options.phase1_lifetime, {
 				optional: false,
 				validate: function(input){
-					var v = nearleyValidator('integer', _('Should contain only digits'));
+					var v = nearleyValidator('integer', '<%:Should contain only digits%>');
 					var res = v(input);
 					if (res !== true)
 						return res;
@@ -246,7 +246,7 @@ function showModal(data) {
 					if (Number(input) >= 60) {
 						return true;
 					} else {
-						return _("60 sec. minimum!")
+						return "<%:60 sec. minimum!%>"
 					}
 				}
 			}),
@@ -268,7 +268,7 @@ function showModal(data) {
 			phase2_lifetime: new ui.Textfield(data.options.phase2_lifetime, {
 				optional: false,
 				validate: function(input){
-					var v = nearleyValidator('integer', _('Should contain only digits'));
+					var v = nearleyValidator('integer', '<%:Should contain only digits%>');
 					var res = v(input);
 					if (res !== true)
 						return res;
@@ -276,7 +276,7 @@ function showModal(data) {
 					if (Number(input) >= 60) {
 						return true;
 					} else {
-						return _("60 sec. minimum!")
+						return "<%:60 sec. minimum!%>"
 					}
 				}
 			}),
@@ -297,59 +297,59 @@ function showModal(data) {
 			})
 		}
 
-		L.showModal(_('Configure IPSec'), [
+		L.showModal('<%:Configure IPSec%>',[
 
 			E('div', {class: "modal-row"}, [
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('Name')),
+					E('label', { 'class': 'modal-val-title' }, '<%:Name%>'),
 					form.name.render()
 				]),	
 			]),
 	
 			E('div', {class: "modal-row"}, [
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('Source address')),
+					E('label', { 'class': 'modal-val-title' }, '<%:Source address%>'),
 					form.localAddr.render()
 				]),	
 
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('Remote address')),
+					E('label', { 'class': 'modal-val-title' }, '<%:Remote address%>'),
 					form.remoteAddr.render()
 				]),	
 
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('DPD delay (sec)')),
+					E('label', { 'class': 'modal-val-title' }, '<%:DPD delay (sec)%>'),
 					form.dpdDelay.render()
 				]),	
 			]),
 	
 			E('div', {class: "modal-row"}, [
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('Local ID')),
+					E('label', { 'class': 'modal-val-title' }, '<%:Local ID%>'),
 					form.localId.render()
 				]),	
 
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('Remote ID')),
+					E('label', { 'class': 'modal-val-title' }, '<%:Remote ID%>'),
 					form.remoteId.render()
 				]),	
 			]),
 	
 			E('div', {class: "modal-row"}, [
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('Key exchange mode')),
+					E('label', { 'class': 'modal-val-title' }, '<%:Key exchange mode%>'),
 					form.keyExchMode.render()
 				]),	
 			]),
 	
 			E('div', {class: "modal-row"}, [
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('Local subnets')),
+					E('label', { 'class': 'modal-val-title' }, '<%:Local subnets%>'),
 					form.localSubnetes.render()
 				]),	
 
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('Remote subnets')),
+					E('label', { 'class': 'modal-val-title' }, '<%:Remote subnets%>'),
 					form.remoteSubnets.render()
 				]),	
 			]),
@@ -357,47 +357,47 @@ function showModal(data) {
 			E('div', {class: "modal-row"}, [
 			
 				E('div', { class: 'modal-section' }, [
-					E('label', { 'class': 'modal-val-title' }, _('Phase #1')),
+					E('label', { 'class': 'modal-val-title' }, '<%:Phase #1%>'),
 					E('div', { class: 'modal-value' }, [
-						E('label', { 'class': 'modal-val-title' }, _('Lifetime')),
+						E('label', { 'class': 'modal-val-title' }, '<%:Lifetime%>'),
 						form.phase1_lifetime.render()
 					]),	
 
 					E('div', { class: 'modal-value' }, [
-						E('label', { 'class': 'modal-val-title' }, _('IKE Encription')),
+						E('label', { 'class': 'modal-val-title' }, '<%:IKE Encription%>'),
 						form.phase1_ikeEncript.render()
 					]),	
 
 					E('div', { class: 'modal-value' }, [
-						E('label', { 'class': 'modal-val-title' }, _('IKE Hash')),
+						E('label', { 'class': 'modal-val-title' }, '<%:IKE Hash%>'),
 						form.phase1_ikeHash.render()
 					]),	
 
 					E('div', { class: 'modal-value' }, [
-						E('label', { 'class': 'modal-val-title' }, _('DH group')),
+						E('label', { 'class': 'modal-val-title' }, '<%:DH group%>'),
 						form.phase1_dhGroup.render()
 					]),	
 				]),
 
 				E('div', { class: 'modal-section' }, [
-					E('label', { 'class': 'modal-val-title' }, _('Phase #2')),
+					E('label', { 'class': 'modal-val-title' }, '<%:Phase #2%>'),
 					E('div', { class: 'modal-value' }, [
-						E('label', { 'class': 'modal-val-title' }, _('Lifetime')),
+						E('label', { 'class': 'modal-val-title' }, '<%:Lifetime%>'),
 						form.phase2_lifetime.render()
 					]),	
 
 					E('div', { class: 'modal-value' }, [
-						E('label', { 'class': 'modal-val-title' }, _('ESP Encription')),
+						E('label', { 'class': 'modal-val-title' }, '<%:ESP Encription%>'),
 						form.phase2_espEncript.render()
 					]),	
 
 					E('div', { class: 'modal-value' }, [
-						E('label', { 'class': 'modal-val-title' }, _('ESP Hash')),
+						E('label', { 'class': 'modal-val-title' }, '<%:ESP Hash%>'),
 						form.phase2_espHash.render()
 					]),	
 
 					E('div', { class: 'modal-value' }, [
-						E('label', { 'class': 'modal-val-title' }, _('PFS group')),
+						E('label', { 'class': 'modal-val-title' }, '<%:PFS group%>'),
 						form.phase2_pfsGroup.render()
 					]),	
 				]),
@@ -405,7 +405,7 @@ function showModal(data) {
 	
 			E('div', {class: "modal-row"}, [
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('Authentication method')),
+					E('label', { 'class': 'modal-val-title' }, '<%:Authentication method%>'),
 					form.authType.render()
 				]),	
 			]),
@@ -413,7 +413,7 @@ function showModal(data) {
 			E('div', {id: "psk-key", class: (form.authType.getValue() != 'psk' ? 'hidden' : '')}, [
 				E('div', {class: "modal-row"}, [
 					E('div', { class: 'modal-value' }, [
-						E('label', { 'class': 'modal-val-title' }, _('Pre-shared key')),
+						E('label', { 'class': 'modal-val-title' }, '<%:Pre-shared key%>'),
 						E('div', {class: 'modal-password'}, form.presharedKey.render())
 					]),	
 				]),
@@ -422,19 +422,19 @@ function showModal(data) {
 			E('div', {id: "pub-key", class: (form.authType.getValue() != 'pubkey' ? 'hidden' : '')}, [
 				E('div', {class: "modal-row"}, [
 					E('div', { class: 'modal-value' }, [
-						E('label', { 'class': 'modal-val-title' }, _('CA PEM Certificate')),
+						E('label', { 'class': 'modal-val-title' }, '<%:CA PEM Certificate%>'),
 						form.fileCaCertificate.render('fileCaCertificate'),
 					]),	
 				]),
 				E('div', {class: "modal-row"}, [
 					E('div', { class: 'modal-value' }, [
-						E('label', { 'class': 'modal-val-title' }, _('Local certificate')),
+						E('label', { 'class': 'modal-val-title' }, '<%:Local certificate%>'),
 						form.fileLocalCertificate.render('fileLocalCertificate'),
 					]),
 				]),
 				E('div', {class: "modal-row"}, [
 					E('div', { class: 'modal-value' }, [
-						E('label', { 'class': 'modal-val-title' }, _('PEM key')),
+						E('label', { 'class': 'modal-val-title' }, '<%:PEM key%>'),
 						form.filePubkey.render('filePubkey'),
 					]),
 				]),
@@ -446,7 +446,7 @@ function showModal(data) {
 					click: function() {
 						L.hideModal()
 					}
-				}, _('Close')),
+				}, '<%:Close%>'),
 				E('div', {
 					class: 'btn',
 					click: function() {
@@ -456,7 +456,7 @@ function showModal(data) {
 						}
 						showKeyFields(form.authType.getValue());
 					}
-				}, _('Reset')),
+				}, '<%:Reset%>'),
 				E('div', {
 					class: 'btn primary',
 					click: function() {
@@ -522,7 +522,7 @@ function showModal(data) {
 						commitConfig(data);
 						L.hideModal()
 					}
-				}, _('Save')),
+				}, '<%:Save%>'),
 			]),
 		]);
 

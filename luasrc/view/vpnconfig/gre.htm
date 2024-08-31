@@ -68,10 +68,10 @@ function showModal(greData) {
 	L.require('ui').then(function(ui) {
 		var form = {
 			name: new ui.Textfield(greData.name, {
-				placeholder: _(" Name"),
+				placeholder: "<%: Name%>",
 				optional: false,
 				readonly: greData.name.length > 0,
-				validate: nearleyValidator('sectionName', _('Should contain letters, numbers and "_"'))
+				validate: nearleyValidator('sectionName', '<%:Should contain letters, numbers and "_"%>')
 			}),
 			localAddr: new ui.Dropdown(greData.options.localAddr, make_dropdown_options(localAddresses), {
 				multiple: false,
@@ -79,9 +79,9 @@ function showModal(greData) {
 				sort: false
 			}),
 			remoteAddr: new ui.Textfield(greData.options.remoteAddr, {
-				placeholder: _("Remote IP"),
+				placeholder: "<%:Remote IP%>",
 				optional: false,
-				validate: nearleyValidator('ip4', _('Should contain numbers 0..255 and "."'))
+				validate: nearleyValidator('ip4', '<%:Should contain numbers 0..255 and "."%>')
 			}),
 			netType: new ui.Dropdown(greData.options.netType, make_dropdown_options(networkTypes), {
 				multiple: false,
@@ -93,23 +93,23 @@ function showModal(greData) {
 				optional: false,
 				sort: false,
 				create: true,
-				validate: nearleyValidator('string', _('Should contain letters, numbers and "_"'))
+				validate: nearleyValidator('string', '<%:Should contain letters, numbers and "_"%>')
 			}),
 			tunnelIp: new ui.Textfield(greData.options.tunnelIp, {
 				optional: false,
-				placeholder: _("Local IP for tunnel %."),
-				validate: nearleyValidator('ip4', _('Should contain numbers 0..255 and "."'))
+				placeholder: "<%:Local IP for tunnel %.%>",
+				validate: nearleyValidator('ip4', '<%:Should contain numbers 0..255 and "."%>')
 			}),
 			tunnelMask: new ui.Textfield(greData.options.tunnelMask, {
 				optional: false,
-				placeholder: _(" Netmask"),
-				validate: nearleyValidator('netmask', _('Should contain numbers 0..255 and "." or bits count 0..32'))
+				placeholder: "<%: Netmask%>",
+				validate: nearleyValidator('netmask', '<%:Should contain numbers 0..255 and "." or bits count 0..32%>')
 			}),
 			greKey: new ui.Textfield(greData.options.greKey, {
 				optional: true,
-				placeholder: _("Leave blank if not used"),
+				placeholder: "<%:Leave blank if not used%>",
 				validate: function(input){
-					var v = nearleyValidator('integer', _('Should contain only digits'));
+					var v = nearleyValidator('integer', '<%:Should contain only digits%>');
 					var res = v(input);
 					if (res !== true)
 						return res;
@@ -120,7 +120,7 @@ function showModal(greData) {
 					if (Number(input) > 0 && Number(input) < 0xFFFFFFFF) {
 						return true;
 					} else {
-						return _("out of range");
+						return "<%:out of range%>";
 					}
 				}
 			}),
@@ -129,74 +129,74 @@ function showModal(greData) {
 				create: true,
 				sort: false,
 				optional: false,
-				validate: nearleyValidator('string', _('Should contain letters, numbers and "_"'))
+				validate: nearleyValidator('string', '<%:Should contain letters, numbers and "_"%>')
 			}),
 			notFragment: new ui.Checkbox(greData.options.notFragment, {
 				id: 'notFragment'
 			})
 		}
 
-		L.showModal(_('Configure GRE tunnel'), [
+		L.showModal('<%:Configure GRE tunnel%>',[
 			E('div', {class: "modal-row"}, [
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('Name')),
+					E('label', { 'class': 'modal-val-title' }, '<%:Name%>'),
 					form.name.render()
 				]),
 			]),
 
 			E('div', {class: "modal-row"}, [
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('Local address')),
+					E('label', { 'class': 'modal-val-title' }, '<%:Local address%>'),
 					form.localAddr.render()
 				]),
 
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('Remote address')),
+					E('label', { 'class': 'modal-val-title' }, '<%:Remote address%>'),
 					form.remoteAddr.render()
 				]),
 			]),
 
 			E('div', { class: 'modal-row' }, [
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('Network type')),
+					E('label', { 'class': 'modal-val-title' }, '<%:Network type%>'),
 					form.netType.render()
 				]),
 			]),
 
 			E('div', { class: 'modal-row' }, [
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('Add to Bridge or create new')),
+					E('label', { 'class': 'modal-val-title' }, '<%:Add to Bridge or create new%>'),
 					form.bridge.render()
 				]),
 			]),
 
 			E('div', { class: 'modal-row' }, [
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('Tunnel IP')),
+					E('label', { 'class': 'modal-val-title' }, '<%:Tunnel IP%>'),
 					form.tunnelIp.render()
 				]),
 
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('Tunnel netmask')),
+					E('label', { 'class': 'modal-val-title' }, '<%:Tunnel netmask%>'),
 					form.tunnelMask.render()
 				]),
 			]),
 
 			E('div', { class: 'modal-row' }, [
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('GRE key')),
+					E('label', { 'class': 'modal-val-title' }, '<%:GRE key%>'),
 					form.greKey.render()
 				]),
 
 				E('div', { class: 'modal-value' }, [
-					E('label', { 'class': 'modal-val-title' }, _('Firewall zone')),
+					E('label', { 'class': 'modal-val-title' }, '<%:Firewall zone%>'),
 					form.zone.render()
 				]),
 			]),
 
 			E('div', { class: 'modal-value modal-checkbox' }, [
 				form.notFragment.render(),
-				E('label', { 'class': 'modal-val-title', for: 'notFragment'}, _('Dont fragment packets')),
+				E('label', { 'class': 'modal-val-title', for: 'notFragment'}, '<%:Dont fragment packets%>'),
 			]),
 
 			E('div', { class: 'modal-buttons' }, [
@@ -205,7 +205,7 @@ function showModal(greData) {
 					click: function() {
 						L.hideModal()
 					}
-				}, _('Close')),
+				}, '<%:Close%>'),
 				
 				E('div', {
 					class: 'btn',
@@ -215,7 +215,7 @@ function showModal(greData) {
 							form[i].triggerValidation();
 						}
 					}
-				}, _('Reset')),
+				}, '<%:Reset%>'),
 				
 				E('div', {
 					class: 'btn primary',
@@ -243,7 +243,7 @@ function showModal(greData) {
 						commitConfig(greData);
 						L.hideModal()
 					}
-				}, _('Save')),
+				}, '<%:Save%>'),
 			]),
 		]);
 	});
