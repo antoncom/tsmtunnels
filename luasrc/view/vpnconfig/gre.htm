@@ -97,7 +97,7 @@ function showModal(greData) {
 			}),
 			tunnelIp: new ui.Textfield(greData.options.tunnelIp, {
 				optional: false,
-				placeholder: "<%:Local IP for tunnel %.%>",
+				placeholder: "<%:Local IP for tunnel%>",
 				validate: nearleyValidator('ip4', '<%:Should contain numbers 0..255 and "."%>')
 			}),
 			tunnelMask: new ui.Textfield(greData.options.tunnelMask, {

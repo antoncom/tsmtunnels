@@ -58,7 +58,7 @@ L.require('ui').then(function(ui) {
         form['username'] = new ui.Textfield(data.options.username, {
             placeholder: "<%: Username%>",
             optional: false,
-            validate: nearleyValidator('sectionName', '<%:Should not contain letters, numbers and "_"%>')
+            validate: nearleyValidator('sectionName', '<%:Should contain letters, numbers and "_"%>')
         });
         form['password'] = new ui.Textfield(data.options.password, {
             placeholder: "<%: Password%>",
