@@ -6,6 +6,10 @@ copy resources/* to /www/luci-static/resources/vpnconfig/ on target device.
 
 copy luasrc/* to /usr/lib/lua/luci/ on target device.
 
+copy root/* to / on target device.
+
+Module will create file /etc/configs/vpnconfig on first-time run if it was not found. 
+
 # USAGE
 If no configure found on target system, module will create empty file /etc/config/vpnconfig.
 
