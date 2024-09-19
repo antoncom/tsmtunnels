@@ -178,11 +178,11 @@ function apply(form) {
     pptpData.options['isDefaultRoute'] = form.isDefaultRoute.getValue();   
     pptpData.isActive = form.isActive.getValue();
     
-    send_action("edit", pptpData, function(){
+    sendAction("edit", pptpData, function(){
         if (pptpData.isActive == g_pptpData.isActive) {
             location.reload();
         } else {
-            send_action("enable", pptpData, function(){
+            sendAction("enable", pptpData, function(){
                 location.reload();
             });
         }
