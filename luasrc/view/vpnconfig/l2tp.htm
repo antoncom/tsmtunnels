@@ -184,11 +184,11 @@ L.require('ui').then(function(ui) {
         l2tpData.options['isIPSecProt'] = form.isIPSecProt.getValue();   
         l2tpData.isActive = form.isActive.getValue();
         
-        send_action("edit", l2tpData, function(){
+        sendAction("edit", l2tpData, function(){
             if (l2tpData.isActive == g_l2tpData.isActive) {
                 location.reload();
             } else {
-                send_action("enable", l2tpData, function(){
+                sendAction("enable", l2tpData, function(){
                     location.reload();
                 });
             }
